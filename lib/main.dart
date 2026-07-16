@@ -38,8 +38,6 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
             centerTitle: true,
         ),
-ThemeData.dark(useMaterial3: true),
-themeMode: ThemeMode.system,
         cardTheme: CardThemeData(color: Colors.white, elevation: 6),
 
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -49,6 +47,8 @@ themeMode: ThemeMode.system,
           ),
         ),
       ),
+     darkTheme: ThemeData.dark(useMaterial3: true),
+themeMode: ThemeMode.system,
       home: const HomePage(),
     );
   }
