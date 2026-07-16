@@ -30,17 +30,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.indigo,
-darkTheme: ThemeData.dark(useMaterial3: true),
-themeMode: ThemeMode.system,
 
         scaffoldBackgroundColor: Colors.grey.shade100,
 
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.indigo,
           foregroundColor: Colors.white,
-          centerTitle: true,
+            centerTitle: true,
         ),
-
+ThemeData.dark(useMaterial3: true),
+themeMode: ThemeMode.system,
         cardTheme: CardThemeData(color: Colors.white, elevation: 6),
 
         elevatedButtonTheme: ElevatedButtonThemeData(
