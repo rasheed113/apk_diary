@@ -30,6 +30,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.indigo,
+darkTheme: ThemeData.dark(useMaterial3: true),
+themeMode: ThemeMode.system,
 
         scaffoldBackgroundColor: Colors.grey.shade100,
 
