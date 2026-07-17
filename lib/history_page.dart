@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'database_helper.dart';
 import 'diary_entry.dart';
-import 'work_page.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -292,37 +291,18 @@ class _HistoryPageState extends State<HistoryPage> {
                                     color: Colors.green,
                                   ),
                                 ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    color: Colors.blue,
-                                  ),
-                                  onPressed: () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => WorkPage(entry: entry),
-                                      ),
-                                    );
-                                    if (result == true) {
-                                      refreshEntries();
-                                    }
-                                  },
-                                ),
                                 SizedBox(
-                                  width: 50,
-                                  height: 50,
+                                  width: 56,
+                                  height: 56,
                                   child: IconButton(
-                                    splashRadius: 26,
+                                    iconSize: 30,
+                                    splashRadius: 28,
                                     padding: EdgeInsets.zero,
                                     icon: const Icon(
                                       Icons.delete_forever,
                                       color: Colors.red,
-                                      size: 28,
                                     ),
-                                    onPressed: () {
-                                      confirmDelete(entry);
-                                    },
+                                    onPressed: () => confirmDelete(entry),
                                   ),
                                 ),
                               ],
