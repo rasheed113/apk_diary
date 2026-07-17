@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'theme_manager.dart';
+import 'app_theme_controller.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -20,6 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String machineType = 'Single Needle';
   String jobType = 'Full Piece';
   String currency = 'PKR';
+  String selectedTheme = 'goldLegend';
 
   @override
   void initState() {
@@ -42,6 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
       jobType = profile['default_job_type'] ?? 'Full Piece';
 
       currency = profile['currency'] ?? 'PKR';
+      selectedTheme = profile['selected_theme'] ?? 'goldLegend';
       if ((profile['profile_image'] ?? '').toString().isNotEmpty) {
         profileImage = File(profile['profile_image']);
       }
@@ -68,7 +72,33 @@ class _SettingsPageState extends State<SettingsPage> {
       'default_job_type': jobType,
       'currency': currency,
       'profile_image': profileImage?.path ?? '',
+      'selected_theme': selectedTheme,
     });
+    switch (selectedTheme) {
+      case 'shadowDark':
+        AppThemeController.currentTheme.value = AppTheme.shadowDark;
+        break;
+
+      case 'goldLegend':
+        AppThemeController.currentTheme.value = AppTheme.goldLegend;
+        break;
+
+      case 'platinumPro':
+        AppThemeController.currentTheme.value = AppTheme.platinumPro;
+        break;
+
+      case 'cyberBlue':
+        AppThemeController.currentTheme.value = AppTheme.cyberBlue;
+        break;
+
+      case 'neonGreen':
+        AppThemeController.currentTheme.value = AppTheme.neonGreen;
+        break;
+
+      case 'rubyRed':
+        AppThemeController.currentTheme.value = AppTheme.rubyRed;
+        break;
+    }
     print('PROFILE SAVED');
     final check = await DatabaseHelper.instance.getProfile();
     print(check);
@@ -204,7 +234,37 @@ class _SettingsPageState extends State<SettingsPage> {
                 });
               },
             ),
+            const SizedBox(height: 12),
 
+            DropdownButtonFormField<String>(
+              initialValue: selectedTheme,
+              decoration: const InputDecoration(
+                labelText: 'Theme',
+                border: OutlineInputBorder(),
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: 'shadowDark',
+                  child: Text('Shadow Dark'),
+                ),
+                DropdownMenuItem(
+                  value: 'goldLegend',
+                  child: Text('Gold Legend'),
+                ),
+                DropdownMenuItem(
+                  value: 'platinumPro',
+                  child: Text('Platinum Pro'),
+                ),
+                DropdownMenuItem(value: 'cyberBlue', child: Text('Cyber Blue')),
+                DropdownMenuItem(value: 'neonGreen', child: Text('Neon Green')),
+                DropdownMenuItem(value: 'rubyRed', child: Text('Ruby Red')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedTheme = value!;
+                });
+              },
+            ),
             const SizedBox(height: 20),
 
             SizedBox(

@@ -1,3 +1,36 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import 'package:flutter/material.dart';
 
 enum AppTheme {
@@ -6,51 +39,97 @@ enum AppTheme {
   platinumPro,
   cyberBlue,
   neonGreen,
+  rubyRed,
 }
 
 class ThemeManager {
   static ThemeData getTheme(AppTheme theme) {
     switch (theme) {
-
       case AppTheme.shadowDark:
         return ThemeData.dark(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+          cardColor: const Color(0xFF1A1A1A),
           colorScheme: const ColorScheme.dark(
-            primary: Colors.deepPurpleAccent,
-            secondary: Colors.purpleAccent,
+            primary: Color(0xFF9C27B0),
+            secondary: Color(0xFFE040FB),
           ),
         );
 
       case AppTheme.goldLegend:
         return ThemeData.dark(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: const Color(0xFF090909),
+          cardColor: const Color(0xFF1A1400),
           colorScheme: const ColorScheme.dark(
             primary: Color(0xFFFFD700),
-            secondary: Colors.orangeAccent,
+            secondary: Color(0xFFFFB300),
           ),
         );
 
       case AppTheme.platinumPro:
-        return ThemeData.light(useMaterial3: true).copyWith(
-          colorScheme: const ColorScheme.light(
-            primary: Colors.blueGrey,
-            secondary: Colors.grey,
+        return ThemeData.dark(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: const Color(0xFF101010),
+          cardColor: const Color(0xFF202020),
+          colorScheme: const ColorScheme.dark(
+            primary: Color(0xFFE5E4E2),
+            secondary: Color(0xFFBFC5CA),
           ),
         );
 
       case AppTheme.cyberBlue:
         return ThemeData.dark(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: const Color(0xFF050A14),
+          cardColor: const Color(0xFF101C30),
           colorScheme: const ColorScheme.dark(
-            primary: Colors.cyanAccent,
-            secondary: Colors.blueAccent,
+            primary: Color(0xFF00E5FF),
+            secondary: Color(0xFF2979FF),
           ),
         );
 
       case AppTheme.neonGreen:
         return ThemeData.dark(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: const Color(0xFF071107),
+          cardColor: const Color(0xFF102010),
           colorScheme: const ColorScheme.dark(
-            primary: Colors.greenAccent,
-            secondary: Colors.lightGreenAccent,
+            primary: Color(0xFF00FF66),
+            secondary: Color(0xFF76FF03),
+          ),
+        );
+
+      case AppTheme.rubyRed:
+        return ThemeData.dark(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: const Color(0xFF120606),
+          cardColor: const Color(0xFF2A1010),
+          colorScheme: const ColorScheme.dark(
+            primary: Color(0xFFFF1744),
+            secondary: Color(0xFFFF5252),
           ),
         );
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
