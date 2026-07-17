@@ -10,12 +10,22 @@ import 'settings_page.dart';
 import 'work_page.dart';
 import 'theme_manager.dart';
 import 'app_theme_controller.dart';
+import 'database_helper.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+
+  final savedTheme = await DatabaseHelper.instance.getTheme();
+
+  AppThemeController.currentTheme.value = AppTheme.values.firstWhere(
+    (e) => e.name == savedTheme,
+    orElse: () => AppTheme.shadowDark,
+  );
 
   runApp(const MyApp());
 }

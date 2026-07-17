@@ -258,4 +258,32 @@ class DatabaseHelper {
 
     return earning - received;
   }
+
+  Future<void> saveTheme(String theme) async {
+    final db = await database;
+
+    await db.update(
+      'profile',
+      {'selected_theme': theme},
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+  }
+
+  Future<String> getTheme() async {
+    final db = await database;
+
+    final result = await db.query(
+      'profile',
+      columns: ['selected_theme'],
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+
+    if (result.isNotEmpty) {
+      return result.first['selected_theme']?.toString() ?? 'shadowDark';
+    }
+
+    return 'shadowDark';
+  }
 }

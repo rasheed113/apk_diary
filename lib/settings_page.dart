@@ -259,10 +259,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 DropdownMenuItem(value: 'neonGreen', child: Text('Neon Green')),
                 DropdownMenuItem(value: 'rubyRed', child: Text('Ruby Red')),
               ],
-              onChanged: (value) {
+              onChanged: (value) async {
+                if (value == null) return;
+
                 setState(() {
-                  selectedTheme = value!;
+                  selectedTheme = value;
                 });
+
+                AppThemeController.currentTheme.value = AppTheme.values
+                    .firstWhere(
+                      (e) => e.name == value,
+                      orElse: () => AppTheme.shadowDark,
+                    );
+
+                await DatabaseHelper.instance.saveTheme(value);
               },
             ),
             const SizedBox(height: 20),
