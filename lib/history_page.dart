@@ -309,14 +309,21 @@ class _HistoryPageState extends State<HistoryPage> {
                                     }
                                   },
                                 ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                                SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: IconButton(
+                                    splashRadius: 26,
+                                    padding: EdgeInsets.zero,
+                                    icon: const Icon(
+                                      Icons.delete_forever,
+                                      color: Colors.red,
+                                      size: 28,
+                                    ),
+                                    onPressed: () {
+                                      confirmDelete(entry);
+                                    },
                                   ),
-                                  onPressed: () {
-                                    confirmDelete(entry);
-                                  },
                                 ),
                               ],
                             ),

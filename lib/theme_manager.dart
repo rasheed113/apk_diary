@@ -1,39 +1,7 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'package:flutter/material.dart';
 
 enum AppTheme {
+  classicLight,
   shadowDark,
   goldLegend,
   platinumPro,
@@ -45,6 +13,23 @@ enum AppTheme {
 class ThemeManager {
   static ThemeData getTheme(AppTheme theme) {
     switch (theme) {
+      case AppTheme.classicLight:
+        return ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: const Color(0xFFF5F6FA),
+          cardColor: Colors.white,
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF3F51B5),
+            secondary: Color(0xFF5C6BC0),
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFF3F51B5),
+            foregroundColor: Colors.white,
+            elevation: 4,
+          ),
+        );
+
       case AppTheme.shadowDark:
         return ThemeData.dark(useMaterial3: true).copyWith(
           scaffoldBackgroundColor: const Color(0xFF0A0A0A),
@@ -107,29 +92,3 @@ class ThemeManager {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -22,7 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String machineType = 'Single Needle';
   String jobType = 'Full Piece';
   String currency = 'PKR';
-  String selectedTheme = 'goldLegend';
+  String selectedTheme = 'classicLight';
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
       jobType = profile['default_job_type'] ?? 'Full Piece';
 
       currency = profile['currency'] ?? 'PKR';
-      selectedTheme = profile['selected_theme'] ?? 'goldLegend';
+      selectedTheme = profile['selected_theme'] ?? 'classicLight';
       if ((profile['profile_image'] ?? '').toString().isNotEmpty) {
         profileImage = File(profile['profile_image']);
       }
@@ -75,6 +75,10 @@ class _SettingsPageState extends State<SettingsPage> {
       'selected_theme': selectedTheme,
     });
     switch (selectedTheme) {
+      case 'classicLight':
+        AppThemeController.currentTheme.value = AppTheme.classicLight;
+        break;
+
       case 'shadowDark':
         AppThemeController.currentTheme.value = AppTheme.shadowDark;
         break;
@@ -179,6 +183,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               items: const [
                 DropdownMenuItem(
+                  value: 'classicLight',
+                  child: Text('Classic Light'),
+                ),
+                DropdownMenuItem(
                   value: 'Single Needle',
                   child: Text('Single Needle'),
                 ),
@@ -202,6 +210,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 border: OutlineInputBorder(),
               ),
               items: const [
+                DropdownMenuItem(
+                  value: 'classicLight',
+                  child: Text('Classic Light'),
+                ),
                 DropdownMenuItem(
                   value: 'Full Piece',
                   child: Text('Full Piece'),
@@ -243,6 +255,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 border: OutlineInputBorder(),
               ),
               items: const [
+                DropdownMenuItem(
+                  value: 'classicLight',
+                  child: Text('Classic Light'),
+                ),
                 DropdownMenuItem(
                   value: 'shadowDark',
                   child: Text('Shadow Dark'),
