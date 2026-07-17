@@ -79,32 +79,63 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: pages[selectedIndex],
 
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(left: 14, right: 14, bottom: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.35),
+              blurRadius: 25,
+              spreadRadius: 2,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: NavigationBar(
+            height: 72,
+            elevation: 0,
+            backgroundColor: Theme.of(
+              context,
+            ).cardColor.withValues(alpha: 0.92),
+            indicatorColor: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.30),
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            selectedIndex: selectedIndex,
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.dashboard, size: 30),
+                label: 'Dashboard',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.work, size: 30),
+                label: 'Work',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.history, size: 30),
+                label: 'History',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.account_balance_wallet, size: 30),
+                label: 'Finance',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.settings, size: 30),
+                label: 'Settings',
+              ),
+            ],
+            onDestinationSelected: (index) {
+              setState(() {
+                selectedIndex = index;
+              });
+            },
           ),
-
-          NavigationDestination(icon: Icon(Icons.work), label: 'Work'),
-
-          NavigationDestination(icon: Icon(Icons.history), label: 'History'),
-
-          NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Finance',
-          ),
-
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-
-        onDestinationSelected: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
+        ),
       ),
     );
   }

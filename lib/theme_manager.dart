@@ -42,31 +42,31 @@ class ThemeManager {
 
       case AppTheme.goldLegend:
         return ThemeData.dark(useMaterial3: true).copyWith(
-          scaffoldBackgroundColor: const Color(0xFF090909),
-          cardColor: const Color(0xFF1A1400),
+          scaffoldBackgroundColor: const Color(0xFF050505),
+          cardColor: const Color(0xFF2B2100),
           colorScheme: const ColorScheme.dark(
-            primary: Color(0xFFFFD700),
-            secondary: Color(0xFFFFB300),
+            primary: Color(0xFFFFE55C),
+            secondary: Color(0xFFFFEA00),
           ),
         );
 
       case AppTheme.platinumPro:
         return ThemeData.dark(useMaterial3: true).copyWith(
           scaffoldBackgroundColor: const Color(0xFF101010),
-          cardColor: const Color(0xFF202020),
+          cardColor: const Color(0xFF2A2A2A),
           colorScheme: const ColorScheme.dark(
-            primary: Color(0xFFE5E4E2),
-            secondary: Color(0xFFBFC5CA),
+            primary: Color(0xFFFFFFFF),
+            secondary: Color(0xFFDADADA),
           ),
         );
 
       case AppTheme.cyberBlue:
         return ThemeData.dark(useMaterial3: true).copyWith(
-          scaffoldBackgroundColor: const Color(0xFF050A14),
-          cardColor: const Color(0xFF101C30),
+          scaffoldBackgroundColor: const Color(0xFF030A15),
+          cardColor: const Color(0xFF0A223A),
           colorScheme: const ColorScheme.dark(
-            primary: Color(0xFF00E5FF),
-            secondary: Color(0xFF2979FF),
+            primary: Color(0xFF00F0FF),
+            secondary: Color(0xFF42A5F5),
           ),
         );
 
@@ -75,7 +75,7 @@ class ThemeManager {
           scaffoldBackgroundColor: const Color(0xFF071107),
           cardColor: const Color(0xFF102010),
           colorScheme: const ColorScheme.dark(
-            primary: Color(0xFF00FF66),
+            primary: Color(0xFF39FF14),
             secondary: Color(0xFF76FF03),
           ),
         );

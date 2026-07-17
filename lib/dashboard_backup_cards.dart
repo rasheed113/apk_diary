@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:async';
@@ -101,9 +100,6 @@ class _DashboardPageState extends State<DashboardPage> {
     required IconData icon,
     VoidCallback? onTap,
   }) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final secondary = Theme.of(context).colorScheme.secondary;
-
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.85, end: 1),
@@ -111,89 +107,62 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (context, scale, child) {
         return Transform.scale(scale: scale, child: child);
       },
-      child: InkWell(
-        borderRadius: BorderRadius.circular(26),
-        onTap: onTap,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            boxShadow: [
-              BoxShadow(
-                color: primary.withValues(alpha: 0.45),
-                blurRadius: 25,
-                spreadRadius: 2,
-              ),
-            ],
+      child: Card(
+        elevation: 20,
+        color: Theme.of(context).cardColor,
+        shadowColor: Theme.of(
+          context,
+        ).colorScheme.primary.withValues(alpha: 0.9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.35),
+            width: 3,
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(26),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  color: Theme.of(context).cardColor.withValues(alpha: 0.75),
-                  border: Border.all(
-                    color: primary.withValues(alpha: 0.8),
-                    width: 2,
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: Icon(icon, size: 36, color: Colors.black),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        value,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 38,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [primary, secondary]),
-                        boxShadow: [
-                          BoxShadow(
-                            color: primary.withValues(alpha: 0.8),
-                            blurRadius: 18,
-                          ),
-                        ],
-                      ),
-                      child: Icon(icon, size: 36, color: Colors.black),
-                    ),
-
-                    const SizedBox(width: 18),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              color: secondary,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-
-                          const SizedBox(height: 6),
-
-                          Text(
-                            value,
-                            style: TextStyle(
-                              color: primary,
-                              fontSize: 38,
-                              fontWeight: FontWeight.w900,
-                              shadows: [
-                                Shadow(
-                                  color: primary.withValues(alpha: 0.8),
-                                  blurRadius: 12,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
           ),
         ),
