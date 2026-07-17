@@ -14,7 +14,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   File? profileImage;
-  File? coverImage;
   final ImagePicker picker = ImagePicker();
   final nameController = TextEditingController();
   final mobileController = TextEditingController();
@@ -50,9 +49,6 @@ class _SettingsPageState extends State<SettingsPage> {
       if ((profile['profile_image'] ?? '').toString().isNotEmpty) {
         profileImage = File(profile['profile_image']);
       }
-      if ((profile['cover_image'] ?? '').toString().isNotEmpty) {
-        coverImage = File(profile['cover_image']);
-      }
     });
   }
 
@@ -65,17 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
       });
     }
   }
-    Future<void> pickCoverImage() async {
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
 
-    if (picked != null) {
-      setState(() {
-        coverImage = File(picked.path);
-      });
-    }
-  }
   Future<void> saveProfile() async {
     print('SAVE BUTTON PRESSED');
     await DatabaseHelper.instance.saveProfile({
@@ -86,7 +72,6 @@ class _SettingsPageState extends State<SettingsPage> {
       'default_job_type': jobType,
       'currency': currency,
       'profile_image': profileImage?.path ?? '',
-      'cover_image': coverImage?.path ?? '',
       'selected_theme': selectedTheme,
     });
     switch (selectedTheme) {
@@ -157,50 +142,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     : null,
               ),
             ),
-
-              const SizedBox(height: 12),
-
-              GestureDetector(
-                onTap: pickCoverImage,
-                child: Container(
-                  height: 90,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: coverImage != null
-                        ? DecorationImage(
-                            image: FileImage(coverImage!),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withValues(alpha: 0.5),
-                        blurRadius: 15,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: coverImage == null
-                      ? const Center(
-                          child: Text(
-                            "Add Cover Image 🚀",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        )
-                      : null,
-                ),
-              ),
 
             const SizedBox(height: 15),
             TextField(

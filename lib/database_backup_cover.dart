@@ -24,7 +24,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 2,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -41,13 +41,6 @@ class DatabaseHelper {
         ALTER TABLE profile
         ADD COLUMN selected_theme TEXT DEFAULT 'shadowDark'
         ''');
-    }
-
-    if (oldVersion < 3) {
-      await db.execute('''
-        ALTER TABLE profile
-        ADD COLUMN cover_image TEXT
-      ''');
     }
   }
 

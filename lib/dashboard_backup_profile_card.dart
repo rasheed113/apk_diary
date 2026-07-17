@@ -40,7 +40,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   String? profileImage;
-  String? coverImage;
   String tickerMessage = '';
 
   @override
@@ -71,7 +70,6 @@ class _DashboardPageState extends State<DashboardPage> {
       operatorName = profile?['operator_name'] ?? 'Operator';
       userId = profile?['user_id'] ?? 'APK-LOCAL-001';
       profileImage = profile?['profile_image'];
-      coverImage = profile?['cover_image'];
       greeting = getGreeting();
       tickerMessage = getTickerMessage();
     });
@@ -95,34 +93,6 @@ class _DashboardPageState extends State<DashboardPage> {
   void dispose() {
     tickerTimer?.cancel();
     super.dispose();
-  }
-
-  Widget buildGlowButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final secondary = Theme.of(context).colorScheme.secondary;
-
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        minimumSize: const Size(double.infinity, 60),
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-
-        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-      ),
-
-      onPressed: onPressed,
-
-      icon: Icon(icon),
-
-      label: Text(label),
-    );
   }
 
   Widget buildCard({
@@ -289,141 +259,38 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: const EdgeInsets.all(18),
           child: Column(
             children: [
-              Container(
-                margin: const EdgeInsets.only(bottom: 10),
-
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.35),
-                      blurRadius: 25,
-                      spreadRadius: 2,
+              Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 38,
+                    backgroundImage:
+                        profileImage != null && profileImage!.isNotEmpty
+                        ? FileImage(File(profileImage!))
+                        : null,
+                    child: profileImage == null || profileImage!.isEmpty
+                        ? const Icon(Icons.person)
+                        : null,
+                  ),
+                  title: Text(
+                    'Welcome, $operatorName 👋',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 28,
                     ),
-                  ],
-                ),
-
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(28),
-
-                  child: Container(
-                    padding: const EdgeInsets.all(18),
-
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28),
-
-                      color: Theme.of(
-                        context,
-                      ).cardColor.withValues(alpha: 0.80),
-
-                      border: Border.all(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.8),
-                        width: 2,
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(greeting, style: const TextStyle(fontSize: 14)),
+                      const SizedBox(height: 4),
+                      Text(
+                        'ID: $userId',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(3),
-
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.8),
-                                blurRadius: 18,
-                              ),
-                            ],
-                          ),
-
-                          child: CircleAvatar(
-                            radius: 42,
-
-                            backgroundImage:
-                                profileImage != null && profileImage!.isNotEmpty
-                                ? FileImage(File(profileImage!))
-                                : null,
-
-                            child: profileImage == null || profileImage!.isEmpty
-                                ? const Icon(Icons.person, size: 42)
-                                : null,
-                          ),
-                        ),
-
-                        const SizedBox(width: 18),
-
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-
-                            children: [
-                              Text(
-                                'Welcome, $operatorName 👋',
-
-                                style: TextStyle(
-                                  fontSize: 26,
-
-                                  fontWeight: FontWeight.w900,
-
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-
-                              const SizedBox(height: 8),
-
-                              Text(
-                                greeting,
-
-                                style: TextStyle(
-                                  fontSize: 15,
-
-                                  fontWeight: FontWeight.w700,
-
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary,
-                                ),
-                              ),
-
-                              const SizedBox(height: 8),
-
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 5,
-                                ),
-
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.15),
-                                ),
-
-                                child: Text(
-                                  'ID: $userId',
-
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
@@ -481,9 +348,18 @@ class _DashboardPageState extends State<DashboardPage> {
               Row(
                 children: [
                   Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.add,
-                      label: 'New Entry',
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 20,
+                        minimumSize: const Size(double.infinity, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                       onPressed: () async {
                         final result = await Navigator.push(
                           context,
@@ -494,15 +370,24 @@ class _DashboardPageState extends State<DashboardPage> {
                           loadDashboard();
                         }
                       },
+                      icon: const Icon(Icons.add),
+                      label: const Text('New Entry'),
                     ),
                   ),
-
                   const SizedBox(width: 8),
-
                   Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.history,
-                      label: 'History',
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 20,
+                        minimumSize: const Size(double.infinity, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -511,10 +396,15 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         );
                       },
+                      icon: const Icon(Icons.history),
+                      label: const Text('History'),
                     ),
                   ),
                 ],
               ),
+
+              const SizedBox(height: 8),
+
               Row(
                 children: [
                   Expanded(

@@ -40,7 +40,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   String? profileImage;
-  String? coverImage;
   String tickerMessage = '';
 
   @override
@@ -71,7 +70,6 @@ class _DashboardPageState extends State<DashboardPage> {
       operatorName = profile?['operator_name'] ?? 'Operator';
       userId = profile?['user_id'] ?? 'APK-LOCAL-001';
       profileImage = profile?['profile_image'];
-      coverImage = profile?['cover_image'];
       greeting = getGreeting();
       tickerMessage = getTickerMessage();
     });
@@ -95,34 +93,6 @@ class _DashboardPageState extends State<DashboardPage> {
   void dispose() {
     tickerTimer?.cancel();
     super.dispose();
-  }
-
-  Widget buildGlowButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final secondary = Theme.of(context).colorScheme.secondary;
-
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        minimumSize: const Size(double.infinity, 60),
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-
-        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-      ),
-
-      onPressed: onPressed,
-
-      icon: Icon(icon),
-
-      label: Text(label),
-    );
   }
 
   Widget buildCard({
@@ -481,9 +451,18 @@ class _DashboardPageState extends State<DashboardPage> {
               Row(
                 children: [
                   Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.add,
-                      label: 'New Entry',
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 20,
+                        minimumSize: const Size(double.infinity, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                       onPressed: () async {
                         final result = await Navigator.push(
                           context,
@@ -494,15 +473,24 @@ class _DashboardPageState extends State<DashboardPage> {
                           loadDashboard();
                         }
                       },
+                      icon: const Icon(Icons.add),
+                      label: const Text('New Entry'),
                     ),
                   ),
-
                   const SizedBox(width: 8),
-
                   Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.history,
-                      label: 'History',
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 20,
+                        minimumSize: const Size(double.infinity, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -511,10 +499,15 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         );
                       },
+                      icon: const Icon(Icons.history),
+                      label: const Text('History'),
                     ),
                   ),
                 ],
               ),
+
+              const SizedBox(height: 8),
+
               Row(
                 children: [
                   Expanded(

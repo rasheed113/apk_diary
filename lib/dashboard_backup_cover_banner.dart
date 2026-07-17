@@ -40,7 +40,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   String? profileImage;
-  String? coverImage;
   String tickerMessage = '';
 
   @override
@@ -71,7 +70,6 @@ class _DashboardPageState extends State<DashboardPage> {
       operatorName = profile?['operator_name'] ?? 'Operator';
       userId = profile?['user_id'] ?? 'APK-LOCAL-001';
       profileImage = profile?['profile_image'];
-      coverImage = profile?['cover_image'];
       greeting = getGreeting();
       tickerMessage = getTickerMessage();
     });
