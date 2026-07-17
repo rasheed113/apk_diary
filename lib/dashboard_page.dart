@@ -109,7 +109,8 @@ class _DashboardPageState extends State<DashboardPage> {
     VoidCallback? onTap,
   }) {
     return Card(
-      elevation: 5,
+      elevation: 8,
+      color: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -118,7 +119,11 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              CircleAvatar(radius: 26, child: Icon(icon, size: 28)),
+              CircleAvatar(
+                radius: 26,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: Icon(icon, size: 28, color: Colors.black),
+              ),
 
               const SizedBox(width: 16),
 
@@ -128,8 +133,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -138,7 +143,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
                     Text(
                       value,
-                      style: const TextStyle(
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -201,82 +207,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
             const SizedBox(height: 10),
             Card(
-              elevation: 8,
+              elevation: 6,
+              color: Theme.of(context).colorScheme.primary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.deepPurple, Colors.blue],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white24,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: const Icon(
-                        Icons.rocket_launch,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-
-                    const SizedBox(width: 14),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "APK DIARY BOOST 🚀",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-
-                          const SizedBox(height: 6),
-                          SizedBox(
-                            height: 24,
-                            child: Marquee(
-                              text: tickerMessage,
-                              blankSpace: 80,
-                              velocity: 50,
-                              pauseAfterRound: const Duration(seconds: 1),
-                              startPadding: 20,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Card(
-              elevation: 4,
               child: SizedBox(
                 height: 45,
                 child: Marquee(
                   text: tickerMessage.isEmpty
                       ? "🚀 Welcome to APK Diary"
                       : tickerMessage,
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
