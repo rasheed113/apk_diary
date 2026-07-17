@@ -51,28 +51,14 @@ class _HistoryPageState extends State<HistoryPage> {
           content: Text('Delete "${entry.itemName}" ?'),
           actions: [
             TextButton(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => WorkPage(entry: entry)),
-                );
-
-                setState(() {
-                  entriesFuture = DatabaseHelper.instance.getAllEntries();
-                });
+              onPressed: () {
+                Navigator.pop(context, false);
               },
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => WorkPage(entry: entry)),
-                );
-
-                setState(() {
-                  entriesFuture = DatabaseHelper.instance.getAllEntries();
-                });
+              onPressed: () {
+                Navigator.pop(context, true);
               },
               child: const Text('Delete'),
             ),
@@ -306,45 +292,37 @@ class _HistoryPageState extends State<HistoryPage> {
                                     color: Colors.green,
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 56,
-                                  height: 56,
-                                  child: IconButton(
-                                    iconSize: 30,
-                                    splashRadius: 28,
-                                    padding: EdgeInsets.zero,
-                                    icon: const Icon(
-                                      Icons.edit,
-                                      color: Colors.blue,
-                                    ),
-                                    onPressed: () async {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              WorkPage(entry: entry),
-                                        ),
-                                      );
-
-                                      setState(() {
-                                        entriesFuture = DatabaseHelper.instance
-                                            .getAllEntries();
-                                      });
-                                    },
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.blue,
                                   ),
+                                  onPressed: () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => WorkPage(entry: entry),
+                                      ),
+                                    );
+                                    if (result == true) {
+                                      refreshEntries();
+                                    }
+                                  },
                                 ),
                                 SizedBox(
-                                  width: 56,
-                                  height: 56,
+                                  width: 50,
+                                  height: 50,
                                   child: IconButton(
-                                    iconSize: 30,
-                                    splashRadius: 28,
+                                    splashRadius: 26,
                                     padding: EdgeInsets.zero,
                                     icon: const Icon(
                                       Icons.delete_forever,
                                       color: Colors.red,
+                                      size: 28,
                                     ),
-                                    onPressed: () => confirmDelete(entry),
+                                    onPressed: () {
+                                      confirmDelete(entry);
+                                    },
                                   ),
                                 ),
                               ],
