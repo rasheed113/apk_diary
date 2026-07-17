@@ -8,9 +8,12 @@ import 'finance_page.dart';
 import 'history_page.dart';
 import 'settings_page.dart';
 import 'work_page.dart';
+import 'theme_manager.dart';
 
 void main() {
-  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+  if (Platform.isLinux ||
+      Platform.isWindows ||
+      Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
@@ -18,50 +21,49 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  static final ValueNotifier<AppTheme> currentTheme =
+      ValueNotifier(AppTheme.shadowDark);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'APK Diary',
+    return ValueListenableBuilder<AppTheme>(
+      valueListenable: MyApp.currentTheme,
+      builder: (context, theme, child) {
 
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.indigo,
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'APK Diary',
 
-        scaffoldBackgroundColor: Colors.grey.shade100,
+          theme: ThemeManager.getTheme(theme),
 
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.indigo,
-          foregroundColor: Colors.white,
-            centerTitle: true,
-        ),
-        cardTheme: CardThemeData(color: Colors.white, elevation: 6),
-
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
-            foregroundColor: Colors.white,
-          ),
-        ),
-      ),
-     darkTheme: ThemeData.dark(useMaterial3: true),
-themeMode: ThemeMode.system,
-      home: const HomePage(),
+          home: const HomePage(),
+        );
+      },
     );
   }
 }
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() =>
+      _HomePageState();
 }
 
+
 class _HomePageState extends State<HomePage> {
+
   int selectedIndex = 0;
 
   final List<Widget> pages = const [
@@ -72,31 +74,55 @@ class _HomePageState extends State<HomePage> {
     SettingsPage(),
   ];
 
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       body: pages[selectedIndex],
 
       bottomNavigationBar: NavigationBar(
+
         selectedIndex: selectedIndex,
+
         destinations: const [
+
           NavigationDestination(
             icon: Icon(Icons.dashboard),
             label: 'Dashboard',
           ),
-          NavigationDestination(icon: Icon(Icons.work), label: 'Work'),
-          NavigationDestination(icon: Icon(Icons.history), label: 'History'),
+
+          NavigationDestination(
+            icon: Icon(Icons.work),
+            label: 'Work',
+          ),
+
+          NavigationDestination(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+
           NavigationDestination(
             icon: Icon(Icons.account_balance_wallet),
             label: 'Finance',
           ),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+
+          NavigationDestination(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
+
+
         onDestinationSelected: (index) {
+
           setState(() {
             selectedIndex = index;
           });
+
         },
+
       ),
     );
   }
