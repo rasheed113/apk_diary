@@ -280,7 +280,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             },
                           ),
                           trailing: SizedBox(
-                            width: 150,
+                            width: 180,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
