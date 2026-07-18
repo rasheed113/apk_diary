@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'dart:async';
 import 'database_helper.dart';
 import 'work_page.dart';
@@ -7,7 +8,6 @@ import 'history_page.dart';
 import 'finance_page.dart';
 import 'settings_page.dart';
 import 'package:marquee/marquee.dart';
-import 'profile_header_card.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -102,6 +102,8 @@ class _DashboardPageState extends State<DashboardPage> {
     required String label,
     required VoidCallback onPressed,
   }) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
 
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
@@ -129,9 +131,8 @@ class _DashboardPageState extends State<DashboardPage> {
     required IconData icon,
     VoidCallback? onTap,
   }) {
-      final primary = Theme.of(context).colorScheme.primary;
-      final secondary = Theme.of(context).colorScheme.secondary;
-
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
@@ -288,13 +289,150 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: const EdgeInsets.all(18),
           child: Column(
             children: [
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
 
-              ProfileHeaderCard(
-                operatorName: operatorName,
-                userId: userId,
-                greeting: greeting,
-                profileImage: profileImage,
-                coverImage: coverImage,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
+
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.35),
+                      blurRadius: 25,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+
+                  child: Container(
+                    padding: const EdgeInsets.all(18),
+
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+
+                      image: coverImage != null && coverImage!.isNotEmpty
+                          ? DecorationImage(
+                              image: FileImage(File(coverImage!)),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+
+                      color: coverImage == null || coverImage!.isEmpty
+                          ? Theme.of(context).cardColor.withValues(alpha: 0.80)
+                          : Colors.black.withValues(alpha: 0.25),
+
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.8),
+                        width: 2,
+                      ),
+                    ),
+
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(3),
+
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.primary.withValues(alpha: 0.8),
+                                blurRadius: 18,
+                              ),
+                            ],
+                          ),
+
+                          child: CircleAvatar(
+                            radius: 42,
+
+                            backgroundImage:
+                                profileImage != null && profileImage!.isNotEmpty
+                                ? FileImage(File(profileImage!))
+                                : null,
+
+                            child: profileImage == null || profileImage!.isEmpty
+                                ? const Icon(Icons.person, size: 42)
+                                : null,
+                          ),
+                        ),
+
+                        const SizedBox(width: 18),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: [
+                              Text(
+                                'Welcome, $operatorName 👋',
+
+                                style: TextStyle(
+                                  fontSize: 26,
+
+                                  fontWeight: FontWeight.w900,
+
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              Text(
+                                greeting,
+
+                                style: TextStyle(
+                                  fontSize: 15,
+
+                                  fontWeight: FontWeight.w700,
+
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 5,
+                                ),
+
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: 0.15),
+                                ),
+
+                                child: Text(
+                                  'ID: $userId',
+
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 10),
