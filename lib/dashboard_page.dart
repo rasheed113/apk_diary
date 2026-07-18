@@ -339,7 +339,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                          const SizedBox(height: 45),
+                          const SizedBox(height: 140),
 
                           Center(
                             child: Container(
