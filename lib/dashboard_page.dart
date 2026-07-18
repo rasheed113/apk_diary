@@ -334,103 +334,99 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
 
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(3),
 
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.8),
-                                blurRadius: 18,
-                              ),
-                            ],
-                          ),
+                          const SizedBox(height: 45),
 
-                          child: CircleAvatar(
-                            radius: 42,
-
-                            backgroundImage:
-                                profileImage != null && profileImage!.isNotEmpty
-                                ? FileImage(File(profileImage!))
-                                : null,
-
-                            child: profileImage == null || profileImage!.isEmpty
-                                ? const Icon(Icons.person, size: 42)
-                                : null,
-                          ),
-                        ),
-
-                        const SizedBox(width: 18),
-
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-
-                            children: [
-                              Text(
-                                'Welcome, $operatorName 👋',
-
-                                style: TextStyle(
-                                  fontSize: 26,
-
-                                  fontWeight: FontWeight.w900,
-
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-
-                              const SizedBox(height: 8),
-
-                              Text(
-                                greeting,
-
-                                style: TextStyle(
-                                  fontSize: 15,
-
-                                  fontWeight: FontWeight.w700,
-
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary,
-                                ),
-                              ),
-
-                              const SizedBox(height: 8),
-
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 5,
-                                ),
-
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.15),
-                                ),
-
-                                child: Text(
-                                  'ID: $userId',
-
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w900,
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withValues(alpha: 0.8),
+                                    blurRadius: 18,
                                   ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 42,
+                                backgroundImage:
+                                    profileImage != null &&
+                                            profileImage!.isNotEmpty
+                                        ? FileImage(File(profileImage!))
+                                        : null,
+                                child: profileImage == null ||
+                                        profileImage!.isEmpty
+                                    ? const Icon(Icons.person, size: 42)
+                                    : null,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          Center(
+                            child: Text(
+                              operatorName,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
+
+                          Center(
+                            child: Text(
+                              greeting,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .secondary,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withValues(alpha: 0.15),
+                              ),
+                              child: Text(
+                                'ID: $userId',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
                   ),
                 ),
               ),
