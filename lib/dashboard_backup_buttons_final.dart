@@ -525,39 +525,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Row(
                 children: [
                   Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.account_balance_wallet,
-                      label: 'Finance',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const FinancePage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.settings,
-                      label: 'Settings',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              )
-
-              /*
-
+                    child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         elevation: 20,
                         minimumSize: const Size(double.infinity, 60),
@@ -610,8 +578,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
 
-*/
-              
               buildCard(
                 title: 'Current Balance',
                 value: 'Rs. ${currentBalance.toStringAsFixed(2)}',

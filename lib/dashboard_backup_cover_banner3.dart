@@ -315,16 +315,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(28),
 
-                      image: coverImage != null && coverImage!.isNotEmpty
-                          ? DecorationImage(
-                              image: FileImage(File(coverImage!)),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-
-                      color: coverImage == null || coverImage!.isEmpty
-                          ? Theme.of(context).cardColor.withValues(alpha: 0.80)
-                          : Colors.black.withValues(alpha: 0.25),
+                      color: Theme.of(
+                        context,
+                      ).cardColor.withValues(alpha: 0.80),
 
                       border: Border.all(
                         color: Theme.of(
@@ -525,39 +518,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Row(
                 children: [
                   Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.account_balance_wallet,
-                      label: 'Finance',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const FinancePage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.settings,
-                      label: 'Settings',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              )
-
-              /*
-
+                    child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         elevation: 20,
                         minimumSize: const Size(double.infinity, 60),
@@ -610,8 +571,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
 
-*/
-              
               buildCard(
                 title: 'Current Balance',
                 value: 'Rs. ${currentBalance.toStringAsFixed(2)}',

@@ -21,6 +21,7 @@ class DatabaseHelper {
   Future<Database> _initDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
+    print("DB PATH: $path");
 
     return await openDatabase(
       path,
