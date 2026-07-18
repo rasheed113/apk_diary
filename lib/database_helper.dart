@@ -90,6 +90,7 @@ class DatabaseHelper {
         default_job_type TEXT,
         currency TEXT,
         profile_image TEXT,
+        cover_image TEXT,
         dark_mode INTEGER DEFAULT 0,
         selected_theme TEXT DEFAULT 'shadowDark'
       )
