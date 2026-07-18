@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 class FinancePage extends StatefulWidget {
   const FinancePage({super.key});
 
-@override
+  @override
   State<FinancePage> createState() => _FinancePageState();
 }
 
@@ -143,9 +143,9 @@ class _FinancePageState extends State<FinancePage> {
                       updatedRecord,
                     );
 
-                    if (!dialogContext.mounted) return;
+                    if (!mounted) return;
 
-                    Navigator.pop(dialogContext, true);
+                    Navigator.of(dialogContext).pop(true);
                   },
 
                   child: const Text('Update'),
@@ -170,7 +170,7 @@ class _FinancePageState extends State<FinancePage> {
     }
   }
 
-@override
+  @override
   void initState() {
     super.initState();
     loadFinance();
@@ -292,55 +292,7 @@ class _FinancePageState extends State<FinancePage> {
     });
   }
 
-
-Widget _financeMiniCard(
-  String title,
-  double value,
-  IconData icon,
-) {
-  final primary = Theme.of(context).colorScheme.primary;
-
-  return Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(22),
-      color: Theme.of(context).cardColor.withValues(alpha:0.75),
-      border: Border.all(
-        color: primary.withValues(alpha:0.8),
-        width:2,
-      ),
-      boxShadow:[
-        BoxShadow(
-          color: primary.withValues(alpha:0.35),
-          blurRadius:18,
-        ),
-      ],
-    ),
-    child: Column(
-      children:[
-        Icon(icon,size:32),
-        const SizedBox(height:8),
-        Text(
-          title,
-          style:const TextStyle(
-            fontWeight:FontWeight.w900,
-          ),
-        ),
-        const SizedBox(height:5),
-        Text(
-          "Rs ${value.toStringAsFixed(0)}",
-          style:TextStyle(
-            fontSize:20,
-            fontWeight:FontWeight.w900,
-            color:primary,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Finance')),
@@ -348,92 +300,80 @@ Widget _financeMiniCard(
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds:500),
-              tween: Tween(begin:0.85,end:1),
-              curve: Curves.easeOutBack,
-              builder:(context,scale,child){
-                return Transform.scale(
-                  scale:scale,
-                  child:child,
-                );
-              },
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  color: Theme.of(context)
-                      .cardColor
-                      .withValues(alpha:0.75),
-                  border: Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha:0.8),
-                    width:2,
-                  ),
-                  boxShadow:[
-                    BoxShadow(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha:0.45),
-                      blurRadius:25,
-                      spreadRadius:2,
-                    ),
-                  ],
-                ),
+                padding: const EdgeInsets.all(16),
                 child: Column(
-                  children:[
-                    const Icon(
-                      Icons.account_balance_wallet,
-                      size:45,
-                    ),
-                    const SizedBox(height:10),
-                    const Text(
-                      '💰 CURRENT BALANCE',
-                      style:TextStyle(
-                        fontSize:18,
-                        fontWeight:FontWeight.w900,
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Colors.green.shade100,
+                      child: const Icon(
+                        Icons.account_balance_wallet,
+                        color: Colors.green,
+                        size: 30,
                       ),
                     ),
-                    const SizedBox(height:8),
+
+                    const SizedBox(height: 10),
+
+                    const Text(
+                      'Current Balance',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
                     Text(
                       'Rs ${currentBalance.toStringAsFixed(0)}',
-                      style:TextStyle(
-                        fontSize:36,
-                        fontWeight:FontWeight.w900,
-                        color: currentBalance < 0
-                            ? Colors.red
-                            : Theme.of(context)
-                                .colorScheme
-                                .primary,
-                      ),
+                      style: TextStyle(
+  fontSize: 28,
+  fontWeight: FontWeight.bold,
+  color: currentBalance < 0
+      ? Colors.red
+      : Colors.green,
+),
                     ),
                   ],
                 ),
               ),
             ),
 
-            Row(
-              children: [
-                Expanded(
-                  child: _financeMiniCard(
-                    "SALARY",
-                    salaryReceived,
-                    Icons.payments,
-                  ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Column(
+                      children: [
+                        const Text(
+                          'Salary',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text('Rs ${salaryReceived.toStringAsFixed(0)}'),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Text(
+                          'Advance',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text('Rs ${advanceReceived.toStringAsFixed(0)}'),
+                      ],
+                    ),
+                  ],
                 ),
-                const SizedBox(width:12),
-                Expanded(
-                  child: _financeMiniCard(
-                    "ADVANCE",
-                    advanceReceived,
-                    Icons.account_balance,
-                  ),
-                ),
-              ],
+              ),
             ),
 
             const SizedBox(height: 15),
