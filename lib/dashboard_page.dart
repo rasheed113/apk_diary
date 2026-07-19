@@ -133,116 +133,68 @@ class _DashboardPageState extends State<DashboardPage> {
     final primary = Theme.of(context).colorScheme.primary;
     final secondary = Theme.of(context).colorScheme.secondary;
 
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 500),
-      tween: Tween(begin: 0.9, end: 1),
-      curve: Curves.easeOutBack,
-      builder: (context, scale, child) {
-        return Transform.scale(
-          scale: scale,
-          child: child,
-        );
-      },
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: primary.withValues(alpha: 0.35),
-                blurRadius: 6,
-                spreadRadius: 0,
-              ),
-            ],
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: Theme.of(context).cardColor.withValues(alpha: 0.5),
+          border: Border.all(
+            color: primary.withValues(alpha: 0.2),
+            width: 1,
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(18),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 10,
-                sigmaY: 10,
+        ),
+        child: Row(
+          children: [
+            // Chota aur Clean Soft Icon Background
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: primary.withValues(alpha: 0.15),
               ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  color: Theme.of(context)
-                      .cardColor
-                      .withValues(alpha: 0.75),
-                  border: Border.all(
-                    color: primary.withValues(alpha: 0.7),
-                    width: 1.5,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [primary, secondary],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: primary.withValues(alpha: 0.7),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 20,
-                        color: Colors.black,
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              color: secondary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-
-                          Text(
-                            value,
-                            style: TextStyle(
-                              color: primary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              shadows: [
-                                Shadow(
-                                  color: primary.withValues(alpha: 0.7),
-                                  blurRadius: 0,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: primary,
               ),
             ),
-          ),
+            const SizedBox(width: 12),
+            // Text values ekdam perfectly aligned
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: secondary.withValues(alpha: 0.8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
