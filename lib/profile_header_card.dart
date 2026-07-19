@@ -8,6 +8,8 @@ class ProfileHeaderCard extends StatelessWidget {
   final String greeting;
   final String? profileImage;
   final String? coverImage;
+  final VoidCallback? onProfileTap;
+  final VoidCallback? onCoverTap;
 
   const ProfileHeaderCard({
     super.key,
@@ -16,6 +18,8 @@ class ProfileHeaderCard extends StatelessWidget {
     required this.greeting,
     this.profileImage,
     this.coverImage,
+    this.onProfileTap,
+    this.onCoverTap,
   });
 
   @override
@@ -28,42 +32,42 @@ class ProfileHeaderCard extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  image: coverImage != null && coverImage!.isNotEmpty
-                      ? DecorationImage(
-                          image: FileImage(File(coverImage!)),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                  color: Theme.of(context).colorScheme.primaryContainer,
+              // Cover Image Clickable
+              GestureDetector(
+                onTap: onCoverTap,
+                child: Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                  ),
                 ),
               ),
+              // Profile Image Clickable
               Positioned(
                 left: 12,
                 bottom: -32,
-                child: CircleAvatar(
-                  radius: 32,
-                  backgroundColor: Colors.white,
+                child: GestureDetector(
+                  onTap: onProfileTap,
                   child: CircleAvatar(
-                    radius: 29,
-                    backgroundImage:
-                        profileImage != null && profileImage!.isNotEmpty
-                            ? FileImage(File(profileImage!))
-                            : null,
-                    child: profileImage == null || profileImage!.isEmpty
-                        ? const Icon(Icons.person, size: 30)
-                        : null,
+                    radius: 32,
+                    backgroundColor: Colors.white,
+                    child: CircleAvatar(
+                      radius: 29,
+                          : null,
+                          ? const Icon(Icons.person, size: 30)
+                          : null,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 38),
-
           Padding(
             padding: const EdgeInsets.only(left: 12),
             child: Text(
@@ -74,18 +78,16 @@ class ProfileHeaderCard extends StatelessWidget {
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(left: 12),
             child: Text(
               operatorName,
               style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(left: 12),
             child: Row(

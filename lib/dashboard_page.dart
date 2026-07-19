@@ -123,70 +123,84 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+
   Widget buildCard({
     required String title,
     required String value,
     required IconData icon,
     VoidCallback? onTap,
   }) {
-      final primary = Theme.of(context).colorScheme.primary;
-      final secondary = Theme.of(context).colorScheme.secondary;
-
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
-      tween: Tween(begin: 0.85, end: 1),
+      tween: Tween(begin: 0.9, end: 1),
       curve: Curves.easeOutBack,
       builder: (context, scale, child) {
-        return Transform.scale(scale: scale, child: child);
+        return Transform.scale(
+          scale: scale,
+          child: child,
+        );
       },
       child: InkWell(
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(18),
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
+          margin: const EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: primary.withValues(alpha: 0.45),
-                blurRadius: 25,
-                spreadRadius: 2,
+                color: primary.withValues(alpha: 0.35),
+                blurRadius: 6,
+                spreadRadius: 0,
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(18),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              filter: ImageFilter.blur(
+                sigmaX: 10,
+                sigmaY: 10,
+              ),
               child: Container(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  color: Theme.of(context).cardColor.withValues(alpha: 0.75),
+                  borderRadius: BorderRadius.circular(18),
+                  color: Theme.of(context)
+                      .cardColor
+                      .withValues(alpha: 0.75),
                   border: Border.all(
-                    color: primary.withValues(alpha: 0.8),
-                    width: 2,
+                    color: primary.withValues(alpha: 0.7),
+                    width: 1.5,
                   ),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(18),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [primary, secondary]),
+                        gradient: LinearGradient(
+                          colors: [primary, secondary],
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: primary.withValues(alpha: 0.8),
-                            blurRadius: 18,
+                            color: primary.withValues(alpha: 0.7),
+                            blurRadius: 4,
                           ),
                         ],
                       ),
-                      child: Icon(icon, size: 36, color: Colors.black),
+                      child: Icon(
+                        icon,
+                        size: 20,
+                        color: Colors.black,
+                      ),
                     ),
 
-                    const SizedBox(width: 18),
+                    const SizedBox(width: 12),
 
                     Expanded(
                       child: Column(
@@ -196,23 +210,21 @@ class _DashboardPageState extends State<DashboardPage> {
                             title,
                             style: TextStyle(
                               color: secondary,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-
-                          const SizedBox(height: 6),
 
                           Text(
                             value,
                             style: TextStyle(
                               color: primary,
-                              fontSize: 38,
-                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                               shadows: [
                                 Shadow(
-                                  color: primary.withValues(alpha: 0.8),
-                                  blurRadius: 12,
+                                  color: primary.withValues(alpha: 0.7),
+                                  blurRadius: 0,
                                 ),
                               ],
                             ),
@@ -261,8 +273,8 @@ class _DashboardPageState extends State<DashboardPage> {
         title: const Text(
           "APK DIARY PRO ⚡",
           style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
             color: Colors.white,
           ),
         ),
@@ -334,7 +346,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
                       fontSize: 20,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
                     scrollAxis: Axis.horizontal,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -428,7 +440,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         textStyle: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       onPressed: () {
@@ -454,7 +466,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         textStyle: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       onPressed: () {
