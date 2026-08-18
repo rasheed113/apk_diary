@@ -1,35 +1,20 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'app_localization.dart';
 
-/// Owns the current application language for the app shell and persists the
-/// user's language choice independently from profile/domain data.
+/// Language switching is intentionally disabled. The app is English-only.
+/// The existing value is kept for compatibility with pages that still consume
+/// AppLocalization while the user-facing language layer is removed.
 class AppLanguageController {
   AppLanguageController._();
 
-  static const String _storageKey = 'app_language';
-
-  static final ValueNotifier<AppLanguage> currentLanguage =
-      ValueNotifier<AppLanguage>(AppLanguage.english);
+  static final ValueNotifier<AppLanguage> currentLanguage = ValueNotifier<AppLanguage>(AppLanguage.english);
 
   static Future<void> initialize() async {
-    final preferences = await SharedPreferences.getInstance();
-    final savedName = preferences.getString(_storageKey);
-    if (savedName == null) return;
-
-    final savedLanguage = AppLanguage.values.where((language) => language.name == savedName);
-    if (savedLanguage.isNotEmpty) {
-      currentLanguage.value = savedLanguage.first;
-    }
+    currentLanguage.value = AppLanguage.english;
   }
 
   static Future<void> setLanguage(AppLanguage language) async {
-    if (currentLanguage.value != language) {
-      currentLanguage.value = language;
-    }
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(_storageKey, language.name);
+    currentLanguage.value = AppLanguage.english;
   }
 
   static void dispose() {
