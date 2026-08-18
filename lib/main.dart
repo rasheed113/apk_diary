@@ -8,79 +8,23 @@ import 'finance_page.dart';
 import 'history_page.dart';
 import 'settings_page.dart';
 import 'work_page.dart';
-<<<<<<< HEAD
-
-void main() {
-=======
 import 'theme_manager.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
   if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-<<<<<<< HEAD
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'APK Diary',
-
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.indigo,
-
-        scaffoldBackgroundColor: Colors.white,
-
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.indigo,
-          foregroundColor: Colors.white,
-          centerTitle: true,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ),
-
-        cardTheme: const CardThemeData(
-          color: Colors.white,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-            side: BorderSide(color: Color(0xFFE8E8E8), width: 1),
-          ),
-        ),
-
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            shadowColor: Colors.transparent,
-          ),
-        ),
-
-        dividerColor: Colors.transparent,
-        canvasColor: Colors.white,
-      ),
-      home: const HomePage(),
-=======
   final savedTheme = await DatabaseHelper.instance.getTheme();
 
   AppThemeController.currentTheme.value = AppTheme.values.firstWhere(
     (e) => e.name == savedTheme,
-    orElse: () => AppTheme.shadowDark,
+    orElse: () => AppTheme.classicLight,
   );
 
   runApp(const MyApp());
@@ -102,13 +46,10 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'APK Diary',
-
           theme: ThemeManager.getTheme(theme),
-
           home: const HomePage(),
         );
       },
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
     );
   }
 }
@@ -133,80 +74,33 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: pages[selectedIndex],
-
-<<<<<<< HEAD
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(icon: Icon(Icons.work), label: 'Work'),
-          NavigationDestination(icon: Icon(Icons.history), label: 'History'),
-          NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Finance',
-          ),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-        onDestinationSelected: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-=======
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(left: 14, right: 14, bottom: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.35),
-              blurRadius: 25,
-              spreadRadius: 2,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          color: theme.cardColor,
+          border: Border.all(
+            color: theme.colorScheme.primary.withValues(alpha: 0.22),
+          ),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
           child: NavigationBar(
             height: 72,
             elevation: 0,
-            backgroundColor: Theme.of(
-              context,
-            ).cardColor.withValues(alpha: 0.92),
-            indicatorColor: Theme.of(
-              context,
-            ).colorScheme.primary.withValues(alpha: 0.30),
+            backgroundColor: theme.cardColor,
+            indicatorColor: theme.colorScheme.primary.withValues(alpha: 0.14),
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
             selectedIndex: selectedIndex,
             destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.dashboard, size: 30),
-                label: 'Dashboard',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.work, size: 30),
-                label: 'Work',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.history, size: 30),
-                label: 'History',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.account_balance_wallet, size: 30),
-                label: 'Finance',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.settings, size: 30),
-                label: 'Settings',
-              ),
+              NavigationDestination(icon: Icon(Icons.dashboard, size: 30), label: 'Dashboard'),
+              NavigationDestination(icon: Icon(Icons.work, size: 30), label: 'Work'),
+              NavigationDestination(icon: Icon(Icons.history, size: 30), label: 'History'),
+              NavigationDestination(icon: Icon(Icons.account_balance_wallet, size: 30), label: 'Finance'),
+              NavigationDestination(icon: Icon(Icons.settings, size: 30), label: 'Settings'),
             ],
             onDestinationSelected: (index) {
               setState(() {
@@ -215,7 +109,6 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         ),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
       ),
     );
   }
