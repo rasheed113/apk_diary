@@ -6,25 +6,394 @@ import 'diary_entry.dart';
 class WorkPage extends StatefulWidget {
   final DiaryEntry? entry;
   const WorkPage({super.key, this.entry});
-  @override State<WorkPage> createState() => _WorkPageState();
+
+  @override
+  State<WorkPage> createState() => _WorkPageState();
 }
 
 class _WorkPageState extends State<WorkPage> {
-  late String selectedItem, selectedRateType;
-  final customItemController=TextEditingController(), piecesController=TextEditingController(), rateController=TextEditingController(), notesController=TextEditingController();
-  List<String> selectedSizes=[];
-  DateTime selectedDate=DateTime.now();
-  final itemList=['Shirt','Pant','Kameez','Other']; final rateTypes=['Per Piece','Per Dozen'];
-  bool get isEditMode=>widget.entry!=null;
-  double get total{final p=double.tryParse(piecesController.text)??0,r=double.tryParse(rateController.text)??0;return selectedRateType=='Per Dozen'?(p/12)*r:p*r;}
-  @override void initState(){super.initState();final e=widget.entry;selectedItem=e?.itemName??'Shirt';selectedRateType=e?.rateType??'Per Piece';if(e!=null){selectedSizes=e.sizes.split(',').map((x)=>x.trim()).where((x)=>x.isNotEmpty).toList();piecesController.text='${e.pieces}';rateController.text='${e.rate}';notesController.text=e.notes;final p=e.workDate.split('-');if(p.length==3)selectedDate=DateTime.tryParse('${p[2]}-${p[1]}-${p[0]}')??DateTime.now();}}
-  @override void dispose(){customItemController.dispose();piecesController.dispose();rateController.dispose();notesController.dispose();super.dispose();}
-  void calculateTotal()=>setState((){});
-  Future<void> selectSizes()async{final temp=List<String>.from(selectedSizes);final custom=TextEditingController();await showDialog<void>(context:context,builder:(dialogContext)=>StatefulBuilder(builder:(context,setDialogState)=>AlertDialog(title:const Text('Select Sizes'),content:SingleChildScrollView(child:Column(mainAxisSize:MainAxisSize.min,children:[...['XS','S','M','L','XL','XXL'].map((size)=>CheckboxListTile(value:temp.contains(size),title:Text(size),onChanged:(value)=>setDialogState((){if(value==true&&!temp.contains(size))temp.add(size);if(value!=true)temp.remove(size);})),TextField(controller:custom,decoration:const InputDecoration(labelText:'Custom Sizes',hintText:'14,16,18,20',border:OutlineInputBorder()))])),actions:[TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('Cancel')),ElevatedButton(onPressed:(){setState((){selectedSizes=List<String>.from(temp);if(custom.text.trim().isNotEmpty)selectedSizes.add(custom.text.trim());});Navigator.pop(dialogContext);},child:const Text('Done'))])));custom.dispose();}
-  Future<void> pickDate()async{final p=await showDatePicker(context:context,initialDate:selectedDate,firstDate:DateTime(2020),lastDate:DateTime(2100));if(p!=null)setState(()=>selectedDate=p);}
-  Future<void> saveOrUpdateEntry()async{final pieces=int.tryParse(piecesController.text),rate=double.tryParse(rateController.text);if(pieces==null||pieces<=0){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Pieces must be greater than 0')));return;}if(rate==null||rate<=0){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Rate must be greater than 0')));return;}final item=selectedItem=='Other'?customItemController.text.trim():selectedItem;if(item.isEmpty){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Please enter an item')));return;}final entry=DiaryEntry(id:widget.entry?.id,itemName:item,sizes:selectedSizes.join(', '),pieces:pieces,rate:rate,rateType:selectedRateType,total:total,machineType:widget.entry?.machineType??'',jobType:widget.entry?.jobType??'',notes:notesController.text,workDate:DateFormat('dd-MM-yyyy').format(selectedDate),createdTime:widget.entry?.createdTime??DateFormat('hh:mm a').format(DateTime.now()));if(isEditMode){await DatabaseHelper.instance.updateEntry(entry);}else{await DatabaseHelper.instance.insertEntry(entry);}if(!mounted)return;ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(isEditMode?'Entry Updated Successfully ✅':'Entry Saved Successfully ✅')));Navigator.pop(context,true);}
-  InputDecoration fieldDecoration(String label,IconData icon)=>InputDecoration(labelText:label,prefixIcon:Icon(icon),border:OutlineInputBorder(borderRadius:BorderRadius.circular(12)),isDense:true);
-  Widget field(Widget child){final scheme=Theme.of(context).colorScheme;return Container(margin:const EdgeInsets.only(bottom:10),decoration:BoxDecoration(color:scheme.surfaceContainerHighest,borderRadius:BorderRadius.circular(14),border:Border.all(color:scheme.primary.withValues(alpha:.12)),boxShadow:[BoxShadow(color:scheme.shadow.withValues(alpha:.10),blurRadius:8,offset:const Offset(0,3))]),padding:const EdgeInsets.all(8),child:child);}
-  Widget sectionHeader(String text,IconData icon){final scheme=Theme.of(context).colorScheme;return Row(children:[Icon(icon,color:scheme.primary),const SizedBox(width:8),Text(text,style:TextStyle(fontSize:18,fontWeight:FontWeight.w800,color:scheme.onSurface))]);}
-  @override Widget build(BuildContext context){final scheme=Theme.of(context).colorScheme;return Scaffold(backgroundColor:scheme.surface,appBar:AppBar(title:Text(isEditMode?'Edit Entry':'New Entry'),backgroundColor:scheme.surface,elevation:0),body:SingleChildScrollView(padding:const EdgeInsets.all(12),child:Column(children:[sectionHeader('Work Details',Icons.work),const SizedBox(height:10),field(DropdownButtonFormField<String>(initialValue:selectedItem,decoration:fieldDecoration('Item Name',Icons.checkroom),items:itemList.map((e)=>DropdownMenuItem(value:e,child:Text(e))).toList(),onChanged:(value)=>setState(()=>selectedItem=value??'Shirt'))),if(selectedItem=='Other')field(TextField(controller:customItemController,decoration:fieldDecoration('Custom Item',Icons.inventory_2))),field(Align(alignment:Alignment.centerLeft,child:TextButton.icon(onPressed:selectSizes,icon:Icon(Icons.grid_view,color:scheme.primary),label:Text(selectedSizes.isEmpty?'Select Sizes':selectedSizes.join(', '))))),field(TextField(controller:piecesController,keyboardType:TextInputType.number,decoration:fieldDecoration('Pieces',Icons.numbers),onChanged:(_)=>calculateTotal())),field(TextField(controller:rateController,keyboardType:const TextInputType.numberWithOptions(decimal:true),decoration:fieldDecoration('Rate',Icons.payments),onChanged:(_)=>calculateTotal())),field(DropdownButtonFormField<String>(initialValue:selectedRateType,decoration:fieldDecoration('Rate Type',Icons.category),items:rateTypes.map((e)=>DropdownMenuItem(value:e,child:Text(e))).toList(),onChanged:(value){setState(()=>selectedRateType=value??'Per Piece');calculateTotal();}})),field(TextButton.icon(onPressed:pickDate,icon:Icon(Icons.calendar_month,color:scheme.primary),label:Text(DateFormat('dd-MM-yyyy').format(selectedDate)))),field(TextField(controller:notesController,maxLines:3,decoration:fieldDecoration('Notes',Icons.notes))),Container(width:double.infinity,padding:const EdgeInsets.all(14),margin:const EdgeInsets.only(bottom:12),decoration:BoxDecoration(gradient:LinearGradient(colors:[scheme.primaryContainer,scheme.secondaryContainer]),borderRadius:BorderRadius.circular(16),boxShadow:[BoxShadow(color:scheme.shadow.withValues(alpha:.12),blurRadius:10,offset:const Offset(0,4))]),child:Column(children:[Text('Total',style:TextStyle(color:scheme.onSurfaceVariant,fontWeight:FontWeight.w600)),const SizedBox(height:4),Text('Rs ${total.toStringAsFixed(0)}',style:TextStyle(fontSize:26,fontWeight:FontWeight.w900,color:scheme.primary))])),SizedBox(width:double.infinity,child:ElevatedButton.icon(onPressed:saveOrUpdateEntry,icon:Icon(isEditMode?Icons.save:Icons.add),label:Text(isEditMode?'Update Entry':'Save Entry')))]));}
+  late String selectedItem;
+  late String selectedRateType;
+  final customItemController = TextEditingController();
+  final piecesController = TextEditingController();
+  final rateController = TextEditingController();
+  final notesController = TextEditingController();
+  List<String> selectedSizes = [];
+  DateTime selectedDate = DateTime.now();
+
+  final itemList = ['Shirt', 'Pant', 'Kameez', 'Other'];
+  final rateTypes = ['Per Piece', 'Per Dozen'];
+
+  bool get isEditMode => widget.entry != null;
+
+  double get total {
+    final pieces = double.tryParse(piecesController.text) ?? 0;
+    final rate = double.tryParse(rateController.text) ?? 0;
+    return selectedRateType == 'Per Dozen' ? (pieces / 12) * rate : pieces * rate;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.entry;
+    selectedItem = e?.itemName ?? 'Shirt';
+    selectedRateType = e?.rateType ?? 'Per Piece';
+    if (e != null) {
+      selectedSizes = e.sizes
+          .split(',')
+          .map((x) => x.trim())
+          .where((x) => x.isNotEmpty)
+          .toList();
+      piecesController.text = '${e.pieces}';
+      rateController.text = '${e.rate}';
+      notesController.text = e.notes;
+      final p = e.workDate.split('-');
+      if (p.length == 3) {
+        selectedDate = DateTime.tryParse('${p[2]}-${p[1]}-${p[0]}') ?? DateTime.now();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    customItemController.dispose();
+    piecesController.dispose();
+    rateController.dispose();
+    notesController.dispose();
+    super.dispose();
+  }
+
+  void calculateTotal() => setState(() {});
+
+  Future<void> selectSizes() async {
+    final temp = List<String>.from(selectedSizes);
+    final custom = TextEditingController();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Select Sizes'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(
+                      (size) => CheckboxListTile(
+                        value: temp.contains(size),
+                        title: Text(size),
+                        onChanged: (value) {
+                          setDialogState(() {
+                            if (value == true && !temp.contains(size)) {
+                              temp.add(size);
+                            }
+                            if (value != true) {
+                              temp.remove(size);
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                    TextField(
+                      controller: custom,
+                      decoration: const InputDecoration(
+                        labelText: 'Custom Sizes',
+                        hintText: '14,16,18,20',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedSizes = List<String>.from(temp);
+                      if (custom.text.trim().isNotEmpty) {
+                        selectedSizes.add(custom.text.trim());
+                      }
+                    });
+                    Navigator.pop(dialogContext);
+                  },
+                  child: const Text('Done'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+    custom.dispose();
+  }
+
+  Future<void> pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() => selectedDate = picked);
+    }
+  }
+
+  Future<void> saveOrUpdateEntry() async {
+    final pieces = int.tryParse(piecesController.text);
+    final rate = double.tryParse(rateController.text);
+
+    if (pieces == null || pieces <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pieces must be greater than 0')),
+      );
+      return;
+    }
+    if (rate == null || rate <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Rate must be greater than 0')),
+      );
+      return;
+    }
+
+    final item = selectedItem == 'Other'
+        ? customItemController.text.trim()
+        : selectedItem;
+    if (item.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter an item')),
+      );
+      return;
+    }
+
+    final entry = DiaryEntry(
+      id: widget.entry?.id,
+      itemName: item,
+      sizes: selectedSizes.join(', '),
+      pieces: pieces,
+      rate: rate,
+      rateType: selectedRateType,
+      total: total,
+      machineType: widget.entry?.machineType ?? '',
+      jobType: widget.entry?.jobType ?? '',
+      notes: notesController.text,
+      workDate: DateFormat('dd-MM-yyyy').format(selectedDate),
+      createdTime: widget.entry?.createdTime ?? DateFormat('hh:mm a').format(DateTime.now()),
+    );
+
+    if (isEditMode) {
+      await DatabaseHelper.instance.updateEntry(entry);
+    } else {
+      await DatabaseHelper.instance.insertEntry(entry);
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isEditMode ? 'Entry Updated Successfully ✅' : 'Entry Saved Successfully ✅',
+        ),
+      ),
+    );
+    Navigator.pop(context, true);
+  }
+
+  InputDecoration fieldDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      isDense: true,
+    );
+  }
+
+  Widget field(Widget child) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: scheme.primary.withValues(alpha: .12)),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.shadow.withValues(alpha: .10),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(8),
+      child: child,
+    );
+  }
+
+  Widget sectionHeader(String text, IconData icon) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Icon(icon, color: scheme.primary),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: scheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: scheme.surface,
+      appBar: AppBar(
+        title: Text(isEditMode ? 'Edit Entry' : 'New Entry'),
+        backgroundColor: scheme.surface,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            sectionHeader('Work Details', Icons.work),
+            const SizedBox(height: 10),
+            field(
+              DropdownButtonFormField<String>(
+                initialValue: selectedItem,
+                decoration: fieldDecoration('Item Name', Icons.checkroom),
+                items: itemList
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() => selectedItem = value ?? 'Shirt');
+                },
+              ),
+            ),
+            if (selectedItem == 'Other')
+              field(
+                TextField(
+                  controller: customItemController,
+                  decoration: fieldDecoration('Custom Item', Icons.inventory_2),
+                ),
+              ),
+            field(
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: selectSizes,
+                  icon: Icon(Icons.grid_view, color: scheme.primary),
+                  label: Text(
+                    selectedSizes.isEmpty
+                        ? 'Select Sizes'
+                        : selectedSizes.join(', '),
+                  ),
+                ),
+              ),
+            ),
+            field(
+              TextField(
+                controller: piecesController,
+                keyboardType: TextInputType.number,
+                decoration: fieldDecoration('Pieces', Icons.numbers),
+                onChanged: (_) => calculateTotal(),
+              ),
+            ),
+            field(
+              TextField(
+                controller: rateController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: fieldDecoration('Rate', Icons.payments),
+                onChanged: (_) => calculateTotal(),
+              ),
+            ),
+            field(
+              DropdownButtonFormField<String>(
+                initialValue: selectedRateType,
+                decoration: fieldDecoration('Rate Type', Icons.category),
+                items: rateTypes
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() => selectedRateType = value ?? 'Per Piece');
+                  calculateTotal();
+                },
+              ),
+            ),
+            field(
+              TextButton.icon(
+                onPressed: pickDate,
+                icon: Icon(Icons.calendar_month, color: scheme.primary),
+                label: Text(DateFormat('dd-MM-yyyy').format(selectedDate)),
+              ),
+            ),
+            field(
+              TextField(
+                controller: notesController,
+                maxLines: 3,
+                decoration: fieldDecoration('Notes', Icons.notes),
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [scheme.primaryContainer, scheme.secondaryContainer],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: scheme.shadow.withValues(alpha: .12),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Total',
+                    style: TextStyle(
+                      color: scheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Rs ${total.toStringAsFixed(0)}',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w900,
+                      color: scheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: saveOrUpdateEntry,
+                icon: Icon(isEditMode ? Icons.save : Icons.add),
+                label: Text(isEditMode ? 'Update Entry' : 'Save Entry'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
