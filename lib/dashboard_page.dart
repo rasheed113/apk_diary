@@ -192,8 +192,29 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(children: [Expanded(child: buildGlowButton(icon: Icons.add, label: 'New Entry', onPressed: () async { final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage())); if (r == true) loadDashboard(); })), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.history, label: 'History', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage())))]),
-              Row(children: [Expanded(child: buildGlowButton(icon: Icons.account_balance_wallet, label: 'Finance', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage())))), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.settings, label: 'Settings', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())))]),
+              Row(
+                children: [
+                  Expanded(child: buildGlowButton(icon: Icons.add, label: 'New Entry', onPressed: () async {
+                    final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage()));
+                    if (r == true) loadDashboard();
+                  })),
+                  const SizedBox(width: 8),
+                  Expanded(child: buildGlowButton(icon: Icons.history, label: 'History', onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()));
+                  })),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(child: buildGlowButton(icon: Icons.account_balance_wallet, label: 'Finance', onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()));
+                  })),
+                  const SizedBox(width: 8),
+                  Expanded(child: buildGlowButton(icon: Icons.settings, label: 'Settings', onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+                  })),
+                ],
+              ),
               buildCard(title: 'Current Balance', value: 'Rs. ${currentBalance.toStringAsFixed(2)}', icon: Icons.account_balance_wallet, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()))),
               buildCard(title: 'Total Entries', value: totalEntries.toString(), icon: Icons.list_alt, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()))),
               buildCard(title: 'Total Pieces', value: totalPieces.toString(), icon: Icons.inventory_2),
