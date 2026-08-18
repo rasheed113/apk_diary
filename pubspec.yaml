@@ -1,5 +1,5 @@
 name: apk_diary
-description: "APK Diary - Garment Operator Diary"
+description: "WorkEarn - Garment Work and Earnings Diary"
 publish_to: 'none'
 
 version: 1.0.1+2
@@ -11,7 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
   marquee: ^2.3.0
-
 
   cupertino_icons: ^1.0.8
   sqflite: ^2.3.0
