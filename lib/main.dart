@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, theme, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'APK Diary',
+          title: 'WorkEarn',
           theme: ThemeManager.getTheme(theme),
           home: const HomePage(),
         );
