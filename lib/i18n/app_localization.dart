@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import 'app_strings.dart';
+import 'urdu_translations.dart';
 
 /// Supported application languages.
 ///
@@ -26,9 +27,8 @@ extension AppLanguageCode on AppLanguage {
 
 /// Localised values for the existing AppStrings keys.
 ///
-/// This first layer deliberately covers the complete current AppStrings
-/// surface. English is returned unchanged; Urdu will be populated in the
-/// dedicated Urdu translation map rather than hardcoded into UI widgets.
+/// The English AppStrings values remain the fallback authority. Urdu values
+/// are supplied only by the dedicated Urdu catalogue.
 class AppLocalization {
   const AppLocalization(this.language);
 
@@ -136,9 +136,9 @@ class AppLocalization {
   String get pleaseEnterAnItem => _value('pleaseEnterAnItem', AppStrings.pleaseEnterAnItem);
 
   String _value(String key, String english) {
-    // Urdu values are intentionally not inserted here yet. This keeps the
-    // architecture change separate from translation content and guarantees
-    // an English fallback until the Urdu catalogue is sealed.
+    if (language == AppLanguage.urdu) {
+      return urduTranslations[key] ?? english;
+    }
     return english;
   }
 }
