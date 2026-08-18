@@ -79,7 +79,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   String getTickerMessage() {
     if (totalEarning <= 0) {
-      return "🚀 Welcome to APK Diary Pro • Add your first work entry today";
+      return "🚀 Welcome to WorkEarn • Add your first work entry today";
     }
 
     if (todayEarning > 0) {
@@ -223,7 +223,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
         title: const Text(
-          "APK DIARY PRO ⚡",
+          "WORK EARN ⚡",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 18,
@@ -261,6 +261,30 @@ class _DashboardPageState extends State<DashboardPage> {
                 coverImage: coverImage,
               ),
 
+              const SizedBox(height: 12),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.10),
+                      Theme.of(context).colorScheme.secondary.withValues(alpha: 0.08),
+                    ],
+                  ),
+                ),
+                child: Image.asset(
+                  'assets/branding/workearn_logo.png',
+                  height: 82,
+                  fit: BoxFit.contain,
+                ),
+              ),
+
               const SizedBox(height: 10),
               Card(
                 elevation: 20,
@@ -293,7 +317,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   child: Marquee(
                     text: tickerMessage.isEmpty
-                        ? "🚀 Welcome to APK Diary"
+                        ? "🚀 Welcome to WorkEarn"
                         : tickerMessage,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
