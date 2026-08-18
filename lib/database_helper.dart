@@ -160,6 +160,26 @@ class DatabaseHelper {
     return result.first;
   }
 
+  Future<String> getTheme() async {
+    final profile = await getProfile();
+    final value = profile?['selected_theme'];
+    return value is String && value.isNotEmpty ? value : 'classicLight';
+  }
+
+  Future<int> saveTheme(String theme) async {
+    final db = await database;
+    final existing = await db.query('profile', columns: ['id'], limit: 1);
+    if (existing.isEmpty) {
+      return await db.insert('profile', {'selected_theme': theme});
+    }
+    return await db.update(
+      'profile',
+      {'selected_theme': theme},
+      where: 'id = ?',
+      whereArgs: [existing.first['id']],
+    );
+  }
+
   Future<double> getTotalEarning() async {
     final db = await database;
     final result = await db.rawQuery(
@@ -197,16 +217,13 @@ class DatabaseHelper {
   Future<double> getWeeklyEarning() async {
     final db = await database;
     final now = DateTime.now();
-    final startOfWeek = DateTime(now.year, now.month, now.day).subtract(
-      Duration(days: now.weekday - 1),
-    );
+    final startOfWeek = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
+    final startDate = _formatDateForQuery(startOfWeek);
     final nextWeek = startOfWeek.add(const Duration(days: 7));
-    final startDate = _formatDateForSql(startOfWeek);
-    final nextWeekDate = _formatDateForSql(nextWeek);
+    final nextWeekDate = _formatDateForQuery(nextWeek);
     final result = await db.rawQuery(
       '''SELECT SUM(total) as total FROM diary_entries
-         WHERE substr(work_date, 7, 4) || '-' || substr(work_date, 4, 2) || '-' || substr(work_date, 1, 2) >= ?
-           AND substr(work_date, 7, 4) || '-' || substr(work_date, 4, 2) || '-' || substr(work_date, 1, 2) < ?''',
+         WHERE work_date >= ? AND work_date < ?''',
       [startDate, nextWeekDate],
     );
     return ((result.first['total'] ?? 0) as num).toDouble();
@@ -217,12 +234,11 @@ class DatabaseHelper {
     final now = DateTime.now();
     final firstDay = DateTime(now.year, now.month, 1);
     final nextMonth = DateTime(now.year, now.month + 1, 1);
-    final startDate = _formatDateForSql(firstDay);
-    final nextMonthDate = _formatDateForSql(nextMonth);
+    final startDate = _formatDateForQuery(firstDay);
+    final nextMonthDate = _formatDateForQuery(nextMonth);
     final result = await db.rawQuery(
       '''SELECT SUM(total) as total FROM diary_entries
-         WHERE substr(work_date, 7, 4) || '-' || substr(work_date, 4, 2) || '-' || substr(work_date, 1, 2) >= ?
-           AND substr(work_date, 7, 4) || '-' || substr(work_date, 4, 2) || '-' || substr(work_date, 1, 2) < ?''',
+         WHERE work_date >= ? AND work_date < ?''',
       [startDate, nextMonthDate],
     );
     return ((result.first['total'] ?? 0) as num).toDouble();
@@ -233,12 +249,6 @@ class DatabaseHelper {
     final month = date.month.toString().padLeft(2, '0');
     final year = date.year;
     return '$day-$month-$year';
-  }
-
-  String _formatDateForSql(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    return '${date.year.toString().padLeft(4, '0')}-$month-$day';
   }
 
   Future<double> getSalaryReceived() async {
