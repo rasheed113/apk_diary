@@ -154,26 +154,21 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             sectionCard(
               context,
-              child: Column(
-                children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.language),
-                    title: const Text('Language'),
-                    subtitle: Text(language == AppLanguage.urdu ? 'Urdu' : 'English'),
-                    trailing: DropdownButton<AppLanguage>(
-                      value: language,
-                      underline: const SizedBox.shrink(),
-                      items: const [
-                        DropdownMenuItem(value: AppLanguage.english, child: Text('English')),
-                        DropdownMenuItem(value: AppLanguage.urdu, child: Text('Urdu')),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) AppLanguageController.setLanguage(value);
-                      },
-                    ),
-                  ),
-                ],
+              child: SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Text('🌎', style: TextStyle(fontSize: 25)),
+                title: const Text('Language'),
+                subtitle: Text(
+                  language == AppLanguage.urdu
+                      ? '🇵🇰 Urdu'
+                      : '🇬🇧 British English',
+                ),
+                value: language == AppLanguage.urdu,
+                onChanged: (useUrdu) {
+                  AppLanguageController.setLanguage(
+                    useUrdu ? AppLanguage.urdu : AppLanguage.english,
+                  );
+                },
               ),
             ),
             sectionCard(
