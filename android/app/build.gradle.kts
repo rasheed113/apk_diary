@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Copy
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,10 +7,21 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val workEarnGeneratedRes = layout.buildDirectory.dir("generated/res/workearn/main")
+
+val copyWorkEarnIcon by tasks.registering(Copy::class) {
+    from(rootProject.file("../assets/branding/workearn_icon.png"))
+    into(workEarnGeneratedRes.map { it.dir("drawable-nodpi") })
+}
+
 android {
     namespace = "com.example.apk_diary"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+
+    sourceSets.getByName("main") {
+        res.srcDir(workEarnGeneratedRes)
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -37,6 +50,10 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+}
+
+tasks.named("preBuild") {
+    dependsOn(copyWorkEarnIcon)
 }
 
 flutter {

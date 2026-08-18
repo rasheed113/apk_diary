@@ -2,7 +2,7 @@
     <application
         android:label="WorkEarn"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/workearn_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
