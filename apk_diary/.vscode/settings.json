@@ -1,0 +1,69 @@
+{
+  "dart.enableSdkFormatter": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "[dart]": {
+    "editor.defaultFormatter": "Dart-Code.dart-code",
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+      80,
+      120
+    ],
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/CVS": true,
+    "**/.git": true,
+    "**/.gitignore": false,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/node_modules": true,
+    "**/.dart_tool": true,
+    "**/.flutter-plugins": true,
+    "**/.flutter-plugins-dependencies": true,
+    "**/.metadata": true,
+    "**/.packages": true,
+    "build/": true,
+    ".dart_tool/": true,
+    ".packages": true
+  },
+  "search.exclude": {
+    "**/.git": true,
+    "**/.dartTool": true,
+    "**/build": true,
+    "**/.dart_tool": true,
+    "**/backup/**": true,
+    "**/old_backups/**": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/.packages": true
+  },
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.trimAutoWhitespace": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "dart.showTodos": true,
+  "dart.showTestCodeLens": true,
+  "dart.flutterRunLogTag": "flutter",
+  "flutter.debugModeBanner": false,
+  "[pubspec.yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

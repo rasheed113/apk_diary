@@ -13,7 +13,6 @@ class DatabaseHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-
     _database = await _initDB('apk_diary.db');
     return _database!;
   }
@@ -21,7 +20,6 @@ class DatabaseHelper {
   Future<Database> _initDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
-    print("DB PATH: $path");
 
     return await openDatabase(
       path,
@@ -36,12 +34,11 @@ class DatabaseHelper {
       await db.execute('''
         ALTER TABLE profile
         ADD COLUMN dark_mode INTEGER DEFAULT 0
-        ''');
-
+      ''');
       await db.execute('''
         ALTER TABLE profile
-        ADD COLUMN selected_theme TEXT DEFAULT 'shadowDark'
-        ''');
+        ADD COLUMN selected_theme TEXT DEFAULT 'classicLight'
+      ''');
     }
 
     if (oldVersion < 3) {
@@ -93,28 +90,24 @@ class DatabaseHelper {
         profile_image TEXT,
         cover_image TEXT,
         dark_mode INTEGER DEFAULT 0,
-        selected_theme TEXT DEFAULT 'shadowDark'
+        selected_theme TEXT DEFAULT 'classicLight'
       )
     ''');
-  } // ================= WORK =================
+  }
 
   Future<int> insertEntry(DiaryEntry entry) async {
     final db = await database;
-
     return await db.insert('diary_entries', entry.toMap());
   }
 
   Future<List<DiaryEntry>> getAllEntries() async {
     final db = await database;
-
     final result = await db.query('diary_entries', orderBy: 'id DESC');
-
     return result.map((e) => DiaryEntry.fromMap(e)).toList();
   }
 
   Future<int> updateEntry(DiaryEntry entry) async {
     final db = await database;
-
     return await db.update(
       'diary_entries',
       entry.toMap(),
@@ -125,29 +118,22 @@ class DatabaseHelper {
 
   Future<int> deleteEntry(int id) async {
     final db = await database;
-
     return await db.delete('diary_entries', where: 'id=?', whereArgs: [id]);
   }
 
-  // ================= FINANCE =================
-
   Future<int> insertFinanceRecord(FinanceRecord record) async {
     final db = await database;
-
     return await db.insert('finance_records', record.toMap());
   }
 
   Future<List<FinanceRecord>> getAllFinanceRecords() async {
     final db = await database;
-
     final result = await db.query('finance_records', orderBy: 'id DESC');
-
     return result.map((e) => FinanceRecord.fromMap(e)).toList();
   }
 
   Future<int> updateFinanceRecord(FinanceRecord record) async {
     final db = await database;
-
     return await db.update(
       'finance_records',
       record.toMap(),
@@ -158,141 +144,155 @@ class DatabaseHelper {
 
   Future<int> deleteFinanceRecord(int id) async {
     final db = await database;
-
     return await db.delete('finance_records', where: 'id=?', whereArgs: [id]);
   }
 
-  // ================= PROFILE =================
-
   Future<int> saveProfile(Map<String, dynamic> data) async {
     final db = await database;
-
     await db.delete('profile');
-
     return await db.insert('profile', data);
   }
 
   Future<Map<String, dynamic>?> getProfile() async {
     final db = await database;
-
     final result = await db.query('profile', limit: 1);
-
-    if (result.isEmpty) {
-      return null;
-    }
-
+    if (result.isEmpty) return null;
     return result.first;
-  } // ================= DASHBOARD =================
+  }
 
   Future<double> getTotalEarning() async {
     final db = await database;
-
     final result = await db.rawQuery(
       'SELECT SUM(total) as total FROM diary_entries',
     );
-
     return ((result.first['total'] ?? 0) as num).toDouble();
   }
 
   Future<int> getTotalPieces() async {
     final db = await database;
-
     final result = await db.rawQuery(
       'SELECT SUM(pieces) as total FROM diary_entries',
     );
-
     return ((result.first['total'] ?? 0) as num).toInt();
   }
 
   Future<int> getTotalEntries() async {
     final db = await database;
-
     final result = await db.rawQuery(
       'SELECT COUNT(*) as total FROM diary_entries',
     );
-
     return ((result.first['total'] ?? 0) as num).toInt();
   }
 
   Future<double> getTodayEarning() async {
-    return await getTotalEarning();
+    final db = await database;
+    final today = _formatDateForQuery(DateTime.now());
+    final result = await db.rawQuery(
+      'SELECT SUM(total) as total FROM diary_entries WHERE work_date = ?',
+      [today],
+    );
+    return ((result.first['total'] ?? 0) as num).toDouble();
   }
 
   Future<double> getWeeklyEarning() async {
-    return await getTotalEarning();
+    final db = await database;
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    final startDate = _formatDateForQuery(startOfWeek);
+    final endDate = _formatDateForQuery(endOfWeek);
+    final result = await db.rawQuery(
+      '''SELECT SUM(total) as total FROM diary_entries
+         WHERE work_date >= ? AND work_date <= ?''',
+      [startDate, endDate],
+    );
+    return ((result.first['total'] ?? 0) as num).toDouble();
   }
 
   Future<double> getMonthlyEarning() async {
-    return await getTotalEarning();
+    final db = await database;
+    final now = DateTime.now();
+    final firstDay = DateTime(now.year, now.month, 1);
+    final lastDay = DateTime(now.year, now.month + 1, 0);
+    final startDate = _formatDateForQuery(firstDay);
+    final endDate = _formatDateForQuery(lastDay);
+    final result = await db.rawQuery(
+      '''SELECT SUM(total) as total FROM diary_entries
+         WHERE work_date >= ? AND work_date <= ?''',
+      [startDate, endDate],
+    );
+    return ((result.first['total'] ?? 0) as num).toDouble();
+  }
+
+  String _formatDateForQuery(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = date.year;
+    return '$day-$month-$year';
   }
 
   Future<double> getSalaryReceived() async {
     final db = await database;
-
     final result = await db.rawQuery('''
       SELECT SUM(amount) as total
       FROM finance_records
       WHERE type = 'Salary Received'
-      ''');
-
+    ''');
     return ((result.first['total'] ?? 0) as num).toDouble();
   }
 
   Future<double> getAdvanceReceived() async {
     final db = await database;
-
     final result = await db.rawQuery('''
       SELECT SUM(amount) as total
       FROM finance_records
       WHERE type = 'Advance Received'
-      ''');
-
+    ''');
     return ((result.first['total'] ?? 0) as num).toDouble();
   }
 
   Future<double> getTotalFinanceReceived() async {
     final db = await database;
-
     final result = await db.rawQuery(
       'SELECT SUM(amount) as total FROM finance_records',
     );
-
     return ((result.first['total'] ?? 0) as num).toDouble();
   }
 
   Future<double> getBalance() async {
     final earning = await getTotalEarning();
-
     final received = await getTotalFinanceReceived();
-
     return earning - received;
   }
 
   Future<void> saveTheme(String theme) async {
     final db = await database;
+    final existing = await db.query('profile', columns: ['id'], limit: 1);
+
+    if (existing.isEmpty) {
+      await db.insert('profile', {'selected_theme': theme});
+      return;
+    }
 
     await db.update(
       'profile',
       {'selected_theme': theme},
       where: 'id = ?',
-      whereArgs: [1],
+      whereArgs: [existing.first['id']],
     );
   }
 
   Future<String> getTheme() async {
     final db = await database;
-
     final result = await db.query(
       'profile',
       columns: ['selected_theme'],
-      where: 'id = ?',
-      whereArgs: [1],
+      orderBy: 'id ASC',
+      limit: 1,
     );
-
     if (result.isNotEmpty) {
-      return result.first['selected_theme']?.toString() ?? 'shadowDark';
+      return result.first['selected_theme']?.toString() ?? 'classicLight';
     }
-
-    return 'shadowDark';
+    return 'classicLight';
   }
 }

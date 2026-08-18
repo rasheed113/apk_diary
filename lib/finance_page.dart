@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'database_helper.dart';
 import 'finance_record.dart';
-import 'package:intl/intl.dart';
 
 class FinancePage extends StatefulWidget {
   const FinancePage({super.key});
 
-@override
+  @override
   State<FinancePage> createState() => _FinancePageState();
 }
 
@@ -15,267 +15,11 @@ class _FinancePageState extends State<FinancePage> {
   double currentBalance = 0;
   double salaryReceived = 0;
   double advanceReceived = 0;
-  Future<void> confirmDelete(FinanceRecord record) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete Finance Record'),
-          content: Text(
-            'Delete ${record.type} (Rs ${record.amount.toStringAsFixed(0)}) ?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
 
-    if (confirm == true) {
-      await DatabaseHelper.instance.deleteFinanceRecord(record.id!);
-
-      await loadFinance();
-
-      if (!mounted) return;
-
-      setState(() {});
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Finance Record Deleted Successfully ✅')),
-      );
-    }
-  }
-
-  Future<void> editFinanceRecord(FinanceRecord record) async {
-    if (!mounted) return;
-
-    String selectedType = record.type;
-
-    final amountController = TextEditingController(
-      text: record.amount.toString(),
-    );
-
-    final reasonController = TextEditingController(text: record.reason);
-    final dialogContext = context;
-
-    final result = await showDialog<bool>(
-      context: dialogContext,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Edit Finance Record'),
-
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedType,
-
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'Salary Received',
-                          child: Text('Salary Received'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Advance Received',
-                          child: Text('Advance Received'),
-                        ),
-                        DropdownMenuItem(value: 'Other', child: Text('Other')),
-                      ],
-
-                      onChanged: (value) {
-                        setDialogState(() {
-                          selectedType = value!;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextField(
-                      controller: amountController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Amount'),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextField(
-                      controller: reasonController,
-                      decoration: const InputDecoration(labelText: 'Reason'),
-                    ),
-                  ],
-                ),
-              ),
-
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                  child: const Text('Cancel'),
-                ),
-
-                ElevatedButton(
-                  onPressed: () async {
-                    final amount = double.tryParse(amountController.text) ?? 0;
-
-                    if (amount <= 0) return;
-
-                    final updatedRecord = FinanceRecord(
-                      id: record.id,
-                      type: selectedType,
-                      amount: amount,
-                      reason: reasonController.text,
-                      recordDate: record.recordDate,
-                      createdTime: record.createdTime,
-                    );
-
-                    await DatabaseHelper.instance.updateFinanceRecord(
-                      updatedRecord,
-                    );
-
-                    if (!dialogContext.mounted) return;
-
-                    Navigator.pop(dialogContext, true);
-                  },
-
-                  child: const Text('Update'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (result == true) {
-      await loadFinance();
-
-      if (!mounted) return;
-
-      setState(() {});
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Finance Record Updated ✅')));
-    }
-  }
-
-@override
+  @override
   void initState() {
     super.initState();
     loadFinance();
-  }
-
-  Future<void> addFinanceRecord() async {
-    String selectedType = 'Salary Received';
-
-    final amountController = TextEditingController();
-    final reasonController = TextEditingController();
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Add Finance Record'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedType,
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'Salary Received',
-                          child: Text('Salary Received'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Advance Received',
-                          child: Text('Advance Received'),
-                        ),
-                        DropdownMenuItem(value: 'Other', child: Text('Other')),
-                      ],
-                      onChanged: (value) {
-                        setDialogState(() {
-                          selectedType = value!;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextField(
-                      controller: amountController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Amount'),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextField(
-                      controller: reasonController,
-                      decoration: const InputDecoration(labelText: 'Reason'),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final amount = double.tryParse(amountController.text) ?? 0;
-
-                    if (amount <= 0) {
-                      return;
-                    }
-
-                    final record = FinanceRecord(
-                      type: selectedType,
-                      amount: amount,
-                      reason: reasonController.text,
-                      recordDate: DateFormat(
-                        'dd-MM-yyyy',
-                      ).format(DateTime.now()),
-                      createdTime: DateFormat('hh:mm a').format(DateTime.now()),
-                    );
-                    await DatabaseHelper.instance.insertFinanceRecord(record);
-
-                    if (!context.mounted) return;
-
-                    Navigator.pop(context, true);
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (result == true) {
-      await loadFinance();
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Finance Record Saved ✅')));
-    }
   }
 
   Future<void> loadFinance() async {
@@ -284,7 +28,6 @@ class _FinancePageState extends State<FinancePage> {
     final advance = await DatabaseHelper.instance.getAdvanceReceived();
 
     if (!mounted) return;
-
     setState(() {
       currentBalance = balance;
       salaryReceived = salary;
@@ -292,152 +35,262 @@ class _FinancePageState extends State<FinancePage> {
     });
   }
 
-
-Widget _financeMiniCard(
-  String title,
-  double value,
-  IconData icon,
-) {
-  final primary = Theme.of(context).colorScheme.primary;
-
-  return Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(22),
-      color: Theme.of(context).cardColor.withValues(alpha:0.75),
-      border: Border.all(
-        color: primary.withValues(alpha:0.8),
-        width:2,
+  Future<void> confirmDelete(FinanceRecord record) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Finance Record'),
+        content: Text(
+          'Delete ${record.type} (Rs ${record.amount.toStringAsFixed(0)}) ?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
-      boxShadow:[
-        BoxShadow(
-          color: primary.withValues(alpha:0.35),
-          blurRadius:18,
-        ),
-      ],
-    ),
-    child: Column(
-      children:[
-        Icon(icon,size:32),
-        const SizedBox(height:8),
-        Text(
-          title,
-          style:const TextStyle(
-            fontWeight:FontWeight.w900,
-          ),
-        ),
-        const SizedBox(height:5),
-        Text(
-          "Rs ${value.toStringAsFixed(0)}",
-          style:TextStyle(
-            fontSize:20,
-            fontWeight:FontWeight.w900,
-            color:primary,
-          ),
-        ),
-      ],
-    ),
-  );
-}
+    );
 
-@override
+    if (confirm != true) return;
+    await DatabaseHelper.instance.deleteFinanceRecord(record.id!);
+    await loadFinance();
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Finance Record Deleted Successfully ✅')),
+    );
+  }
+
+  Future<void> editFinanceRecord(FinanceRecord record) async {
+    String selectedType = record.type;
+    final amountController = TextEditingController(text: record.amount.toString());
+    final reasonController = TextEditingController(text: record.reason);
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Edit Finance Record'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                DropdownButtonFormField<String>(
+                  initialValue: selectedType,
+                  items: const [
+                    DropdownMenuItem(value: 'Salary Received', child: Text('Salary Received')),
+                    DropdownMenuItem(value: 'Advance Received', child: Text('Advance Received')),
+                    DropdownMenuItem(value: 'Other', child: Text('Other')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setDialogState(() => selectedType = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Amount'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: reasonController,
+                  decoration: const InputDecoration(labelText: 'Reason'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final amount = double.tryParse(amountController.text) ?? 0;
+                if (amount <= 0) return;
+
+                final updatedRecord = FinanceRecord(
+                  id: record.id,
+                  type: selectedType,
+                  amount: amount,
+                  reason: reasonController.text,
+                  recordDate: record.recordDate,
+                  createdTime: record.createdTime,
+                );
+                await DatabaseHelper.instance.updateFinanceRecord(updatedRecord);
+
+                if (!dialogContext.mounted) return;
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('Update'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    amountController.dispose();
+    reasonController.dispose();
+
+    if (result == true) {
+      await loadFinance();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Finance Record Updated ✅')),
+      );
+    }
+  }
+
+  Future<void> addFinanceRecord() async {
+    String selectedType = 'Salary Received';
+    final amountController = TextEditingController();
+    final reasonController = TextEditingController();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Add Finance Record'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  initialValue: selectedType,
+                  items: const [
+                    DropdownMenuItem(value: 'Salary Received', child: Text('Salary Received')),
+                    DropdownMenuItem(value: 'Advance Received', child: Text('Advance Received')),
+                    DropdownMenuItem(value: 'Other', child: Text('Other')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setDialogState(() => selectedType = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Amount'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: reasonController,
+                  decoration: const InputDecoration(labelText: 'Reason'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final amount = double.tryParse(amountController.text) ?? 0;
+                if (amount <= 0) return;
+
+                final record = FinanceRecord(
+                  type: selectedType,
+                  amount: amount,
+                  reason: reasonController.text,
+                  recordDate: DateFormat('dd-MM-yyyy').format(DateTime.now()),
+                  createdTime: DateFormat('hh:mm a').format(DateTime.now()),
+                );
+                await DatabaseHelper.instance.insertFinanceRecord(record);
+
+                if (!dialogContext.mounted) return;
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    amountController.dispose();
+    reasonController.dispose();
+
+    if (result == true) {
+      await loadFinance();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Finance Record Saved ✅')),
+      );
+    }
+  }
+
+  Widget _financeMiniCard(String title, double value, IconData icon) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: Theme.of(context).cardColor,
+        border: Border.all(color: scheme.primary.withValues(alpha: 0.45)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 28, color: scheme.primary),
+          const SizedBox(height: 6),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+          const SizedBox(height: 4),
+          Text(
+            'Rs ${value.toStringAsFixed(0)}',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: scheme.primary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Finance')),
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds:500),
-              tween: Tween(begin:0.85,end:1),
-              curve: Curves.easeOutBack,
-              builder:(context,scale,child){
-                return Transform.scale(
-                  scale:scale,
-                  child:child,
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  color: Theme.of(context)
-                      .cardColor
-                      .withValues(alpha:0.75),
-                  border: Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha:0.8),
-                    width:2,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Theme.of(context).cardColor,
+                border: Border.all(color: scheme.primary.withValues(alpha: 0.5)),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.account_balance_wallet, color: scheme.primary, size: 34),
+                  const SizedBox(height: 6),
+                  const Text('Current Balance', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Rs ${currentBalance.toStringAsFixed(0)}',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: currentBalance < 0 ? Colors.red : scheme.primary),
                   ),
-                  boxShadow:[
-                    BoxShadow(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha:0.45),
-                      blurRadius:25,
-                      spreadRadius:2,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children:[
-                    const Icon(
-                      Icons.account_balance_wallet,
-                      size:45,
-                    ),
-                    const SizedBox(height:10),
-                    const Text(
-                      '💰 CURRENT BALANCE',
-                      style:TextStyle(
-                        fontSize:18,
-                        fontWeight:FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height:8),
-                    Text(
-                      'Rs ${currentBalance.toStringAsFixed(0)}',
-                      style:TextStyle(
-                        fontSize:36,
-                        fontWeight:FontWeight.w900,
-                        color: currentBalance < 0
-                            ? Colors.red
-                            : Theme.of(context)
-                                .colorScheme
-                                .primary,
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
             ),
-
+            const SizedBox(height: 10),
             Row(
               children: [
-                Expanded(
-                  child: _financeMiniCard(
-                    "SALARY",
-                    salaryReceived,
-                    Icons.payments,
-                  ),
-                ),
-                const SizedBox(width:12),
-                Expanded(
-                  child: _financeMiniCard(
-                    "ADVANCE",
-                    advanceReceived,
-                    Icons.account_balance,
-                  ),
-                ),
+                Expanded(child: _financeMiniCard('SALARY', salaryReceived, Icons.payments)),
+                const SizedBox(width: 10),
+                Expanded(child: _financeMiniCard('ADVANCE', advanceReceived, Icons.account_balance)),
               ],
             ),
-
-            const SizedBox(height: 15),
-
+            const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -446,35 +299,24 @@ Widget _financeMiniCard(
                 label: const Text('Add Finance Record'),
               ),
             ),
-
-            const SizedBox(height: 15),
-
+            const SizedBox(height: 12),
             Expanded(
               child: FutureBuilder(
                 future: DatabaseHelper.instance.getAllFinanceRecords(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
+                  if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                   final records = snapshot.data!;
-
-                  if (records.isEmpty) {
-                    return const Center(child: Text('No Finance Records'));
-                  }
+                  if (records.isEmpty) return const Center(child: Text('No Finance Records'));
 
                   return ListView.builder(
                     itemCount: records.length,
                     itemBuilder: (context, index) {
                       final record = records[index];
-
                       return Card(
                         child: ListTile(
-                          leading: const Icon(Icons.account_balance_wallet),
+                          leading: Icon(Icons.account_balance_wallet, color: scheme.primary),
                           title: Text(record.type),
-                          subtitle: Text(
-                            '${record.reason}\n${record.recordDate}',
-                          ),
+                          subtitle: Text('${record.reason}\n${record.recordDate}'),
                           trailing: SizedBox(
                             width: 150,
                             child: Row(
@@ -482,31 +324,15 @@ Widget _financeMiniCard(
                               children: [
                                 Text(
                                   'Rs ${record.amount.toStringAsFixed(0)}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green,
-                                  ),
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
                                 ),
-
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    color: Colors.blue,
-                                  ),
-                                  onPressed: () async {
-                                    await editFinanceRecord(record);
-                                  },
+                                  icon: const Icon(Icons.edit, color: Colors.blue),
+                                  onPressed: () => editFinanceRecord(record),
                                 ),
-
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    confirmDelete(record);
-                                  },
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () => confirmDelete(record),
                                 ),
                               ],
                             ),

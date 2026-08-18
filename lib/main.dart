@@ -12,7 +12,7 @@ import 'theme_manager.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
@@ -24,7 +24,7 @@ void main() async {
 
   AppThemeController.currentTheme.value = AppTheme.values.firstWhere(
     (e) => e.name == savedTheme,
-    orElse: () => AppTheme.shadowDark,
+    orElse: () => AppTheme.classicLight,
   );
 
   runApp(const MyApp());
@@ -45,10 +45,8 @@ class _MyAppState extends State<MyApp> {
       builder: (context, theme, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'APK Diary',
-
+          title: 'WorkEarn',
           theme: ThemeManager.getTheme(theme),
-
           home: const HomePage(),
         );
       },
@@ -76,58 +74,33 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: pages[selectedIndex],
-
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(left: 14, right: 14, bottom: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.35),
-              blurRadius: 25,
-              spreadRadius: 2,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          color: theme.cardColor,
+          border: Border.all(
+            color: theme.colorScheme.primary.withValues(alpha: 0.22),
+          ),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
           child: NavigationBar(
             height: 72,
             elevation: 0,
-            backgroundColor: Theme.of(
-              context,
-            ).cardColor.withValues(alpha: 0.92),
-            indicatorColor: Theme.of(
-              context,
-            ).colorScheme.primary.withValues(alpha: 0.30),
+            backgroundColor: theme.cardColor,
+            indicatorColor: theme.colorScheme.primary.withValues(alpha: 0.14),
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
             selectedIndex: selectedIndex,
             destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.dashboard, size: 30),
-                label: 'Dashboard',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.work, size: 30),
-                label: 'Work',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.history, size: 30),
-                label: 'History',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.account_balance_wallet, size: 30),
-                label: 'Finance',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.settings, size: 30),
-                label: 'Settings',
-              ),
+              NavigationDestination(icon: Icon(Icons.dashboard, size: 30), label: 'Dashboard'),
+              NavigationDestination(icon: Icon(Icons.work, size: 30), label: 'Work'),
+              NavigationDestination(icon: Icon(Icons.history, size: 30), label: 'History'),
+              NavigationDestination(icon: Icon(Icons.account_balance_wallet, size: 30), label: 'Finance'),
+              NavigationDestination(icon: Icon(Icons.settings, size: 30), label: 'Settings'),
             ],
             onDestinationSelected: (index) {
               setState(() {
