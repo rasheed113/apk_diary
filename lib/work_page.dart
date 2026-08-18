@@ -195,6 +195,19 @@ class _WorkPageState extends State<WorkPage> {
     );
   }
 
+  IconData itemIcon(String item) {
+    switch (item) {
+      case 'Shirt':
+        return Icons.checkroom;
+      case 'Pant':
+        return Icons.checkroom;
+      case 'Kameez':
+        return Icons.checkroom;
+      default:
+        return Icons.inventory_2;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -211,7 +224,7 @@ class _WorkPageState extends State<WorkPage> {
             field(DropdownButtonFormField<String>(
               initialValue: selectedItem,
               decoration: fieldDecoration('Item Name', Icons.checkroom),
-              items: itemList.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              items: itemList.map((e) => DropdownMenuItem(value: e, child: Row(children: [Icon(itemIcon(e), size: 22), const SizedBox(width: 10), Text(e)]))).toList(),
               onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
             )),
             if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration('Custom Item', Icons.inventory_2))),
