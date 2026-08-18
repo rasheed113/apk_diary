@@ -9,7 +9,6 @@ import 'i18n/app_localization.dart';
 class WorkPage extends StatefulWidget {
   final DiaryEntry? entry;
   const WorkPage({super.key, this.entry});
-
   @override
   State<WorkPage> createState() => _WorkPageState();
 }
@@ -26,7 +25,6 @@ class _WorkPageState extends State<WorkPage> {
 
   final itemList = ['Shirt', 'Pant', 'Kameez', 'Other'];
   final rateTypes = ['Per Piece', 'Per Dozen'];
-
   bool get isEditMode => widget.entry != null;
 
   double get total {
@@ -66,7 +64,6 @@ class _WorkPageState extends State<WorkPage> {
     final l10n = AppLocalization(AppLanguageController.currentLanguage.value);
     final temp = List<String>.from(selectedSizes);
     final custom = TextEditingController();
-
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
@@ -118,7 +115,6 @@ class _WorkPageState extends State<WorkPage> {
     final l10n = AppLocalization(AppLanguageController.currentLanguage.value);
     final pieces = int.tryParse(piecesController.text);
     final rate = double.tryParse(rateController.text);
-
     if (pieces == null || pieces <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.piecesMustBeGreaterThanZero)));
       return;
@@ -127,13 +123,11 @@ class _WorkPageState extends State<WorkPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.rateMustBeGreaterThanZero)));
       return;
     }
-
     final item = selectedItem == 'Other' ? customItemController.text.trim() : selectedItem;
     if (item.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterAnItem)));
       return;
     }
-
     final entry = DiaryEntry(
       id: widget.entry?.id,
       itemName: item,
@@ -148,21 +142,17 @@ class _WorkPageState extends State<WorkPage> {
       workDate: DateFormat('dd-MM-yyyy').format(selectedDate),
       createdTime: widget.entry?.createdTime ?? DateFormat('hh:mm a').format(DateTime.now()),
     );
-
     if (isEditMode) {
       await DatabaseHelper.instance.updateEntry(entry);
     } else {
       await DatabaseHelper.instance.insertEntry(entry);
     }
-
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEditMode ? l10n.entryUpdatedSuccessfully : l10n.entrySavedSuccessfully)));
     Navigator.pop(context, true);
   }
 
-  InputDecoration fieldDecoration(String label, IconData icon) {
-    return InputDecoration(labelText: label, prefixIcon: Icon(icon), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), isDense: true);
-  }
+  InputDecoration fieldDecoration(String label, IconData icon) => InputDecoration(labelText: label, prefixIcon: Icon(icon), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), isDense: true);
 
   Widget field(Widget child) {
     final scheme = Theme.of(context).colorScheme;
@@ -207,58 +197,74 @@ class _WorkPageState extends State<WorkPage> {
       builder: (context, language, _) {
         final l10n = AppLocalization(language);
         final scheme = Theme.of(context).colorScheme;
-
         return Scaffold(
           backgroundColor: scheme.surface,
           appBar: AppBar(title: Text(isEditMode ? l10n.editEntry : l10n.newEntry), backgroundColor: scheme.surface, elevation: 0),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(12),
-            child: Column(children: [
-              sectionHeader(l10n.workDetails, Icons.work),
-              const SizedBox(height: 10),
-              field(DropdownButtonFormField<String>(
-                initialValue: selectedItem,
-                decoration: fieldDecoration(l10n.itemName, Icons.checkroom),
-                items: itemList.map((e) => DropdownMenuItem(value: e, child: Row(children: [itemOptionIcon(e), const SizedBox(width: 10), Text(localizedItemName(l10n, e))]))).toList(),
-                onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
-              )),
-              if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration(l10n.customItem, Icons.inventory_2))),
-              field(Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: selectSizes, icon: const Icon(Icons.grid_view), label: Text(selectedSizes.isEmpty ? l10n.selectSizes : selectedSizes.join(', ')))),
-              field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration(l10n.pieces, Icons.numbers), onChanged: (_) => calculateTotal())),
-              field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration(l10n.rate, Icons.payments), onChanged: (_) => calculateTotal())),
-              field(DropdownButtonFormField<String>(
-                initialValue: selectedRateType,
-                decoration: fieldDecoration(l10n.rateType, Icons.category),
-                items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(localizedRateType(l10n, e)))).toList(),
-                onChanged: (value) { setState(() => selectedRateType = value ?? 'Per Piece'); calculateTotal(); },
-              )),
-              field(TextButton.icon(onPressed: pickDate, icon: const Icon(Icons.calendar_month), label: Text(DateFormat('dd-MM-yyyy').format(selectedDate)))),
-              field(TextField(controller: notesController, maxLines: 3, decoration: fieldDecoration(l10n.notes, Icons.notes))),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(14),
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: scheme.primary.withValues(alpha: .14)),
-                  boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 4))],
+            child: Column(
+              children: [
+                sectionHeader(l10n.workDetails, Icons.work),
+                const SizedBox(height: 10),
+                field(
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedItem,
+                    decoration: fieldDecoration(l10n.itemName, Icons.checkroom),
+                    items: itemList.map((e) => DropdownMenuItem(value: e, child: Row(children: [itemOptionIcon(e), const SizedBox(width: 10), Text(localizedItemName(l10n, e))]))).toList(),
+                    onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
+                  ),
                 ),
-                child: Column(children: [
-                  Text(l10n.total, style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 4),
-                  Text('Rs ${total.toStringAsFixed(0)}', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: scheme.onSurface)),
-                ]),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: saveOrUpdateEntry,
-                  icon: Icon(isEditMode ? Icons.save_rounded : Icons.save_rounded),
-                  label: Text(isEditMode ? l10n.updateEntry : l10n.saveEntry),
+                if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration(l10n.customItem, Icons.inventory_2))),
+                field(
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: selectSizes,
+                      icon: const Icon(Icons.grid_view),
+                      label: Text(selectedSizes.isEmpty ? l10n.selectSizes : selectedSizes.join(', ')),
+                    ),
+                  ),
                 ),
-              ),
-            ]),
+                field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration(l10n.pieces, Icons.numbers), onChanged: (_) => calculateTotal())),
+                field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration(l10n.rate, Icons.payments), onChanged: (_) => calculateTotal())),
+                field(
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedRateType,
+                    decoration: fieldDecoration(l10n.rateType, Icons.category),
+                    items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(localizedRateType(l10n, e)))).toList(),
+                    onChanged: (value) { setState(() => selectedRateType = value ?? 'Per Piece'); calculateTotal(); },
+                  ),
+                ),
+                field(TextButton.icon(onPressed: pickDate, icon: const Icon(Icons.calendar_month), label: Text(DateFormat('dd-MM-yyyy').format(selectedDate)))),
+                field(TextField(controller: notesController, maxLines: 3, decoration: fieldDecoration(l10n.notes, Icons.notes))),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: scheme.primary.withValues(alpha: .14)),
+                    boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 4))],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(l10n.total, style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 4),
+                      Text('Rs ${total.toStringAsFixed(0)}', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: scheme.onSurface)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: saveOrUpdateEntry,
+                    icon: const Icon(Icons.save_rounded),
+                    label: Text(isEditMode ? l10n.updateEntry : l10n.saveEntry),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
