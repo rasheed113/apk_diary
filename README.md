@@ -1,20 +1,9 @@
-# apk_diary
+# WorkEarn
 
-A new Flutter project.
+WorkEarn is a Flutter-based garment work and earnings diary for tracking work entries, pieces, earnings, finance, and history.
 
-## Getting Started
+## Branding
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-<<<<<<< HEAD
-=======
-APK Build Test
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
+- App name: **WorkEarn**
+- Dashboard logo: `assets/branding/workearn_logo.png`
+- Android launcher icon source: `assets/branding/workearn_icon.png`
