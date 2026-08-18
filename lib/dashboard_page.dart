@@ -27,25 +27,27 @@ class _DashboardPageState extends State<DashboardPage> {
   String operatorName = 'Operator';
   String userId = 'APK-LOCAL-001';
   String greeting = '';
-  String getGreeting() {
-    final hour = DateTime.now().hour;
-
-    if (hour < 12) {
-      return 'Good Morning';
-    } else if (hour < 17) {
-      return 'Good Afternoon';
-    } else {
-      return 'Good Evening';
-    }
-  }
-
   String? profileImage;
   String? coverImage;
   String tickerMessage = '';
+  DateTime currentTime = DateTime.now();
+  Timer? clockTimer;
+  double tickerPosition = 1.0;
+  Timer? tickerTimer;
+
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
 
   @override
   void initState() {
     super.initState();
+    clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() => currentTime = DateTime.now());
+    });
     loadDashboard();
   }
 
@@ -81,18 +83,74 @@ class _DashboardPageState extends State<DashboardPage> {
     if (totalEarning <= 0) {
       return "🚀 Welcome to WorkEarn • Add your first work entry today";
     }
-
     if (todayEarning > 0) {
       return "💰 Today: Rs ${todayEarning.toStringAsFixed(0)} • 📅 Week: Rs ${weeklyEarning.toStringAsFixed(0)} • 🏆 Month: Rs ${monthlyEarning.toStringAsFixed(0)}";
     }
-
     return "📅 Week: Rs ${weeklyEarning.toStringAsFixed(0)} • 🏆 Month: Rs ${monthlyEarning.toStringAsFixed(0)} • 💼 Total: Rs ${totalEarning.toStringAsFixed(0)}";
   }
 
-  double tickerPosition = 1.0;
-  Timer? tickerTimer;
+  String get digitalTime {
+    final hour12 = currentTime.hour % 12 == 0 ? 12 : currentTime.hour % 12;
+    final hh = hour12.toString().padLeft(2, '0');
+    final mm = currentTime.minute.toString().padLeft(2, '0');
+    final ss = currentTime.second.toString().padLeft(2, '0');
+    final period = currentTime.hour >= 12 ? 'PM' : 'AM';
+    return '$hh:$mm:$ss $period';
+  }
+
+  Widget buildDigitalClock() {
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
+    return Container(
+      height: 54,
+      padding: const EdgeInsets.symmetric(horizontal: 13),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            primary.withValues(alpha: 0.95),
+            secondary.withValues(alpha: 0.95),
+          ],
+        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withValues(alpha: 0.42),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateX(-0.025),
+          child: Text(
+            digitalTime,
+            maxLines: 1,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.1,
+              shadows: [
+                Shadow(color: Colors.white.withValues(alpha: 0.85), blurRadius: 5),
+                const Shadow(color: Colors.black54, blurRadius: 2, offset: Offset(1.5, 2)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
+    clockTimer?.cancel();
     tickerTimer?.cancel();
     super.dispose();
   }
@@ -102,27 +160,20 @@ class _DashboardPageState extends State<DashboardPage> {
     required String label,
     required VoidCallback onPressed,
   }) {
-
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         elevation: 0,
         minimumSize: const Size(double.infinity, 60),
         backgroundColor: Colors.transparent,
         shadowColor: Colors.transparent,
-
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-
         textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
       ),
-
       onPressed: onPressed,
-
       icon: Icon(icon),
-
       label: Text(label),
     );
   }
-
 
   Widget buildCard({
     required String title,
@@ -132,7 +183,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }) {
     final primary = Theme.of(context).colorScheme.primary;
     final secondary = Theme.of(context).colorScheme.secondary;
-
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: onTap,
@@ -142,50 +192,24 @@ class _DashboardPageState extends State<DashboardPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           color: Theme.of(context).cardColor.withValues(alpha: 0.5),
-          border: Border.all(
-            color: primary.withValues(alpha: 0.2),
-            width: 1,
-          ),
+          border: Border.all(color: primary.withValues(alpha: 0.2), width: 1),
         ),
         child: Row(
           children: [
-            // Chota aur Clean Soft Icon Background
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primary.withValues(alpha: 0.15),
-              ),
-              child: Icon(
-                icon,
-                size: 18,
-                color: primary,
-              ),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: primary.withValues(alpha: 0.15)),
+              child: Icon(icon, size: 18, color: primary),
             ),
             const SizedBox(width: 12),
-            // Text values ekdam perfectly aligned
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: secondary.withValues(alpha: 0.8),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  Text(title, style: TextStyle(color: secondary.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 1),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      color: primary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  Text(value, style: TextStyle(color: primary, fontSize: 16, fontWeight: FontWeight.w700)),
                 ],
               ),
             ),
@@ -195,6 +219,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -204,46 +229,22 @@ class _DashboardPageState extends State<DashboardPage> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.secondary,
-              ],
+              colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
-              BoxShadow(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.5),
-                blurRadius: 25,
-                spreadRadius: 5,
-              ),
+              BoxShadow(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), blurRadius: 25, spreadRadius: 5),
             ],
           ),
         ),
-        title: const Text(
-          "WORK EARN ⚡",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            color: Colors.white,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: loadDashboard,
-          ),
-        ],
+        title: const Text("WORK EARN ⚡", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18, color: Colors.white)),
+        actions: [IconButton(icon: const Icon(Icons.refresh, color: Colors.white), onPressed: loadDashboard)],
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
-            ],
+            colors: [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -252,7 +253,6 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: const EdgeInsets.all(18),
           child: Column(
             children: [
-
               ProfileHeaderCard(
                 operatorName: operatorName,
                 userId: userId,
@@ -260,57 +260,29 @@ class _DashboardPageState extends State<DashboardPage> {
                 profileImage: profileImage,
                 coverImage: coverImage,
               ),
-
               const SizedBox(height: 12),
-
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 12,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.10),
-                      Theme.of(context).colorScheme.secondary.withValues(alpha: 0.08),
-                    ],
-                  ),
+                  gradient: LinearGradient(colors: [Theme.of(context).colorScheme.primary.withValues(alpha: 0.10), Theme.of(context).colorScheme.secondary.withValues(alpha: 0.08)]),
                 ),
-                child: Image.asset(
-                  'assets/branding/workearn_logo.png',
-                  height: 82,
-                  fit: BoxFit.contain,
-                ),
+                child: Image.asset('assets/branding/workearn_logo.png', height: 82, fit: BoxFit.contain),
               ),
-
               const SizedBox(height: 10),
-
-              // Premium 3D ticker: data and right-to-left marquee behaviour unchanged.
+              Align(
+                alignment: Alignment.centerRight,
+                child: buildDigitalClock(),
+              ),
+              const SizedBox(height: 10),
               Container(
                 height: 72,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.secondary,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.24),
-                    width: 1.4,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.34),
-                      blurRadius: 18,
-                      offset: const Offset(0, 7),
-                    ),
-                  ],
+                  gradient: LinearGradient(colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.24), width: 1.4),
+                  boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.34), blurRadius: 18, offset: const Offset(0, 7))],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(18),
@@ -322,11 +294,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.white.withValues(alpha: 0.16),
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.10),
-                              ],
+                              colors: [Colors.white.withValues(alpha: 0.16), Colors.transparent, Colors.black.withValues(alpha: 0.10)],
                               stops: const [0.0, 0.42, 1.0],
                             ),
                           ),
@@ -340,62 +308,23 @@ class _DashboardPageState extends State<DashboardPage> {
                           width: 46,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(13),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.white.withValues(alpha: 0.30),
-                                Colors.white.withValues(alpha: 0.08),
-                              ],
-                            ),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.30),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.20),
-                                blurRadius: 7,
-                                offset: const Offset(2, 3),
-                              ),
-                            ],
+                            gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white.withValues(alpha: 0.30), Colors.white.withValues(alpha: 0.08)]),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.30)),
+                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.20), blurRadius: 7, offset: const Offset(2, 3))],
                           ),
-                          child: Icon(
-                            Icons.insights_rounded,
-                            size: 27,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            shadows: const [
-                              Shadow(
-                                color: Colors.black38,
-                                blurRadius: 2,
-                                offset: Offset(1.5, 2),
-                              ),
-                            ],
-                          ),
+                          child: Icon(Icons.insights_rounded, size: 27, color: Theme.of(context).colorScheme.onPrimary, shadows: const [Shadow(color: Colors.black38, blurRadius: 2, offset: Offset(1.5, 2))]),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 66),
                         child: Marquee(
-                          text: tickerMessage.isEmpty
-                              ? "🚀 Welcome to WorkEarn"
-                              : tickerMessage,
+                          text: tickerMessage.isEmpty ? "🚀 Welcome to WorkEarn" : tickerMessage,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 0.25,
-                            shadows: const [
-                              Shadow(
-                                color: Colors.black45,
-                                blurRadius: 1.5,
-                                offset: Offset(1.5, 2),
-                              ),
-                              Shadow(
-                                color: Colors.white24,
-                                blurRadius: 1,
-                                offset: Offset(-0.7, -0.7),
-                              ),
-                            ],
+                            shadows: const [Shadow(color: Colors.black45, blurRadius: 1.5, offset: Offset(1.5, 2)), Shadow(color: Colors.white24, blurRadius: 1, offset: Offset(-0.7, -0.7))],
                           ),
                           scrollAxis: Axis.horizontal,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -410,182 +339,40 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
               const SizedBox(height: 10),
-
               Row(
                 children: [
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.add,
-                      label: 'New Entry',
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const WorkPage()),
-                        );
-
-                        if (result == true) {
-                          loadDashboard();
-                        }
-                      },
-                    ),
-                  ),
-
+                  Expanded(child: buildGlowButton(icon: Icons.add, label: 'New Entry', onPressed: () async {
+                    final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage()));
+                    if (result == true) loadDashboard();
+                  })),
                   const SizedBox(width: 8),
-
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.history,
-                      label: 'History',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const HistoryPage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(child: buildGlowButton(icon: Icons.history, label: 'History', onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()));
+                  })),
                 ],
               ),
               Row(
                 children: [
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.account_balance_wallet,
-                      label: 'Finance',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const FinancePage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(child: buildGlowButton(icon: Icons.account_balance_wallet, label: 'Finance', onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()));
+                  })),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.settings,
-                      label: 'Settings',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(child: buildGlowButton(icon: Icons.settings, label: 'Settings', onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+                  })),
                 ],
               ),
-
-              /*
-
-                      style: ElevatedButton.styleFrom(
-                        elevation: 20,
-                        minimumSize: const Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const FinancePage(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.account_balance_wallet),
-                      label: const Text('Finance'),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 20,
-                        minimumSize: const Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.settings),
-                      label: const Text('Settings'),
-                    ),
-                  ),
-                ],
-              ),
-
-*/
-              
-              buildCard(
-                title: 'Current Balance',
-                value: 'Rs. ${currentBalance.toStringAsFixed(2)}',
-                icon: Icons.account_balance_wallet,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const FinancePage()),
-                  );
-                },
-              ),
-              buildCard(
-                title: 'Total Entries',
-                value: totalEntries.toString(),
-                icon: Icons.list_alt,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HistoryPage()),
-                  );
-                },
-              ),
-              buildCard(
-                title: 'Total Pieces',
-                value: totalPieces.toString(),
-                icon: Icons.inventory_2,
-              ),
-              buildCard(
-                title: 'Total Earnings',
-                value: 'Rs. ${totalEarning.toStringAsFixed(2)}',
-                icon: Icons.payments,
-              ),
-              buildCard(
-                title: "Today's Earnings",
-                value: 'Rs. ${todayEarning.toStringAsFixed(2)}',
-                icon: Icons.today,
-              ),
-              buildCard(
-                title: 'Weekly Earnings',
-                value: 'Rs. ${weeklyEarning.toStringAsFixed(2)}',
-                icon: Icons.calendar_view_week,
-              ),
-
-              buildCard(
-                title: 'Monthly Earnings',
-                value: 'Rs. ${monthlyEarning.toStringAsFixed(2)}',
-                icon: Icons.calendar_month,
-              ),
+              buildCard(title: 'Current Balance', value: 'Rs. ${currentBalance.toStringAsFixed(2)}', icon: Icons.account_balance_wallet, onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()));
+              }),
+              buildCard(title: 'Total Entries', value: totalEntries.toString(), icon: Icons.list_alt, onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()));
+              }),
+              buildCard(title: 'Total Pieces', value: totalPieces.toString(), icon: Icons.inventory_2),
+              buildCard(title: 'Total Earnings', value: 'Rs. ${totalEarning.toStringAsFixed(2)}', icon: Icons.payments),
+              buildCard(title: "Today's Earnings", value: 'Rs. ${todayEarning.toStringAsFixed(2)}', icon: Icons.today),
+              buildCard(title: 'Weekly Earnings', value: 'Rs. ${weeklyEarning.toStringAsFixed(2)}', icon: Icons.calendar_view_week),
+              buildCard(title: 'Monthly Earnings', value: 'Rs. ${monthlyEarning.toStringAsFixed(2)}', icon: Icons.calendar_month),
             ],
           ),
         ),
