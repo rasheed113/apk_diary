@@ -11,6 +11,7 @@ import 'work_page.dart';
 import 'theme_manager.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
+import 'i18n/app_strings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +20,7 @@ Future<void> main() async {
     databaseFactory = databaseFactoryFfi;
   }
   final savedTheme = await DatabaseHelper.instance.getTheme();
-  AppThemeController.currentTheme.value = AppTheme.values.firstWhere(
-    (e) => e.name == savedTheme,
-    orElse: () => AppTheme.classicLight,
-  );
+  AppThemeController.currentTheme.value = AppTheme.values.firstWhere((e) => e.name == savedTheme, orElse: () => AppTheme.classicLight);
   runApp(const MyApp());
 }
 
@@ -37,7 +35,7 @@ class _MyAppState extends State<MyApp> {
     valueListenable: AppThemeController.currentTheme,
     builder: (context, theme, child) => MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'WorkEarn',
+      title: AppStrings.appName,
       theme: ThemeManager.getTheme(theme),
       home: const SplashScreen(),
     ),
@@ -62,19 +60,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
     _controller.forward();
     Timer(const Duration(milliseconds: 2300), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomePage()),
-        );
-      }
+      if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
     });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  @override void dispose() { _controller.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -82,46 +72,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [s.surface, s.primary.withValues(alpha: .12)],
-          ),
-        ),
-        child: Center(
-          child: FadeTransition(
-            opacity: _fade,
-            child: ScaleTransition(
-              scale: _scale,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/branding/workearn_logo.png', width: 170, height: 170, fit: BoxFit.contain),
-                  const SizedBox(height: 22),
-                  Text(
-                    'WORK EARN',
-                    style: TextStyle(
-                      color: s.primary,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.2,
-                      shadows: [
-                        Shadow(color: s.primary.withValues(alpha: .28), blurRadius: 5, offset: const Offset(1, 2)),
-                        const Shadow(color: Colors.white70, blurRadius: 2, offset: Offset(-1, -1)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text('by ERGS Dynamics Technology Foundation', textAlign: TextAlign.center, style: TextStyle(color: s.onSurface, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .65)),
-                  const SizedBox(height: 3),
-                  Text('(Founder Rasheed Afridi)', style: TextStyle(color: s.onSurface.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: .35)),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.surface, s.primary.withValues(alpha: .12)])),
+        child: Center(child: FadeTransition(opacity: _fade, child: ScaleTransition(scale: _scale, child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Image.asset('assets/branding/workearn_logo.png', width: 170, height: 170, fit: BoxFit.contain),
+          const SizedBox(height: 22),
+          Text(AppStrings.workEarn, style: TextStyle(color: s.primary, fontSize: 25, fontWeight: FontWeight.w900, letterSpacing: 2.2, shadows: [Shadow(color: s.primary.withValues(alpha: .28), blurRadius: 5, offset: const Offset(1, 2)), const Shadow(color: Colors.white70, blurRadius: 2, offset: Offset(-1, -1))])),
+          const SizedBox(height: 10),
+          Text(AppStrings.foundation, textAlign: TextAlign.center, style: TextStyle(color: s.onSurface, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .65)),
+          const SizedBox(height: 3),
+          Text(AppStrings.founder, style: TextStyle(color: s.onSurface.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: .35)),
+        ]))))),
     );
   }
 }
@@ -134,7 +94,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   final List<Widget> pages = const [DashboardPage(), WorkPage(), HistoryPage(), FinancePage(), SettingsPage()];
-
   Widget nav3D(IconData icon) => Icon(icon, size: 20);
 
   @override
@@ -144,31 +103,18 @@ class _HomePageState extends State<HomePage> {
       body: pages[selectedIndex],
       bottomNavigationBar: Container(
         margin: const EdgeInsets.only(left: 10, right: 10, bottom: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          color: t.cardColor,
-          border: Border.all(color: t.colorScheme.primary.withValues(alpha: .20)),
-          boxShadow: [BoxShadow(color: t.colorScheme.primary.withValues(alpha: .10), blurRadius: 9, offset: const Offset(0, 3))],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: NavigationBar(
-            height: 64,
-            elevation: 0,
-            backgroundColor: t.cardColor,
-            indicatorColor: t.colorScheme.primary.withValues(alpha: .12),
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            selectedIndex: selectedIndex,
-            destinations: [
-              NavigationDestination(icon: nav3D(Icons.dashboard), label: 'Dashboard'),
-              NavigationDestination(icon: nav3D(Icons.work), label: 'Work'),
-              NavigationDestination(icon: nav3D(Icons.history), label: 'History'),
-              NavigationDestination(icon: nav3D(Icons.account_balance_wallet), label: 'Finance'),
-              NavigationDestination(icon: nav3D(Icons.settings), label: 'Settings'),
-            ],
-            onDestinationSelected: (index) => setState(() => selectedIndex = index),
-          ),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: t.cardColor, border: Border.all(color: t.colorScheme.primary.withValues(alpha: .20)), boxShadow: [BoxShadow(color: t.colorScheme.primary.withValues(alpha: .10), blurRadius: 9, offset: const Offset(0, 3))]),
+        child: ClipRRect(borderRadius: BorderRadius.circular(24), child: NavigationBar(
+          height: 64, elevation: 0, backgroundColor: t.cardColor, indicatorColor: t.colorScheme.primary.withValues(alpha: .12), labelBehavior: NavigationDestinationLabelBehavior.alwaysShow, selectedIndex: selectedIndex,
+          destinations: [
+            NavigationDestination(icon: nav3D(Icons.dashboard), label: AppStrings.dashboard),
+            NavigationDestination(icon: nav3D(Icons.work), label: AppStrings.work),
+            NavigationDestination(icon: nav3D(Icons.history), label: AppStrings.history),
+            NavigationDestination(icon: nav3D(Icons.account_balance_wallet), label: AppStrings.finance),
+            NavigationDestination(icon: nav3D(Icons.settings), label: AppStrings.settings),
+          ],
+          onDestinationSelected: (index) => setState(() => selectedIndex = index),
+        )),
       ),
     );
   }
