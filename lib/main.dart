@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Icon;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'modern_icons.dart';
 import 'dashboard_page.dart';
 import 'finance_page.dart';
 import 'history_page.dart';
@@ -134,44 +135,7 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   final List<Widget> pages = const [DashboardPage(), WorkPage(), HistoryPage(), FinancePage(), SettingsPage()];
 
-  Widget nav3D(IconData icon) {
-    final iconLight = switch (icon) {
-      Icons.dashboard => const Color(0xFF7C4DFF),
-      Icons.work => const Color(0xFF26A69A),
-      Icons.history => const Color(0xFF42A5F5),
-      Icons.account_balance_wallet => const Color(0xFFFFA726),
-      Icons.settings => const Color(0xFFAB47BC),
-      _ => Theme.of(context).colorScheme.primary,
-    };
-    final iconDeep = Color.alphaBlend(Colors.black.withValues(alpha: .18), iconLight);
-
-    return SizedBox(
-      width: 26,
-      height: 26,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.translate(
-            offset: const Offset(1.2, 1.5),
-            child: Icon(icon, size: 18, color: Colors.black.withValues(alpha: .22)),
-          ),
-          ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) => LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.white, iconLight, iconDeep],
-            ).createShader(bounds),
-            child: Icon(icon, size: 18),
-          ),
-          Transform.translate(
-            offset: const Offset(-.8, -.8),
-            child: Icon(icon, size: 13, color: Colors.white.withValues(alpha: .28)),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget nav3D(IconData icon) => Icon(icon, size: 20);
 
   @override
   Widget build(BuildContext context) {
