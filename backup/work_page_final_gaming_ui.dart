@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import 'dart:ui';
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -286,79 +283,6 @@ class _WorkPageState extends State<WorkPage> {
     super.dispose();
   }
 
-<<<<<<< HEAD
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Work Entry')),
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-
-        child: Column(
-          children: [
-            const Card(
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(Icons.work),
-                    SizedBox(width: 8),
-                    Text(
-                      'Work Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              initialValue: selectedItem,
-
-              decoration: const InputDecoration(
-                labelText: 'Item Name',
-                border: OutlineInputBorder(),
-              ),
-
-              items: itemList.map((e) {
-                return DropdownMenuItem(value: e, child: Text(e));
-              }).toList(),
-
-              onChanged: (v) {
-                setState(() {
-                  selectedItem = v!;
-                });
-              },
-            ),
-
-            const SizedBox(height: 12),
-
-            if (selectedItem == 'Other')
-              TextField(
-                controller: customItemController,
-                decoration: const InputDecoration(
-                  labelText: 'Custom Item',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-            const SizedBox(height: 12),
-
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: selectSizes,
-                icon: const Icon(Icons.grid_view),
-                label: Text(
-                  selectedSizes.isEmpty
-                      ? 'Select Sizes'
-                      : selectedSizes.join(', '),
-=======
 
   @override
   Widget build(BuildContext context) {
@@ -430,162 +354,10 @@ class _WorkPageState extends State<WorkPage> {
                   selectedSizes.isEmpty
                   ? "Select Sizes"
                   : selectedSizes.join(", "),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
                 ),
               ),
             ),
 
-<<<<<<< HEAD
-            if (selectedSizes.contains('Other'))
-              TextField(
-                controller: customSizeController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Custom Size',
-                  hintText: '14, 16, 18...',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-            const SizedBox(height: 12),
-
-            TextField(
-              controller: piecesController,
-
-              keyboardType: TextInputType.number,
-
-              decoration: const InputDecoration(
-                labelText: 'Pieces',
-
-                border: OutlineInputBorder(),
-              ),
-
-              onChanged: (_) => calculateTotal(),
-            ),
-
-            const SizedBox(height: 12),
-
-            TextField(
-              controller: rateController,
-
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-
-              decoration: const InputDecoration(
-                labelText: 'Rate',
-
-                border: OutlineInputBorder(),
-              ),
-
-              onChanged: (_) => calculateTotal(),
-            ),
-
-            const SizedBox(height: 12),
-
-            DropdownButtonFormField<String>(
-              initialValue: selectedRateType,
-
-              decoration: const InputDecoration(
-                labelText: 'Rate Type',
-
-                border: OutlineInputBorder(),
-              ),
-
-              items: rateTypes.map((e) {
-                return DropdownMenuItem(value: e, child: Text(e));
-              }).toList(),
-
-              onChanged: (v) {
-                setState(() {
-                  selectedRateType = v!;
-                });
-
-                calculateTotal();
-              },
-            ),
-
-            const SizedBox(height: 12),
-
-            const SizedBox(height: 12),
-
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-
-                child: Text(
-                  'Total: Rs ${total.toStringAsFixed(2)}',
-
-                  style: const TextStyle(
-                    fontSize: 24,
-
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 15),
-            const Card(
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(Icons.note_alt),
-                    SizedBox(width: 8),
-                    Text(
-                      'Notes & Date',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            TextField(
-              controller: notesController,
-
-              maxLines: 3,
-
-              decoration: const InputDecoration(
-                labelText: 'Notes',
-
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 15),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.calendar_month),
-
-                title: const Text('Work Date'),
-
-                subtitle: Text(DateFormat('dd MMM yyyy').format(selectedDate)),
-
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-
-                onTap: pickDate,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-
-              height: 55,
-
-              child: ElevatedButton(
-                onPressed: saveOrUpdateEntry,
-
-                child: Text(isEditMode ? '✏️ Update Entry' : '💾 Save Entry'),
-=======
             _fieldCard(
               TextField(
                 controller: piecesController,
@@ -754,7 +526,6 @@ class _WorkPageState extends State<WorkPage> {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
               ),
             ),
           ],
@@ -762,9 +533,6 @@ class _WorkPageState extends State<WorkPage> {
       ),
     );
   }
-<<<<<<< HEAD
-}
-=======
 
   InputDecoration _input(String text, IconData icon){
     return InputDecoration(
@@ -847,4 +615,3 @@ class _WorkPageState extends State<WorkPage> {
   }
 
 }
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f

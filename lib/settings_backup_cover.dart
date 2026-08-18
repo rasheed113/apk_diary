@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-<<<<<<< HEAD
-=======
 import 'theme_manager.dart';
 import 'app_theme_controller.dart';
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -17,10 +14,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   File? profileImage;
-<<<<<<< HEAD
-=======
-  File? coverImage;
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
   final ImagePicker picker = ImagePicker();
   final nameController = TextEditingController();
   final mobileController = TextEditingController();
@@ -29,10 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String machineType = 'Single Needle';
   String jobType = 'Full Piece';
   String currency = 'PKR';
-<<<<<<< HEAD
-=======
   String selectedTheme = 'classicLight';
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 
   @override
   void initState() {
@@ -55,19 +45,10 @@ class _SettingsPageState extends State<SettingsPage> {
       jobType = profile['default_job_type'] ?? 'Full Piece';
 
       currency = profile['currency'] ?? 'PKR';
-<<<<<<< HEAD
-      if ((profile['profile_image'] ?? '').toString().isNotEmpty) {
-        profileImage = File(profile['profile_image']);
-      }
-=======
       selectedTheme = profile['selected_theme'] ?? 'classicLight';
       if ((profile['profile_image'] ?? '').toString().isNotEmpty) {
         profileImage = File(profile['profile_image']);
       }
-      if ((profile['cover_image'] ?? '').toString().isNotEmpty) {
-        coverImage = File(profile['cover_image']);
-      }
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
     });
   }
 
@@ -80,25 +61,9 @@ class _SettingsPageState extends State<SettingsPage> {
       });
     }
   }
-<<<<<<< HEAD
 
-  Future<void> saveProfile() async {
-    // TODO: Add proper logging instead of print statements
-=======
-    Future<void> pickCoverImage() async {
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (picked != null) {
-      setState(() {
-        coverImage = File(picked.path);
-      });
-    }
-  }
   Future<void> saveProfile() async {
     print('SAVE BUTTON PRESSED');
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
     await DatabaseHelper.instance.saveProfile({
       'operator_name': nameController.text.trim(),
       'mobile_number': mobileController.text.trim(),
@@ -107,10 +72,6 @@ class _SettingsPageState extends State<SettingsPage> {
       'default_job_type': jobType,
       'currency': currency,
       'profile_image': profileImage?.path ?? '',
-<<<<<<< HEAD
-    });
-=======
-      'cover_image': coverImage?.path ?? '',
       'selected_theme': selectedTheme,
     });
     switch (selectedTheme) {
@@ -145,7 +106,6 @@ class _SettingsPageState extends State<SettingsPage> {
     print('PROFILE SAVED');
     final check = await DatabaseHelper.instance.getProfile();
     print(check);
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 
     if (!mounted) return;
 
@@ -162,48 +122,6 @@ class _SettingsPageState extends State<SettingsPage> {
     super.dispose();
   }
 
-<<<<<<< HEAD
-=======
-  Widget _glassCard({required Widget child}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: Colors.white.withValues(alpha: 0.06),
-        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.4)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.cyanAccent.withValues(alpha: 0.15),
-            blurRadius: 18,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-
-  Widget _sectionTitle(String text, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.amberAccent),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -225,53 +143,6 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
 
-<<<<<<< HEAD
-=======
-              const SizedBox(height: 12),
-
-              GestureDetector(
-                onTap: pickCoverImage,
-                child: Container(
-                  height: 90,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: coverImage != null
-                        ? DecorationImage(
-                            image: FileImage(coverImage!),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withValues(alpha: 0.5),
-                        blurRadius: 15,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: coverImage == null
-                      ? const Center(
-                          child: Text(
-                            "Add Cover Image 🚀",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        )
-                      : null,
-                ),
-              ),
-
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
             const SizedBox(height: 15),
             TextField(
               controller: nameController,
@@ -312,13 +183,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               items: const [
                 DropdownMenuItem(
-<<<<<<< HEAD
-=======
                   value: 'classicLight',
                   child: Text('Classic Light'),
                 ),
                 DropdownMenuItem(
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
                   value: 'Single Needle',
                   child: Text('Single Needle'),
                 ),
@@ -343,13 +211,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               items: const [
                 DropdownMenuItem(
-<<<<<<< HEAD
-=======
                   value: 'classicLight',
                   child: Text('Classic Light'),
                 ),
                 DropdownMenuItem(
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
                   value: 'Full Piece',
                   child: Text('Full Piece'),
                 ),
@@ -381,9 +246,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 });
               },
             ),
-<<<<<<< HEAD
-
-=======
             const SizedBox(height: 12),
 
             DropdownButtonFormField<String>(
@@ -429,7 +291,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 await DatabaseHelper.instance.saveTheme(value);
               },
             ),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
             const SizedBox(height: 20),
 
             SizedBox(

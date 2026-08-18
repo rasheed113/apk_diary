@@ -21,64 +21,10 @@ class DatabaseHelper {
   Future<Database> _initDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
-<<<<<<< HEAD
-
-    return await openDatabase(path, version: 1, onCreate: _createDB);
-  }
-
-  Future<void> _createDB(Database db, int version) async {
-    // WORK ENTRIES
-    await db.execute('''
-    CREATE TABLE diary_entries (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      item_name TEXT NOT NULL,
-      sizes TEXT,
-      pieces INTEGER NOT NULL,
-      rate REAL NOT NULL,
-      rate_type TEXT,
-      total REAL NOT NULL,
-      machine_type TEXT,
-      job_type TEXT,
-      notes TEXT,
-      work_date TEXT,
-      created_time TEXT
-    )
-    ''');
-
-    // FINANCE
-    await db.execute('''
-    CREATE TABLE finance_records (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      type TEXT NOT NULL,
-      amount REAL NOT NULL,
-      reason TEXT,
-      record_date TEXT,
-      created_time TEXT
-    )
-    ''');
-
-    // PROFILE / SETTINGS
-    await db.execute('''
-    CREATE TABLE profile (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      operator_name TEXT,
-      mobile_number TEXT,
-      company_name TEXT,
-      default_machine_type TEXT,
-      default_job_type TEXT,
-      currency TEXT,
-      profile_image TEXT
-    )
-    ''');
-  }
-
-  // ================= WORK =================
-=======
-    print("DB PATH: $path");
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 2,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -95,13 +41,6 @@ class DatabaseHelper {
         ALTER TABLE profile
         ADD COLUMN selected_theme TEXT DEFAULT 'shadowDark'
         ''');
-    }
-
-    if (oldVersion < 3) {
-      await db.execute('''
-        ALTER TABLE profile
-        ADD COLUMN cover_image TEXT
-      ''');
     }
   }
 
@@ -144,13 +83,11 @@ class DatabaseHelper {
         default_job_type TEXT,
         currency TEXT,
         profile_image TEXT,
-        cover_image TEXT,
         dark_mode INTEGER DEFAULT 0,
         selected_theme TEXT DEFAULT 'shadowDark'
       )
     ''');
   } // ================= WORK =================
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 
   Future<int> insertEntry(DiaryEntry entry) async {
     final db = await database;
@@ -199,8 +136,6 @@ class DatabaseHelper {
     return result.map((e) => FinanceRecord.fromMap(e)).toList();
   }
 
-<<<<<<< HEAD
-=======
   Future<int> updateFinanceRecord(FinanceRecord record) async {
     final db = await database;
 
@@ -212,7 +147,6 @@ class DatabaseHelper {
     );
   }
 
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
   Future<int> deleteFinanceRecord(int id) async {
     final db = await database;
 
@@ -239,13 +173,7 @@ class DatabaseHelper {
     }
 
     return result.first;
-<<<<<<< HEAD
-  }
-
-  // ================= DASHBOARD =================
-=======
   } // ================= DASHBOARD =================
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 
   Future<double> getTotalEarning() async {
     final db = await database;
@@ -278,67 +206,6 @@ class DatabaseHelper {
   }
 
   Future<double> getTodayEarning() async {
-<<<<<<< HEAD
-    final db = await database;
-
-    // Get today's date in dd-MM-yyyy format
-    final today = _formatDateForQuery(DateTime.now());
-
-    final result = await db.rawQuery(
-      'SELECT SUM(total) as total FROM diary_entries WHERE work_date = ?',
-      [today],
-    );
-
-    return ((result.first['total'] ?? 0) as num).toDouble();
-  }
-
-  Future<double> getWeeklyEarning() async {
-    final db = await database;
-
-    // Get the current week's start (Monday) and end (Sunday)
-    final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6));
-
-    final startDate = _formatDateForQuery(startOfWeek);
-    final endDate = _formatDateForQuery(endOfWeek);
-
-    final result = await db.rawQuery(
-      '''SELECT SUM(total) as total FROM diary_entries
-         WHERE work_date >= ? AND work_date <= ?''',
-      [startDate, endDate],
-    );
-
-    return ((result.first['total'] ?? 0) as num).toDouble();
-  }
-
-  Future<double> getMonthlyEarning() async {
-    final db = await database;
-
-    // Get the current month's first and last day
-    final now = DateTime.now();
-    final firstDay = DateTime(now.year, now.month, 1);
-    final lastDay = DateTime(now.year, now.month + 1, 0);
-
-    final startDate = _formatDateForQuery(firstDay);
-    final endDate = _formatDateForQuery(lastDay);
-
-    final result = await db.rawQuery(
-      '''SELECT SUM(total) as total FROM diary_entries
-         WHERE work_date >= ? AND work_date <= ?''',
-      [startDate, endDate],
-    );
-
-    return ((result.first['total'] ?? 0) as num).toDouble();
-  }
-
-  // Helper method to format date for database queries (dd-MM-yyyy)
-  String _formatDateForQuery(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final year = date.year;
-    return '$day-$month-$year';
-=======
     return await getTotalEarning();
   }
 
@@ -348,7 +215,6 @@ class DatabaseHelper {
 
   Future<double> getMonthlyEarning() async {
     return await getTotalEarning();
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
   }
 
   Future<double> getSalaryReceived() async {
@@ -387,27 +253,12 @@ class DatabaseHelper {
 
   Future<double> getBalance() async {
     final earning = await getTotalEarning();
-<<<<<<< HEAD
-=======
 
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
     final received = await getTotalFinanceReceived();
 
     return earning - received;
   }
 
-<<<<<<< HEAD
-  Future<int> updateFinanceRecord(FinanceRecord record) async {
-    final db = await database;
-
-    return await db.update(
-      'finance_records',
-      record.toMap(),
-      where: 'id = ?',
-      whereArgs: [record.id],
-    );
-  }
-=======
   Future<void> saveTheme(String theme) async {
     final db = await database;
 
@@ -435,5 +286,4 @@ class DatabaseHelper {
 
     return 'shadowDark';
   }
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 }

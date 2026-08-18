@@ -309,16 +309,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                     }
                                   },
                                 ),
-<<<<<<< HEAD
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    confirmDelete(entry);
-                                  },
-=======
                                 SizedBox(
                                   width: 50,
                                   height: 50,
@@ -334,7 +324,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                       confirmDelete(entry);
                                     },
                                   ),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
                                 ),
                               ],
                             ),

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import 'dart:ui';
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -286,7 +282,6 @@ class _WorkPageState extends State<WorkPage> {
     super.dispose();
   }
 
-<<<<<<< HEAD
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -297,11 +292,11 @@ class _WorkPageState extends State<WorkPage> {
 
         child: Column(
           children: [
-            const Card(
+            Card(
               child: Padding(
                 padding: EdgeInsets.all(12),
                 child: Row(
-                  children: [
+                  children: const [
                     Icon(Icons.work),
                     SizedBox(width: 8),
                     Text(
@@ -358,84 +353,10 @@ class _WorkPageState extends State<WorkPage> {
                   selectedSizes.isEmpty
                       ? 'Select Sizes'
                       : selectedSizes.join(', '),
-=======
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xff080812),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          isEditMode ? "✏️ Edit Work" : "🎮 New Work Entry",
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-
-            _glowCard(
-              child: Row(
-                children: const [
-                  Icon(Icons.work, size: 35),
-                  SizedBox(width: 12),
-                  Text(
-                    "Work Details",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            _fieldCard(
-              DropdownButtonFormField<String>(
-                initialValue: selectedItem,
-                decoration: _input("Item Name", Icons.checkroom),
-                items: itemList.map(
-                  (e)=>DropdownMenuItem(
-                    value:e,
-                    child:Text(e),
-                  ),
-                ).toList(),
-                onChanged:(v){
-                  setState(()=>selectedItem=v!);
-                },
-              ),
-            ),
-
-            if(selectedItem=="Other")
-              _fieldCard(
-                TextField(
-                  controller: customItemController,
-                  decoration:_input("Custom Item", Icons.inventory),
-                ),
-              ),
-
-            _fieldCard(
-              TextButton.icon(
-                onPressed:selectSizes,
-                icon:const Icon(Icons.grid_view),
-                label:Text(
-                  selectedSizes.isEmpty
-                  ? "Select Sizes"
-                  : selectedSizes.join(", "),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
                 ),
               ),
             ),
 
-<<<<<<< HEAD
             if (selectedSizes.contains('Other'))
               TextField(
                 controller: customSizeController,
@@ -526,11 +447,11 @@ class _WorkPageState extends State<WorkPage> {
             ),
 
             const SizedBox(height: 15),
-            const Card(
+            Card(
               child: Padding(
                 padding: EdgeInsets.all(12),
                 child: Row(
-                  children: [
+                  children: const [
                     Icon(Icons.note_alt),
                     SizedBox(width: 8),
                     Text(
@@ -585,176 +506,6 @@ class _WorkPageState extends State<WorkPage> {
                 onPressed: saveOrUpdateEntry,
 
                 child: Text(isEditMode ? '✏️ Update Entry' : '💾 Save Entry'),
-=======
-            _fieldCard(
-              TextField(
-                controller: piecesController,
-                keyboardType:TextInputType.number,
-                decoration:_input("Pieces", Icons.numbers),
-                onChanged:(_)=>calculateTotal(),
-              ),
-            ),
-
-            _fieldCard(
-              TextField(
-                controller:rateController,
-                keyboardType:const TextInputType.numberWithOptions(decimal:true),
-                decoration:_input("Rate", Icons.payments),
-                onChanged:(_)=>calculateTotal(),
-              ),
-            ),
-
-            _fieldCard(
-              DropdownButtonFormField<String>(
-                initialValue:selectedRateType,
-                decoration:_input("Rate Type", Icons.category),
-                items:rateTypes.map(
-                  (e)=>DropdownMenuItem(
-                    value:e,
-                    child:Text(e),
-                  ),
-                ).toList(),
-                onChanged:(v){
-                  setState(()=>selectedRateType=v!);
-                  calculateTotal();
-                },
-              ),
-            ),
-
-            _glowCard(
-              child:Column(
-                children:[
-                  const Icon(
-                    Icons.workspace_premium,
-                    size:42,
-                  ),
-                  const SizedBox(height:8),
-                  const Text(
-                    "🏆 TOTAL REWARD",
-                    style:TextStyle(
-                      fontSize:18,
-                      fontWeight:FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height:10),
-                  Text(
-                    "Rs ${total.toStringAsFixed(2)}",
-                    style:const TextStyle(
-                      fontSize:36,
-                      fontWeight:FontWeight.w900,
-                      shadows:[
-                        Shadow(
-                          blurRadius:15,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height:6),
-                  const Text(
-                    "Your work earning preview",
-                    style:TextStyle(
-                      fontSize:14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            _fieldCard(
-              TextField(
-                controller:notesController,
-                maxLines:3,
-                decoration:_input("Notes", Icons.note_alt),
-              ),
-            ),
-
-            _glowCard(
-              child:ListTile(
-                contentPadding: const EdgeInsets.all(8),
-                leading: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors:[
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.secondary,
-                      ],
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.calendar_month,
-                    color: Colors.black,
-                  ),
-                ),
-                title: const Text(
-                  "WORK DATE",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                subtitle: Text(
-                  DateFormat('dd MMM yyyy').format(selectedDate),
-                  style: const TextStyle(
-                    fontSize:16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                trailing: const Icon(
-                  Icons.arrow_forward_ios,
-                  size:18,
-                ),
-                onTap:pickDate,
-              ),
-            ),
-
-            const SizedBox(height:20),
-
-            Container(
-              width: double.infinity,
-              height: 65,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary,
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.6),
-                    blurRadius: 25,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.save,
-                  size: 30,
-                ),
-                onPressed: saveOrUpdateEntry,
-                label: Text(
-                  isEditMode
-                      ? "UPDATE ENTRY"
-                      : "SAVE ENTRY",
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
               ),
             ),
           ],
@@ -762,89 +513,4 @@ class _WorkPageState extends State<WorkPage> {
       ),
     );
   }
-<<<<<<< HEAD
 }
-=======
-
-  InputDecoration _input(String text, IconData icon){
-    return InputDecoration(
-      labelText:text,
-      prefixIcon: Icon(icon),
-      border:const OutlineInputBorder(),
-    );
-  }
-
-
-  Widget _fieldCard(Widget child){
-    final primary = Theme.of(context).colorScheme.primary;
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        boxShadow: [
-          BoxShadow(
-            color: primary.withValues(alpha:0.35),
-            blurRadius: 25,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(26),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 12,
-            sigmaY: 12,
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context)
-                  .cardColor
-                  .withValues(alpha:0.75),
-              borderRadius: BorderRadius.circular(26),
-              border: Border.all(
-                color: primary.withValues(alpha:0.8),
-                width: 2,
-              ),
-            ),
-            child: child,
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  Widget _glowCard({required Widget child}){
-    final primary = Theme.of(context).colorScheme.primary;
-    final secondary = Theme.of(context).colorScheme.secondary;
-
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds:500),
-      tween: Tween(begin:0.85,end:1),
-      curve: Curves.easeOutBack,
-      builder:(context,scale,child){
-        return Transform.scale(
-          scale:scale,
-          child:child,
-        );
-      },
-      child: _fieldCard(
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors:[
-                primary.withValues(alpha:0.15),
-                secondary.withValues(alpha:0.15),
-              ],
-            ),
-          ),
-          child: child,
-        ),
-      ),
-    );
-  }
-
-}
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f

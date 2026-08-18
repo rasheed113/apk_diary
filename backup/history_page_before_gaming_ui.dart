@@ -280,15 +280,15 @@ class _HistoryPageState extends State<HistoryPage> {
                             },
                           ),
                           trailing: SizedBox(
-                            width: 150,
+                            width: 180,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
                                   'Rs ${entry.total.toStringAsFixed(0)}',
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
                                     fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                     color: Colors.green,
                                   ),
                                 ),
@@ -298,43 +298,24 @@ class _HistoryPageState extends State<HistoryPage> {
                                     color: Colors.blue,
                                   ),
                                   onPressed: () async {
-                                    final result = await Navigator.push(
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => WorkPage(entry: entry),
                                       ),
                                     );
-                                    if (result == true) {
-                                      refreshEntries();
-                                    }
+                                    setState(() {
+                                      entriesFuture = DatabaseHelper.instance
+                                          .getAllEntries();
+                                    });
                                   },
                                 ),
-<<<<<<< HEAD
                                 IconButton(
                                   icon: const Icon(
                                     Icons.delete,
                                     color: Colors.red,
                                   ),
-                                  onPressed: () {
-                                    confirmDelete(entry);
-                                  },
-=======
-                                SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: IconButton(
-                                    splashRadius: 26,
-                                    padding: EdgeInsets.zero,
-                                    icon: const Icon(
-                                      Icons.delete_forever,
-                                      color: Colors.red,
-                                      size: 28,
-                                    ),
-                                    onPressed: () {
-                                      confirmDelete(entry);
-                                    },
-                                  ),
->>>>>>> b33fc891b41294cee9c240ffee4426ebc16fdd0f
+                                  onPressed: () => confirmDelete(entry),
                                 ),
                               ],
                             ),
