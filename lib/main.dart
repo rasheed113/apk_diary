@@ -12,6 +12,7 @@ import 'theme_manager.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
 import 'i18n/app_strings.dart';
+import 'i18n/app_localization.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,13 +31,22 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // English remains the safe default until the language-selection UI is wired.
+  static const AppLanguage _language = AppLanguage.english;
+
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<AppTheme>(
     valueListenable: AppThemeController.currentTheme,
     builder: (context, theme, child) => MaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppStrings.appName,
+      locale: _language.locale,
+      supportedLocales: AppLanguage.values.map((language) => language.locale).toList(growable: false),
       theme: ThemeManager.getTheme(theme),
+      builder: (context, child) => Directionality(
+        textDirection: _language.textDirection,
+        child: child ?? const SizedBox.shrink(),
+      ),
       home: const SplashScreen(),
     ),
   );
