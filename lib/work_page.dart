@@ -112,6 +112,7 @@ class _WorkPageState extends State<WorkPage> {
   }
 
   Future<void> saveOrUpdateEntry() async {
+    if (!mounted) return;
     final l10n = AppLocalization(AppLanguageController.currentLanguage.value);
     final pieces = int.tryParse(piecesController.text);
     final rate = double.tryParse(rateController.text);
@@ -128,6 +129,7 @@ class _WorkPageState extends State<WorkPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterAnItem)));
       return;
     }
+
     final entry = DiaryEntry(
       id: widget.entry?.id,
       itemName: item,
@@ -142,13 +144,23 @@ class _WorkPageState extends State<WorkPage> {
       workDate: DateFormat('dd-MM-yyyy').format(selectedDate),
       createdTime: widget.entry?.createdTime ?? DateFormat('hh:mm a').format(DateTime.now()),
     );
-    if (isEditMode) {
-      await DatabaseHelper.instance.updateEntry(entry);
-    } else {
-      await DatabaseHelper.instance.insertEntry(entry);
+
+    try {
+      if (isEditMode) {
+        await DatabaseHelper.instance.updateEntry(entry);
+      } else {
+        await DatabaseHelper.instance.insertEntry(entry);
+      }
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.entrySaveFailed}: $error')));
+      return;
     }
+
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEditMode ? l10n.entryUpdatedSuccessfully : l10n.entrySavedSuccessfully)));
+    // Return only after the database operation has completed. The Dashboard owns
+    // its own refresh cycle; keeping the save route free of post-pop work avoids
+    // rendering a disposed WorkPage during the route transition.
     Navigator.pop(context, true);
   }
 
