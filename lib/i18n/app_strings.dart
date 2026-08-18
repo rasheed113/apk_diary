@@ -1,31 +1,17 @@
-/// WorkEarn localisation foundation.
-///
-/// English is the authoritative source language for all user-facing strings.
-/// UI pages should consume these getters instead of embedding user-facing text
-/// directly. Every user-facing key is mirrored by the Urdu translation layer.
 class AppStrings {
-  const AppStrings._();
-
-  // App / navigation
   static const appName = 'WorkEarn';
   static const dashboard = 'Dashboard';
   static const work = 'Work';
   static const history = 'History';
   static const finance = 'Finance';
   static const settings = 'Settings';
-
-  // Language
   static const language = 'Language';
   static const britishEnglish = 'British English';
   static const urduPakistan = 'Urdu (Pakistan)';
-  static const switchLanguage = 'Switch';
-
-  // Splash / branding
-  static const workEarn = 'WORK EARN';
-  static const foundation = 'by ERGS Dynamics Technology Foundation';
+  static const switchLanguage = 'Switch Language';
+  static const workEarn = 'WorkEarn';
+  static const foundation = 'ERGS Dynamics Technology Foundation';
   static const founder = '(Founder Rasheed Afridi)';
-
-  // Common actions
   static const save = 'Save';
   static const update = 'Update';
   static const delete = 'Delete';
@@ -34,7 +20,7 @@ class AppStrings {
   static const done = 'Done';
   static const edit = 'Edit';
 
-  // Work / new entry
+  // Work
   static const newEntry = 'New Entry';
   static const editEntry = 'Edit Entry';
   static const workDetails = 'Work Details';
@@ -54,7 +40,7 @@ class AppStrings {
   static const itemShirt = 'Shirt';
   static const itemPant = 'Pant';
   static const itemKameez = 'Kameez';
-  static const selectSizesPrompt = 'Select sizes';
+  static const selectSizesPrompt = 'Select Sizes';
 
   // Finance
   static const addFinanceRecord = 'Add Finance Record';
@@ -68,8 +54,8 @@ class AppStrings {
   static const amount = 'Amount';
   static const reason = 'Reason';
   static const currentBalance = 'Current Balance';
-  static const salary = 'SALARY';
-  static const advance = 'ADVANCE';
+  static const salary = 'Salary';
+  static const advance = 'Advance';
   static const noFinanceRecords = 'No Finance Records';
 
   // History
@@ -77,10 +63,10 @@ class AppStrings {
   static const monthlyHistory = 'Monthly History';
   static const thisWeek = 'This Week';
   static const thisMonth = 'This Month';
-  static const searchItemOrDate = 'Search Item or Date...';
+  static const searchItemOrDate = 'Search item or date...';
   static const selectedWeek = 'Selected Week';
   static const selectedMonth = 'Selected Month';
-  static const selectAnyDateInMonth = 'Select any date in the month';
+  static const selectAnyDateInMonth = 'Select any date in month';
   static const monthLabel = 'Month';
   static const item = 'Item';
   static const size = 'Size';
@@ -107,6 +93,7 @@ class AppStrings {
   static const totalEarnings = 'Total Earnings';
 
   // Settings
+  static const profilePicture = 'Profile Picture';
   static const profileAndCover = 'Profile & Cover';
   static const addCoverImage = 'Add Cover Image';
   static const operatorName = 'Operator Name';
