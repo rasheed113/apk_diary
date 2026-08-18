@@ -209,12 +209,68 @@ class _HistoryPageState extends State<HistoryPage> {
               const SizedBox(height: 8),
               themedCard(child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [Column(children: [icon3D(context, Icons.list_alt_rounded, size: 22), const SizedBox(height: 2), Text(l.entries, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(filtered.length.toString(), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))]), Column(children: [icon3D(context, Icons.numbers, size: 22), const SizedBox(height: 2), Text(l.pieces, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(totalPieces.toString(), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))]), Column(children: [icon3D(context, Icons.payments, size: 22), const SizedBox(height: 2), Text(l.earnings, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text('Rs ${totalEarnings.toStringAsFixed(0)}', style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))])])),
               const SizedBox(height: 8),
-              Expanded(child: filtered.isEmpty ? Center(child: Text(l.noEntriesYet, style: TextStyle(color: s.onSurfaceVariant))) : ListView.builder(itemCount: filtered.length, itemBuilder: (context, index) {
-                final entry = filtered[index];
-                final date = _parseDate(entry.workDate);
-                final dayName = date == null ? '' : DateFormat('EEEE').format(date);
-                return themedCard(margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), padding: const EdgeInsets.all(8), child: ListTile(contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), title: Text(entry.itemName, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurface)), subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('${l.item}: ${entry.itemName}', style: TextStyle(color: s.onSurfaceVariant)), if (entry.sizes.trim().isNotEmpty) Text('${l.size}: ${entry.sizes}', style: TextStyle(color: s.onSurfaceVariant)), Text('${l.pieces}: ${entry.pieces}', style: TextStyle(color: s.onSurfaceVariant)), Text('$dayName, ${entry.workDate}', style: TextStyle(color: s.onSurfaceVariant))]), trailing: SizedBox(width: 132, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [Flexible(child: Text('Rs ${entry.total.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: s.tertiary), overflow: TextOverflow.ellipsis)), const SizedBox(width: 2), IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: l.edit, icon: icon3D(context, Icons.edit, size: 22), onPressed: () async { final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => WorkPage(entry: entry))); if (r == true && mounted) setState(refreshEntries); }), IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: l.delete, icon: icon3D(context, Icons.delete_forever, size: 23), onPressed: () => confirmDelete(entry))])));
-              })),
+              Expanded(
+                child: filtered.isEmpty
+                    ? Center(child: Text(l.noEntriesYet, style: TextStyle(color: s.onSurfaceVariant)))
+                    : ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final entry = filtered[index];
+                          final date = _parseDate(entry.workDate);
+                          final dayName = date == null ? '' : DateFormat('EEEE').format(date);
+                          return themedCard(
+                            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            padding: const EdgeInsets.all(8),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              title: Text(entry.itemName, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurface)),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('${l.item}: ${entry.itemName}', style: TextStyle(color: s.onSurfaceVariant)),
+                                  if (entry.sizes.trim().isNotEmpty) Text('${l.size}: ${entry.sizes}', style: TextStyle(color: s.onSurfaceVariant)),
+                                  Text('${l.pieces}: ${entry.pieces}', style: TextStyle(color: s.onSurfaceVariant)),
+                                  Text('$dayName, ${entry.workDate}', style: TextStyle(color: s.onSurfaceVariant)),
+                                ],
+                              ),
+                              trailing: SizedBox(
+                                width: 132,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        'Rs ${entry.total.toStringAsFixed(0)}',
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: s.tertiary),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                      tooltip: l.edit,
+                                      icon: icon3D(context, Icons.edit, size: 22),
+                                      onPressed: () async {
+                                        final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => WorkPage(entry: entry)));
+                                        if (r == true && mounted) setState(refreshEntries);
+                                      },
+                                    ),
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                      tooltip: l.delete,
+                                      icon: icon3D(context, Icons.delete_forever, size: 23),
+                                      onPressed: () => confirmDelete(entry),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
             ],
           );
         },
