@@ -115,6 +115,7 @@ class AppStrings {
   static const entrySavedSuccessfully = 'Entry Saved Successfully';
   static const entryUpdatedSuccessfully = 'Entry Updated Successfully';
   static const entryDeletedSuccessfully = 'Entry Deleted Successfully';
+  static const entrySaveFailed = 'Entry Save Failed';
   static const financeRecordSaved = 'Finance Record Saved';
   static const financeRecordUpdated = 'Finance Record Updated';
   static const financeRecordDeletedSuccessfully = 'Finance Record Deleted Successfully';
