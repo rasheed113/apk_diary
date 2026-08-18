@@ -38,7 +38,7 @@ class AppLocalization {
   String get finance => _value('finance', AppStrings.finance);
   String get settings => _value('settings', AppStrings.settings);
 
-  String get language => _value('language', AppStrings.language);
+  String get languageLabel => _value('language', AppStrings.language);
   String get britishEnglish => _value('britishEnglish', AppStrings.britishEnglish);
   String get urduPakistan => _value('urduPakistan', AppStrings.urduPakistan);
   String get switchLanguage => _value('switchLanguage', AppStrings.switchLanguage);
