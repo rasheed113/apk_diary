@@ -4,17 +4,47 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or commit to build'
+        required: true
+        default: 'main'
+        type: string
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact requested ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || 'main' }}
+          fetch-depth: 0
+          clean: true
+
+      - name: Verify checkout provenance and reject conflict markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Workflow SHA: $GITHUB_SHA"
+          echo "Checked-out SHA: $(git rev-parse HEAD)"
+          echo "Origin main SHA: $(git rev-parse origin/main)"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+
+          echo "Scanning tracked source for unresolved merge markers..."
+          if git grep -n -E '^(<<<<<<<|=======|>>>>>>>)' -- '*.dart' '*.gradle' '*.gradle.kts' '*.xml' '*.yaml' '*.yml' '*.properties'; then
+            echo "ERROR: unresolved merge-conflict markers found in tracked source."
+            exit 1
+          fi
+          echo "No unresolved merge-conflict markers found."
 
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+
+      - run: flutter clean
 
       - run: flutter pub get
 
