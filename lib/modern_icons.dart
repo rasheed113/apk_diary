@@ -16,7 +16,7 @@ class Icon extends StatelessWidget {
     this.size,
     this.color,
     this.shadows,
-    semanticLabel,
+    this.semanticLabel,
     double? fill,
     double? weight,
     double? grade,
