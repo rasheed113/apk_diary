@@ -101,150 +101,198 @@ class _SettingsPageState extends State<SettingsPage> {
     super.dispose();
   }
 
+  Widget sectionCard(BuildContext context, {required Widget child}) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
+      color: colors.surfaceContainerHighest,
+      shadowColor: colors.primary.withValues(alpha: 0.12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: colors.primary.withValues(alpha: 0.12)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: child,
+      ),
+    );
+  }
+
+  InputDecoration themedInput(BuildContext context, String label) {
+    final colors = Theme.of(context).colorScheme;
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: colors.onSurfaceVariant),
+      filled: true,
+      fillColor: colors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: colors.primary.withValues(alpha: 0.14)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: colors.primary.withValues(alpha: 0.14)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: colors.primary, width: 1.5),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      backgroundColor: colors.surface,
+      appBar: AppBar(
+        title: const Text('Settings'),
+        backgroundColor: colors.surface,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: pickImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: profileImage != null ? FileImage(profileImage!) : null,
-                child: profileImage == null ? const Icon(Icons.person, size: 50) : null,
-              ),
-            ),
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: pickCoverImage,
-              child: Container(
-                height: 90,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: theme.colorScheme.primary.withValues(alpha: 0.06),
-                  image: coverImage != null
-                      ? DecorationImage(image: FileImage(coverImage!), fit: BoxFit.cover)
-                      : null,
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.25),
+            sectionCard(
+              context,
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: pickImage,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: colors.primary.withValues(alpha: 0.10),
+                      backgroundImage: profileImage != null ? FileImage(profileImage!) : null,
+                      child: profileImage == null
+                          ? Icon(Icons.person, size: 50, color: colors.primary)
+                          : null,
+                    ),
                   ),
-                ),
-                child: coverImage == null
-                    ? Center(
-                        child: Text(
-                          'Add Cover Image',
-                          style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      )
-                    : null,
+                  const SizedBox(height: 12),
+                  Text(
+                    'Profile & Cover',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: pickCoverImage,
+                    child: Container(
+                      height: 90,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        color: colors.primary.withValues(alpha: 0.06),
+                        image: coverImage != null
+                            ? DecorationImage(image: FileImage(coverImage!), fit: BoxFit.cover)
+                            : null,
+                        border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
+                      ),
+                      child: coverImage == null
+                          ? Center(
+                              child: Text(
+                                'Add Cover Image',
+                                style: TextStyle(
+                                  color: colors.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Operator Name',
-                border: OutlineInputBorder(),
+            sectionCard(
+              context,
+              child: Column(
+                children: [
+                  TextField(controller: nameController, decoration: themedInput(context, 'Operator Name')),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: mobileController,
+                    keyboardType: TextInputType.phone,
+                    decoration: themedInput(context, 'Mobile Number (Optional)'),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(controller: companyController, decoration: themedInput(context, 'Company Name (Optional)')),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: mobileController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Mobile Number (Optional)',
-                border: OutlineInputBorder(),
+            sectionCard(
+              context,
+              child: Column(
+                children: [
+                  DropdownButtonFormField<String>(
+                    initialValue: machineType,
+                    decoration: themedInput(context, 'Default Machine Type'),
+                    items: const [
+                      DropdownMenuItem(value: 'Single Needle', child: Text('Single Needle')),
+                      DropdownMenuItem(value: 'Over Lock', child: Text('Over Lock')),
+                      DropdownMenuItem(value: 'Flat Lock', child: Text('Flat Lock')),
+                      DropdownMenuItem(value: 'Other', child: Text('Other')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setState(() => machineType = value);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: jobType,
+                    decoration: themedInput(context, 'Default Job Type'),
+                    items: const [
+                      DropdownMenuItem(value: 'Full Piece', child: Text('Full Piece')),
+                      DropdownMenuItem(value: 'Half Piece', child: Text('Half Piece')),
+                      DropdownMenuItem(value: 'Contract', child: Text('Contract')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setState(() => jobType = value);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: currency,
+                    decoration: themedInput(context, 'Currency'),
+                    items: const [DropdownMenuItem(value: 'PKR', child: Text('PKR'))],
+                    onChanged: (value) {
+                      if (value != null) setState(() => currency = value);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedTheme,
+                    decoration: themedInput(context, 'Theme'),
+                    items: const [
+                      DropdownMenuItem(value: 'classicLight', child: Text('Classic Light')),
+                      DropdownMenuItem(value: 'shadowDark', child: Text('Shadow Dark')),
+                      DropdownMenuItem(value: 'goldLegend', child: Text('Gold Legend')),
+                      DropdownMenuItem(value: 'platinumPro', child: Text('Platinum Pro')),
+                      DropdownMenuItem(value: 'cyberBlue', child: Text('Cyber Blue')),
+                      DropdownMenuItem(value: 'neonGreen', child: Text('Neon Green')),
+                      DropdownMenuItem(value: 'rubyRed', child: Text('Ruby Red')),
+                    ],
+                    onChanged: (value) async {
+                      if (value == null) return;
+                      setState(() => selectedTheme = value);
+                      final theme = AppTheme.values.firstWhere(
+                        (e) => e.name == value,
+                        orElse: () => AppTheme.classicLight,
+                      );
+                      AppThemeController.currentTheme.value = theme;
+                      await DatabaseHelper.instance.saveTheme(value);
+                    },
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: companyController,
-              decoration: const InputDecoration(
-                labelText: 'Company Name (Optional)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: machineType,
-              decoration: const InputDecoration(
-                labelText: 'Default Machine Type',
-                border: OutlineInputBorder(),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'Single Needle', child: Text('Single Needle')),
-                DropdownMenuItem(value: 'Over Lock', child: Text('Over Lock')),
-                DropdownMenuItem(value: 'Flat Lock', child: Text('Flat Lock')),
-                DropdownMenuItem(value: 'Other', child: Text('Other')),
-              ],
-              onChanged: (value) {
-                if (value != null) setState(() => machineType = value);
-              },
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: jobType,
-              decoration: const InputDecoration(
-                labelText: 'Default Job Type',
-                border: OutlineInputBorder(),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'Full Piece', child: Text('Full Piece')),
-                DropdownMenuItem(value: 'Half Piece', child: Text('Half Piece')),
-                DropdownMenuItem(value: 'Contract', child: Text('Contract')),
-              ],
-              onChanged: (value) {
-                if (value != null) setState(() => jobType = value);
-              },
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: currency,
-              decoration: const InputDecoration(
-                labelText: 'Currency',
-                border: OutlineInputBorder(),
-              ),
-              items: const [DropdownMenuItem(value: 'PKR', child: Text('PKR'))],
-              onChanged: (value) {
-                if (value != null) setState(() => currency = value);
-              },
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: selectedTheme,
-              decoration: const InputDecoration(
-                labelText: 'Theme',
-                border: OutlineInputBorder(),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'classicLight', child: Text('Classic Light')),
-                DropdownMenuItem(value: 'shadowDark', child: Text('Shadow Dark')),
-                DropdownMenuItem(value: 'goldLegend', child: Text('Gold Legend')),
-                DropdownMenuItem(value: 'platinumPro', child: Text('Platinum Pro')),
-                DropdownMenuItem(value: 'cyberBlue', child: Text('Cyber Blue')),
-                DropdownMenuItem(value: 'neonGreen', child: Text('Neon Green')),
-                DropdownMenuItem(value: 'rubyRed', child: Text('Ruby Red')),
-              ],
-              onChanged: (value) async {
-                if (value == null) return;
-                setState(() => selectedTheme = value);
-                final theme = AppTheme.values.firstWhere(
-                  (e) => e.name == value,
-                  orElse: () => AppTheme.classicLight,
-                );
-                AppThemeController.currentTheme.value = theme;
-                await DatabaseHelper.instance.saveTheme(value);
-              },
-            ),
-            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 55,
