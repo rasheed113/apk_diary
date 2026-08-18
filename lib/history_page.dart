@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Icon;
 import 'package:intl/intl.dart';
+import 'modern_icons.dart';
 import 'database_helper.dart';
 import 'diary_entry.dart';
 import 'work_page.dart';
@@ -169,23 +170,7 @@ class _HistoryPageState extends State<HistoryPage> {
     if (confirm == true) await deleteEntry(entry.id!);
   }
 
-  Widget icon3D(BuildContext context, IconData icon, {double size = 26, Color? color}) {
-    final s = Theme.of(context).colorScheme;
-    final base = color ?? s.primary;
-    final deep = Color.alphaBlend(Colors.black.withValues(alpha: .20), base);
-    return SizedBox(
-      width: size + 8,
-      height: size + 8,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.translate(offset: const Offset(1.2, 1.5), child: Icon(icon, size: size, color: Colors.black.withValues(alpha: .20))),
-          ShaderMask(blendMode: BlendMode.srcIn, shaderCallback: (bounds) => LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white, base, deep]).createShader(bounds), child: Icon(icon, size: size)),
-          Transform.translate(offset: const Offset(-.8, -.8), child: Icon(icon, size: size * .52, color: Colors.white.withValues(alpha: .32))),
-        ],
-      ),
-    );
-  }
+  Widget icon3D(BuildContext context, IconData icon, {double size = 26, Color? color}) => Icon(icon, size: size);
 
   Widget themedCard({required Widget child, EdgeInsetsGeometry margin = const EdgeInsets.all(8), EdgeInsetsGeometry padding = const EdgeInsets.all(12)}) {
     final s = Theme.of(context).colorScheme;
@@ -260,9 +245,9 @@ class _HistoryPageState extends State<HistoryPage> {
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
                   children: [
-                    Expanded(child: OutlinedButton.icon(onPressed: _showWeeklyHistory, icon: icon3D(context, Icons.calendar_view_week, size: 18, color: Colors.blue), label: const Text('Weekly History'))),
+                    Expanded(child: OutlinedButton.icon(onPressed: _showWeeklyHistory, icon: icon3D(context, Icons.calendar_view_week, size: 18), label: const Text('Weekly History'))),
                     const SizedBox(width: 8),
-                    Expanded(child: OutlinedButton.icon(onPressed: _showMonthlyHistory, icon: icon3D(context, Icons.calendar_month, size: 18, color: Colors.orange), label: const Text('Monthly History'))),
+                    Expanded(child: OutlinedButton.icon(onPressed: _showMonthlyHistory, icon: icon3D(context, Icons.calendar_month, size: 18), label: const Text('Monthly History'))),
                   ],
                 ),
               ),
@@ -326,11 +311,11 @@ class _HistoryPageState extends State<HistoryPage> {
                                   children: [
                                     Flexible(child: Text('Rs ${entry.total.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: s.tertiary), overflow: TextOverflow.ellipsis)),
                                     const SizedBox(width: 2),
-                                    IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Edit', icon: icon3D(context, Icons.edit, size: 22, color: Colors.blue), onPressed: () async {
+                                    IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Edit', icon: icon3D(context, Icons.edit, size: 22), onPressed: () async {
                                       final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => WorkPage(entry: entry)));
                                       if (r == true && mounted) setState(refreshEntries);
                                     }),
-                                    IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Delete', icon: icon3D(context, Icons.delete_forever, size: 23, color: Colors.red), onPressed: () => confirmDelete(entry)),
+                                    IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Delete', icon: icon3D(context, Icons.delete_forever, size: 23), onPressed: () => confirmDelete(entry)),
                                   ],
                                 ),
                               ),
