@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Icon;
 import 'package:intl/intl.dart';
+import 'modern_icons.dart';
 import 'database_helper.dart';
 import 'diary_entry.dart';
 
@@ -39,18 +40,12 @@ class _WorkPageState extends State<WorkPage> {
     selectedItem = e?.itemName ?? 'Shirt';
     selectedRateType = e?.rateType ?? 'Per Piece';
     if (e != null) {
-      selectedSizes = e.sizes
-          .split(',')
-          .map((x) => x.trim())
-          .where((x) => x.isNotEmpty)
-          .toList();
+      selectedSizes = e.sizes.split(',').map((x) => x.trim()).where((x) => x.isNotEmpty).toList();
       piecesController.text = '${e.pieces}';
       rateController.text = '${e.rate}';
       notesController.text = e.notes;
       final p = e.workDate.split('-');
-      if (p.length == 3) {
-        selectedDate = DateTime.tryParse('${p[2]}-${p[1]}-${p[0]}') ?? DateTime.now();
-      }
+      if (p.length == 3) selectedDate = DateTime.tryParse('${p[2]}-${p[1]}-${p[0]}') ?? DateTime.now();
     }
   }
 
@@ -80,45 +75,27 @@ class _WorkPageState extends State<WorkPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ...['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(
-                      (size) => CheckboxListTile(
-                        value: temp.contains(size),
-                        title: Text(size),
-                        onChanged: (value) {
-                          setDialogState(() {
-                            if (value == true && !temp.contains(size)) {
-                              temp.add(size);
-                            }
-                            if (value != true) {
-                              temp.remove(size);
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                    TextField(
-                      controller: custom,
-                      decoration: const InputDecoration(
-                        labelText: 'Custom Sizes',
-                        hintText: '14,16,18,20',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
+                    ...['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => CheckboxListTile(
+                      value: temp.contains(size),
+                      title: Text(size),
+                      onChanged: (value) {
+                        setDialogState(() {
+                          if (value == true && !temp.contains(size)) temp.add(size);
+                          if (value != true) temp.remove(size);
+                        });
+                      },
+                    )),
+                    TextField(controller: custom, decoration: const InputDecoration(labelText: 'Custom Sizes', hintText: '14,16,18,20', border: OutlineInputBorder())),
                   ],
                 ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text('Cancel'),
-                ),
+                TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
                       selectedSizes = List<String>.from(temp);
-                      if (custom.text.trim().isNotEmpty) {
-                        selectedSizes.add(custom.text.trim());
-                      }
+                      if (custom.text.trim().isNotEmpty) selectedSizes.add(custom.text.trim());
                     });
                     Navigator.pop(dialogContext);
                   },
@@ -134,15 +111,8 @@ class _WorkPageState extends State<WorkPage> {
   }
 
   Future<void> pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() => selectedDate = picked);
-    }
+    final picked = await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(2020), lastDate: DateTime(2100));
+    if (picked != null) setState(() => selectedDate = picked);
   }
 
   Future<void> saveOrUpdateEntry() async {
@@ -150,25 +120,17 @@ class _WorkPageState extends State<WorkPage> {
     final rate = double.tryParse(rateController.text);
 
     if (pieces == null || pieces <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pieces must be greater than 0')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pieces must be greater than 0')));
       return;
     }
     if (rate == null || rate <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Rate must be greater than 0')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Rate must be greater than 0')));
       return;
     }
 
-    final item = selectedItem == 'Other'
-        ? customItemController.text.trim()
-        : selectedItem;
+    final item = selectedItem == 'Other' ? customItemController.text.trim() : selectedItem;
     if (item.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter an item')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter an item')));
       return;
     }
 
@@ -194,13 +156,7 @@ class _WorkPageState extends State<WorkPage> {
     }
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          isEditMode ? 'Entry Updated Successfully ✅' : 'Entry Saved Successfully ✅',
-        ),
-      ),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEditMode ? 'Entry Updated Successfully ✅' : 'Entry Saved Successfully ✅')));
     Navigator.pop(context, true);
   }
 
@@ -221,13 +177,7 @@ class _WorkPageState extends State<WorkPage> {
         color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: scheme.primary.withValues(alpha: .12)),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow.withValues(alpha: .10),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .10), blurRadius: 8, offset: const Offset(0, 3))],
       ),
       padding: const EdgeInsets.all(8),
       child: child,
@@ -240,14 +190,7 @@ class _WorkPageState extends State<WorkPage> {
       children: [
         Icon(icon, color: scheme.primary),
         const SizedBox(width: 8),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: scheme.onSurface,
-          ),
-        ),
+        Text(text, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: scheme.onSurface)),
       ],
     );
   }
@@ -258,128 +201,55 @@ class _WorkPageState extends State<WorkPage> {
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      appBar: AppBar(
-        title: Text(isEditMode ? 'Edit Entry' : 'New Entry'),
-        backgroundColor: scheme.surface,
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(isEditMode ? 'Edit Entry' : 'New Entry'), backgroundColor: scheme.surface, elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             sectionHeader('Work Details', Icons.work),
             const SizedBox(height: 10),
-            field(
-              DropdownButtonFormField<String>(
-                initialValue: selectedItem,
-                decoration: fieldDecoration('Item Name', Icons.checkroom),
-                items: itemList
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() => selectedItem = value ?? 'Shirt');
-                },
+            field(DropdownButtonFormField<String>(
+              initialValue: selectedItem,
+              decoration: fieldDecoration('Item Name', Icons.checkroom),
+              items: itemList.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
+            )),
+            if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration('Custom Item', Icons.inventory_2))),
+            field(Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: selectSizes,
+                icon: Icon(Icons.grid_view),
+                label: Text(selectedSizes.isEmpty ? 'Select Sizes' : selectedSizes.join(', ')),
               ),
-            ),
-            if (selectedItem == 'Other')
-              field(
-                TextField(
-                  controller: customItemController,
-                  decoration: fieldDecoration('Custom Item', Icons.inventory_2),
-                ),
-              ),
-            field(
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: selectSizes,
-                  icon: Icon(Icons.grid_view, color: scheme.primary),
-                  label: Text(
-                    selectedSizes.isEmpty
-                        ? 'Select Sizes'
-                        : selectedSizes.join(', '),
-                  ),
-                ),
-              ),
-            ),
-            field(
-              TextField(
-                controller: piecesController,
-                keyboardType: TextInputType.number,
-                decoration: fieldDecoration('Pieces', Icons.numbers),
-                onChanged: (_) => calculateTotal(),
-              ),
-            ),
-            field(
-              TextField(
-                controller: rateController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: fieldDecoration('Rate', Icons.payments),
-                onChanged: (_) => calculateTotal(),
-              ),
-            ),
-            field(
-              DropdownButtonFormField<String>(
-                initialValue: selectedRateType,
-                decoration: fieldDecoration('Rate Type', Icons.category),
-                items: rateTypes
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() => selectedRateType = value ?? 'Per Piece');
-                  calculateTotal();
-                },
-              ),
-            ),
-            field(
-              TextButton.icon(
-                onPressed: pickDate,
-                icon: Icon(Icons.calendar_month, color: scheme.primary),
-                label: Text(DateFormat('dd-MM-yyyy').format(selectedDate)),
-              ),
-            ),
-            field(
-              TextField(
-                controller: notesController,
-                maxLines: 3,
-                decoration: fieldDecoration('Notes', Icons.notes),
-              ),
-            ),
+            )),
+            field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration('Pieces', Icons.numbers), onChanged: (_) => calculateTotal())),
+            field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration('Rate', Icons.payments), onChanged: (_) => calculateTotal())),
+            field(DropdownButtonFormField<String>(
+              initialValue: selectedRateType,
+              decoration: fieldDecoration('Rate Type', Icons.category),
+              items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (value) {
+                setState(() => selectedRateType = value ?? 'Per Piece');
+                calculateTotal();
+              },
+            )),
+            field(TextButton.icon(onPressed: pickDate, icon: Icon(Icons.calendar_month), label: Text(DateFormat('dd-MM-yyyy').format(selectedDate)))),
+            field(TextField(controller: notesController, maxLines: 3, decoration: fieldDecoration('Notes', Icons.notes))),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [scheme.primaryContainer, scheme.secondaryContainer],
-                ),
+                gradient: LinearGradient(colors: [scheme.primaryContainer, scheme.secondaryContainer]),
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: scheme.shadow.withValues(alpha: .12),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .12), blurRadius: 10, offset: const Offset(0, 4))],
               ),
               child: Column(
                 children: [
-                  Text(
-                    'Total',
-                    style: TextStyle(
-                      color: scheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  Text('Total', style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text(
-                    'Rs ${total.toStringAsFixed(0)}',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w900,
-                      color: scheme.primary,
-                    ),
-                  ),
+                  Text('Rs ${total.toStringAsFixed(0)}', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: scheme.primary)),
                 ],
               ),
             ),
