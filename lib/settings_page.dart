@@ -8,6 +8,8 @@ import 'app_theme_controller.dart';
 import 'database_helper.dart';
 import 'theme_manager.dart';
 import 'i18n/app_strings.dart';
+import 'i18n/app_language_controller.dart';
+import 'i18n/app_localization.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -141,6 +143,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final language = AppLanguageController.currentLanguage.value;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -149,6 +152,30 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            sectionCard(
+              context,
+              child: Column(
+                children: [
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.language),
+                    title: const Text('Language'),
+                    subtitle: Text(language == AppLanguage.urdu ? 'Urdu' : 'English'),
+                    trailing: DropdownButton<AppLanguage>(
+                      value: language,
+                      underline: const SizedBox.shrink(),
+                      items: const [
+                        DropdownMenuItem(value: AppLanguage.english, child: Text('English')),
+                        DropdownMenuItem(value: AppLanguage.urdu, child: Text('Urdu')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) AppLanguageController.setLanguage(value);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
             sectionCard(
               context,
               child: Column(
