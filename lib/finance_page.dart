@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Icon;
 import 'package:intl/intl.dart';
+import 'modern_icons.dart';
 import 'database_helper.dart';
 import 'finance_record.dart';
 
@@ -174,27 +175,7 @@ class _FinancePageState extends State<FinancePage> {
     }
   }
 
-  Widget icon3D(IconData icon, {double size = 26, Color? color}) {
-    final s = Theme.of(context).colorScheme;
-    final b = color ?? s.primary;
-    final d = Color.alphaBlend(Colors.black.withValues(alpha: .20), b);
-    return SizedBox(
-      width: size + 8,
-      height: size + 8,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.translate(offset: const Offset(1.2, 1.5), child: Icon(icon, size: size, color: Colors.black.withValues(alpha: .20))),
-          ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (x) => LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white, b, d]).createShader(x),
-            child: Icon(icon, size: size),
-          ),
-          Transform.translate(offset: const Offset(-.8, -.8), child: Icon(icon, size: size * .52, color: Colors.white.withValues(alpha: .32))),
-        ],
-      ),
-    );
-  }
+  Widget icon3D(IconData icon, {double size = 26, Color? color}) => Icon(icon, size: size);
 
   Widget financeCard({required Widget child, EdgeInsetsGeometry margin = const EdgeInsets.symmetric(vertical: 5), EdgeInsetsGeometry padding = const EdgeInsets.all(12)}) {
     final s = Theme.of(context).colorScheme;
@@ -216,7 +197,7 @@ class _FinancePageState extends State<FinancePage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          icon3D(icon, size: 28, color: s.primary),
+          icon3D(icon, size: 28),
           const SizedBox(height: 6),
           Text(title, style: TextStyle(fontWeight: FontWeight.w800, color: s.onSurface)),
           const SizedBox(height: 4),
@@ -241,7 +222,7 @@ class _FinancePageState extends State<FinancePage> {
               padding: const EdgeInsets.all(14),
               child: Column(
                 children: [
-                  icon3D(Icons.account_balance_wallet, size: 34, color: s.primary),
+                  icon3D(Icons.account_balance_wallet, size: 34),
                   const SizedBox(height: 6),
                   Text('Current Balance', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: s.onSurfaceVariant)),
                   const SizedBox(height: 4),
@@ -256,7 +237,7 @@ class _FinancePageState extends State<FinancePage> {
               Expanded(child: _financeMiniCard('ADVANCE', advanceReceived, Icons.account_balance)),
             ]),
             const SizedBox(height: 12),
-            SizedBox(width: double.infinity, child: ElevatedButton.icon(onPressed: addFinanceRecord, icon: icon3D(Icons.add, size: 20, color: s.onPrimary), label: const Text('Add Finance Record'))),
+            SizedBox(width: double.infinity, child: ElevatedButton.icon(onPressed: addFinanceRecord, icon: icon3D(Icons.add, size: 20), label: const Text('Add Finance Record'))),
             const SizedBox(height: 12),
             Expanded(
               child: FutureBuilder(
@@ -272,7 +253,7 @@ class _FinancePageState extends State<FinancePage> {
                       return financeCard(
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          leading: icon3D(Icons.account_balance_wallet, size: 25, color: s.primary),
+                          leading: icon3D(Icons.account_balance_wallet, size: 25),
                           title: Text(record.type, style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface)),
                           subtitle: Text('${record.reason}\n${record.recordDate}', style: TextStyle(color: s.onSurfaceVariant)),
                           trailing: SizedBox(
@@ -281,8 +262,8 @@ class _FinancePageState extends State<FinancePage> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Flexible(child: Text('Rs ${record.amount.toStringAsFixed(0)}', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: s.tertiary), overflow: TextOverflow.ellipsis)),
-                                IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Edit', icon: icon3D(Icons.edit, size: 21, color: Colors.blue), onPressed: () => editFinanceRecord(record)),
-                                IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Delete', icon: icon3D(Icons.delete_forever, size: 22, color: Colors.red), onPressed: () => confirmDelete(record)),
+                                IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Edit', icon: icon3D(Icons.edit, size: 21), onPressed: () => editFinanceRecord(record)),
+                                IconButton(padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 36, minHeight: 36), tooltip: 'Delete', icon: icon3D(Icons.delete_forever, size: 22), onPressed: () => confirmDelete(record)),
                               ],
                             ),
                           ),
