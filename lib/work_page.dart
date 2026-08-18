@@ -69,46 +69,42 @@ class _WorkPageState extends State<WorkPage> {
 
     await showDialog<void>(
       context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(l10n.selectSizes),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ...['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => CheckboxListTile(
-                      value: temp.contains(size),
-                      title: Text(size),
-                      onChanged: (value) {
-                        setDialogState(() {
-                          if (value == true && !temp.contains(size)) temp.add(size);
-                          if (value != true) temp.remove(size);
-                        });
-                      },
-                    )),
-                    TextField(controller: custom, decoration: InputDecoration(labelText: l10n.customSizes, hintText: '14,16,18,20', border: const OutlineInputBorder())),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedSizes = List<String>.from(temp);
-                      if (custom.text.trim().isNotEmpty) selectedSizes.add(custom.text.trim());
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.selectSizes),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ...['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => CheckboxListTile(
+                  value: temp.contains(size),
+                  title: Text(size),
+                  onChanged: (value) {
+                    setDialogState(() {
+                      if (value == true && !temp.contains(size)) temp.add(size);
+                      if (value != true) temp.remove(size);
                     });
-                    Navigator.pop(dialogContext);
                   },
-                  child: Text(l10n.done),
-                ),
+                )),
+                TextField(controller: custom, decoration: InputDecoration(labelText: l10n.customSizes, hintText: '14,16,18,20', border: const OutlineInputBorder())),
               ],
-            );
-          },
-        );
-      },
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  selectedSizes = List<String>.from(temp);
+                  if (custom.text.trim().isNotEmpty) selectedSizes.add(custom.text.trim());
+                });
+                Navigator.pop(dialogContext);
+              },
+              child: Text(l10n.done),
+            ),
+          ],
+        ),
+      ),
     );
     custom.dispose();
   }
@@ -160,31 +156,19 @@ class _WorkPageState extends State<WorkPage> {
     }
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(isEditMode ? l10n.entryUpdatedSuccessfully : l10n.entrySavedSuccessfully)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEditMode ? l10n.entryUpdatedSuccessfully : l10n.entrySavedSuccessfully)));
     Navigator.pop(context, true);
   }
 
   InputDecoration fieldDecoration(String label, IconData icon) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      isDense: true,
-    );
+    return InputDecoration(labelText: label, prefixIcon: Icon(icon), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), isDense: true);
   }
 
   Widget field(Widget child) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: scheme.primary.withValues(alpha: .12)),
-        boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .10), blurRadius: 8, offset: const Offset(0, 3))],
-      ),
+      decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(14), border: Border.all(color: scheme.primary.withValues(alpha: .12)), boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .10), blurRadius: 8, offset: const Offset(0, 3))]),
       padding: const EdgeInsets.all(8),
       child: child,
     );
@@ -192,42 +176,29 @@ class _WorkPageState extends State<WorkPage> {
 
   Widget sectionHeader(String text, IconData icon) {
     final scheme = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Icon(icon, color: scheme.primary),
-        const SizedBox(width: 8),
-        Text(text, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: scheme.onSurface)),
-      ],
-    );
+    return Row(children: [Icon(icon, color: scheme.primary), const SizedBox(width: 8), Text(text, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: scheme.onSurface))]);
   }
 
-  IconData itemIcon(String item) {
-    switch (item) {
-      case 'Shirt':
-      case 'Pant':
-      case 'Kameez':
-        return Icons.checkroom;
-      default:
-        return Icons.inventory_2;
-    }
+  Widget itemOptionIcon(String item) {
+    final emoji = switch (item) {
+      'Shirt' => '👕',
+      'Pant' => '👖',
+      'Kameez' => '👕',
+      _ => '📦',
+    };
+    return Text(emoji, style: const TextStyle(fontSize: 22));
   }
 
   String localizedItemName(AppLocalization l10n, String item) {
     switch (item) {
-      case 'Shirt':
-        return l10n.itemShirt;
-      case 'Pant':
-        return l10n.itemPant;
-      case 'Kameez':
-        return l10n.itemKameez;
-      default:
-        return l10n.other;
+      case 'Shirt': return l10n.itemShirt;
+      case 'Pant': return l10n.itemPant;
+      case 'Kameez': return l10n.itemKameez;
+      default: return l10n.other;
     }
   }
 
-  String localizedRateType(AppLocalization l10n, String rateType) {
-    return rateType == 'Per Dozen' ? l10n.perDozen : l10n.perPiece;
-  }
+  String localizedRateType(AppLocalization l10n, String rateType) => rateType == 'Per Dozen' ? l10n.perDozen : l10n.perPiece;
 
   @override
   Widget build(BuildContext context) {
@@ -242,65 +213,52 @@ class _WorkPageState extends State<WorkPage> {
           appBar: AppBar(title: Text(isEditMode ? l10n.editEntry : l10n.newEntry), backgroundColor: scheme.surface, elevation: 0),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(12),
-            child: Column(
-              children: [
-                sectionHeader(l10n.workDetails, Icons.work),
-                const SizedBox(height: 10),
-                field(DropdownButtonFormField<String>(
-                  initialValue: selectedItem,
-                  decoration: fieldDecoration(l10n.itemName, Icons.checkroom),
-                  items: itemList.map((e) => DropdownMenuItem(value: e, child: Row(children: [Icon(itemIcon(e), size: 22), const SizedBox(width: 10), Text(localizedItemName(l10n, e))]))).toList(),
-                  onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
-                )),
-                if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration(l10n.customItem, Icons.inventory_2))),
-                field(Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: selectSizes,
-                    icon: Icon(Icons.grid_view),
-                    label: Text(selectedSizes.isEmpty ? l10n.selectSizes : selectedSizes.join(', ')),
-                  ),
-                )),
-                field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration(l10n.pieces, Icons.numbers), onChanged: (_) => calculateTotal())),
-                field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration(l10n.rate, Icons.payments), onChanged: (_) => calculateTotal())),
-                field(DropdownButtonFormField<String>(
-                  initialValue: selectedRateType,
-                  decoration: fieldDecoration(l10n.rateType, Icons.category),
-                  items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(localizedRateType(l10n, e)))).toList(),
-                  onChanged: (value) {
-                    setState(() => selectedRateType = value ?? 'Per Piece');
-                    calculateTotal();
-                  },
-                )),
-                field(TextButton.icon(onPressed: pickDate, icon: Icon(Icons.calendar_month), label: Text(DateFormat('dd-MM-yyyy').format(selectedDate)))),
-                field(TextField(controller: notesController, maxLines: 3, decoration: fieldDecoration(l10n.notes, Icons.notes))),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [scheme.primaryContainer, scheme.secondaryContainer]),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .12), blurRadius: 10, offset: const Offset(0, 4))],
-                  ),
-                  child: Column(
-                    children: [
-                      Text(l10n.total, style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w600)),
-                      const SizedBox(height: 4),
-                      Text('Rs ${total.toStringAsFixed(0)}', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: scheme.primary)),
-                    ],
-                  ),
+            child: Column(children: [
+              sectionHeader(l10n.workDetails, Icons.work),
+              const SizedBox(height: 10),
+              field(DropdownButtonFormField<String>(
+                initialValue: selectedItem,
+                decoration: fieldDecoration(l10n.itemName, Icons.checkroom),
+                items: itemList.map((e) => DropdownMenuItem(value: e, child: Row(children: [itemOptionIcon(e), const SizedBox(width: 10), Text(localizedItemName(l10n, e))]))).toList(),
+                onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
+              )),
+              if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration(l10n.customItem, Icons.inventory_2))),
+              field(Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: selectSizes, icon: const Icon(Icons.grid_view), label: Text(selectedSizes.isEmpty ? l10n.selectSizes : selectedSizes.join(', ')))),
+              field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration(l10n.pieces, Icons.numbers), onChanged: (_) => calculateTotal())),
+              field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration(l10n.rate, Icons.payments), onChanged: (_) => calculateTotal())),
+              field(DropdownButtonFormField<String>(
+                initialValue: selectedRateType,
+                decoration: fieldDecoration(l10n.rateType, Icons.category),
+                items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(localizedRateType(l10n, e)))).toList(),
+                onChanged: (value) { setState(() => selectedRateType = value ?? 'Per Piece'); calculateTotal(); },
+              )),
+              field(TextButton.icon(onPressed: pickDate, icon: const Icon(Icons.calendar_month), label: Text(DateFormat('dd-MM-yyyy').format(selectedDate)))),
+              field(TextField(controller: notesController, maxLines: 3, decoration: fieldDecoration(l10n.notes, Icons.notes))),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: scheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: scheme.primary.withValues(alpha: .14)),
+                  boxShadow: [BoxShadow(color: scheme.shadow.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 4))],
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: saveOrUpdateEntry,
-                    icon: Icon(isEditMode ? Icons.save : Icons.add),
-                    label: Text(isEditMode ? l10n.updateEntry : l10n.saveEntry),
-                  ),
+                child: Column(children: [
+                  Text(l10n.total, style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 4),
+                  Text('Rs ${total.toStringAsFixed(0)}', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: scheme.onSurface)),
+                ]),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: saveOrUpdateEntry,
+                  icon: Icon(isEditMode ? Icons.save_rounded : Icons.save_rounded),
+                  label: Text(isEditMode ? l10n.updateEntry : l10n.saveEntry),
                 ),
-              ],
-            ),
+              ),
+            ]),
           ),
         );
       },
