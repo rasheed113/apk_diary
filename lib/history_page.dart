@@ -5,7 +5,9 @@ import 'diary_entry.dart';
 import 'work_page.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+  final String initialFilter;
+
+  const HistoryPage({super.key, this.initialFilter = 'All'});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -16,11 +18,12 @@ class _HistoryPageState extends State<HistoryPage> {
   final TextEditingController searchController = TextEditingController();
 
   String searchText = '';
-  String selectedFilter = 'All';
+  late String selectedFilter;
 
   @override
   void initState() {
     super.initState();
+    selectedFilter = widget.initialFilter;
     refreshEntries();
   }
 
@@ -74,6 +77,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
           final entries = snapshot.data ?? [];
           final today = DateTime.now();
+          final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+          final endOfWeek = startOfWeek.add(const Duration(days: 6));
           final filteredEntries = entries.where((entry) {
             final query = searchText.toLowerCase();
             final matchesSearch = entry.itemName.toLowerCase().contains(query) ||
@@ -84,6 +89,16 @@ class _HistoryPageState extends State<HistoryPage> {
               final todayStr =
                   '${today.day.toString().padLeft(2, '0')}-${today.month.toString().padLeft(2, '0')}-${today.year}';
               return entry.workDate == todayStr;
+            }
+            if (selectedFilter == 'This Week') {
+              final parts = entry.workDate.split('-');
+              if (parts.length != 3) return false;
+              final entryDate = DateTime.tryParse('${parts[2]}-${parts[1]}-${parts[0]}');
+              if (entryDate == null) return false;
+              final dateOnly = DateTime(entryDate.year, entryDate.month, entryDate.day);
+              final startOnly = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+              final endOnly = DateTime(endOfWeek.year, endOfWeek.month, endOfWeek.day);
+              return !dateOnly.isBefore(startOnly) && !dateOnly.isAfter(endOnly);
             }
             if (selectedFilter == 'This Month') {
               final monthStr =
