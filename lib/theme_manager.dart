@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 
-enum AppTheme { classicLight, shadowDark, goldLegend, platinumPro, cyberBlue, neonGreen, rubyRed }
+enum AppTheme { classicLight, goldLegend, platinumPro, cyberBlue, neonGreen, rubyRed }
 
 class ThemeManager {
   static ThemeData getTheme(AppTheme theme) {
     final schemes = <AppTheme, ColorScheme>{
       AppTheme.classicLight: const ColorScheme.light(primary: Color(0xFF4F6BFF), secondary: Color(0xFF7C5CFF), surface: Color(0xFFF9FBFF)),
-      AppTheme.shadowDark: const ColorScheme.light(primary: Color(0xFF8B63F7), secondary: Color(0xFFC18CFF), surface: Color(0xFFFBF9FF)),
       AppTheme.goldLegend: const ColorScheme.light(primary: Color(0xFFD89B18), secondary: Color(0xFFF3C64B), surface: Color(0xFFFFFCF5)),
       AppTheme.platinumPro: const ColorScheme.light(primary: Color(0xFF607D8B), secondary: Color(0xFF90A4AE), surface: Color(0xFFF8FAFB)),
       AppTheme.cyberBlue: const ColorScheme.light(primary: Color(0xFF168BFF), secondary: Color(0xFF49B7FF), surface: Color(0xFFF5FAFF)),
       AppTheme.neonGreen: const ColorScheme.light(primary: Color(0xFF20A83A), secondary: Color(0xFF65D85D), surface: Color(0xFFF6FFF7)),
       AppTheme.rubyRed: const ColorScheme.light(primary: Color(0xFFD92B52), secondary: Color(0xFFFF6B7F), surface: Color(0xFFFFF7F9)),
     };
-    final scheme = schemes[theme]!;
+    final scheme = schemes[theme] ?? schemes[AppTheme.classicLight]!;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
