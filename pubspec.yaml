@@ -2,7 +2,7 @@ name: apk_diary
 description: "APK Diary - Garment Operator Diary"
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.9.0
