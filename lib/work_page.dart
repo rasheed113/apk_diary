@@ -6,8 +6,7 @@ import 'diary_entry.dart';
 class WorkPage extends StatefulWidget {
   final DiaryEntry? entry;
   const WorkPage({super.key, this.entry});
-  @override
-  State<WorkPage> createState() => _WorkPageState();
+  @override State<WorkPage> createState() => _WorkPageState();
 }
 
 class _WorkPageState extends State<WorkPage> {
@@ -154,45 +153,96 @@ class _WorkPageState extends State<WorkPage> {
     isDense: true,
   );
 
-  Widget field(Widget child) => Card(
-    elevation: 0,
-    margin: const EdgeInsets.only(bottom: 10),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.14))),
-    child: Padding(padding: const EdgeInsets.all(10), child: child),
-  );
+  Widget field(Widget child) {
+    final scheme = Theme.of(context).colorScheme;
+    final surface = Theme.of(context).cardColor;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [surface, scheme.primary.withValues(alpha: .035)],
+        ),
+        border: Border.all(color: scheme.primary.withValues(alpha: .16)),
+        boxShadow: [BoxShadow(color: scheme.primary.withValues(alpha: .07), blurRadius: 8, offset: const Offset(0, 3))],
+      ),
+      child: Padding(padding: const EdgeInsets.all(10), child: child),
+    );
+  }
+
+  Widget sectionHeader(String title, IconData icon) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [scheme.primary.withValues(alpha: .15), scheme.secondary.withValues(alpha: .08)],
+        ),
+        border: Border.all(color: scheme.primary.withValues(alpha: .18)),
+      ),
+      child: Row(children: [Icon(icon, color: scheme.primary), const SizedBox(width: 8), Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))]),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final card = Theme.of(context).cardColor;
     return Scaffold(
       appBar: AppBar(title: Text(isEditMode ? 'Edit Work' : 'New Work Entry'), elevation: 0),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: Column(children: [
-          field(const Row(children: [Icon(Icons.work), SizedBox(width: 8), Text('Work Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))])),
-          field(DropdownButtonFormField<String>(
-            initialValue: selectedItem,
-            decoration: fieldDecoration('Item Name', Icons.checkroom),
-            items: itemList.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-            onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
-          )),
-          if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration('Custom Item', Icons.inventory_2))),
-          field(Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: selectSizes, icon: const Icon(Icons.grid_view), label: Text(selectedSizes.isEmpty ? 'Select Sizes' : selectedSizes.join(', '))))),
-          field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration('Pieces', Icons.numbers), onChanged: (_) => calculateTotal())),
-          field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration('Rate', Icons.payments), onChanged: (_) => calculateTotal())),
-          field(DropdownButtonFormField<String>(
-            initialValue: selectedRateType,
-            decoration: fieldDecoration('Rate Type', Icons.category),
-            items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-            onChanged: (value) { setState(() => selectedRateType = value ?? 'Per Piece'); calculateTotal(); },
-          )),
-          Card(elevation: 0, color: scheme.primaryContainer.withValues(alpha: 0.55), child: ListTile(leading: Icon(Icons.payments, color: scheme.primary), title: const Text('Total'), trailing: Text('Rs ${total.toStringAsFixed(2)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))),
-          const SizedBox(height: 8),
-          field(TextField(controller: notesController, maxLines: 3, decoration: fieldDecoration('Notes', Icons.note_alt))),
-          field(ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.calendar_month), title: const Text('Work Date'), subtitle: Text(DateFormat('dd MMM yyyy').format(selectedDate)), trailing: const Icon(Icons.chevron_right), onTap: pickDate)),
-          const SizedBox(height: 8),
-          SizedBox(width: double.infinity, height: 50, child: ElevatedButton.icon(onPressed: saveOrUpdateEntry, icon: Icon(isEditMode ? Icons.edit : Icons.save), label: Text(isEditMode ? 'Update Entry' : 'Save Entry'))),
-        ]),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [scheme.surface, scheme.primary.withValues(alpha: .035)],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(12),
+          child: Column(children: [
+            sectionHeader('Work Details', Icons.work),
+            const SizedBox(height: 10),
+            field(DropdownButtonFormField<String>(
+              initialValue: selectedItem,
+              decoration: fieldDecoration('Item Name', Icons.checkroom),
+              items: itemList.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (value) => setState(() => selectedItem = value ?? 'Shirt'),
+            )),
+            if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration('Custom Item', Icons.inventory_2))),
+            field(Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: selectSizes, icon: Icon(Icons.grid_view, color: scheme.primary), label: Text(selectedSizes.isEmpty ? 'Select Sizes' : selectedSizes.join(', ')))),
+            field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration('Pieces', Icons.numbers), onChanged: (_) => calculateTotal())),
+            field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration('Rate', Icons.payments), onChanged: (_) => calculateTotal())),
+            field(DropdownButtonFormField<String>(
+              initialValue: selectedRateType,
+              decoration: fieldDecoration('Rate Type', Icons.category),
+              items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (value) { setState(() => selectedRateType = value ?? 'Per Piece'); calculateTotal(); },
+            )),
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [scheme.primary.withValues(alpha: .16), scheme.secondary.withValues(alpha: .08)]),
+                border: Border.all(color: scheme.primary.withValues(alpha: .22)),
+                boxShadow: [BoxShadow(color: scheme.primary.withValues(alpha: .08), blurRadius: 8, offset: const Offset(0, 3))],
+              ),
+              child: ListTile(leading: Icon(Icons.payments, color: scheme.primary), title: const Text('Total'), trailing: Text('Rs ${total.toStringAsFixed(2)}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: scheme.primary))),
+            ),
+            field(TextField(controller: notesController, maxLines: 3, decoration: fieldDecoration('Notes', Icons.note_alt))),
+            field(ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.calendar_month, color: scheme.primary), title: const Text('Work Date'), subtitle: Text(DateFormat('dd MMM yyyy').format(selectedDate)), trailing: Icon(Icons.chevron_right, color: scheme.primary), onTap: pickDate)),
+            const SizedBox(height: 2),
+            SizedBox(width: double.infinity, height: 50, child: ElevatedButton.icon(onPressed: saveOrUpdateEntry, icon: Icon(isEditMode ? Icons.edit : Icons.save), label: Text(isEditMode ? 'Update Entry' : 'Save Entry'))),
+            const SizedBox(height: 8),
+          ]),
+        ),
       ),
     );
   }
