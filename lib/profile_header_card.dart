@@ -22,8 +22,17 @@ class ProfileHeaderCard extends StatelessWidget {
     this.onCoverTap,
   });
 
+  ImageProvider<Object>? _imageProvider(String? path) {
+    if (path == null || path.isEmpty) return null;
+    return File(path).existsSync() ? FileImage(File(path)) : null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final coverProvider = _imageProvider(coverImage);
+    final profileProvider = _imageProvider(profileImage);
+    final scheme = Theme.of(context).colorScheme;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -32,22 +41,20 @@ class ProfileHeaderCard extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              // Cover Image Clickable
               GestureDetector(
                 onTap: onCoverTap,
                 child: Container(
                   height: 120,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
-                        ? DecorationImage(
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: scheme.primaryContainer,
+                    image: coverProvider == null
+                        ? null
+                        : DecorationImage(image: coverProvider, fit: BoxFit.cover),
+                    border: Border.all(color: scheme.primary.withValues(alpha: 0.18)),
                   ),
                 ),
               ),
-              // Profile Image Clickable
               Positioned(
                 left: 12,
                 bottom: -32,
@@ -55,10 +62,12 @@ class ProfileHeaderCard extends StatelessWidget {
                   onTap: onProfileTap,
                   child: CircleAvatar(
                     radius: 32,
-                    backgroundColor: Colors.white,
+                    backgroundColor: scheme.surface,
                     child: CircleAvatar(
                       radius: 29,
-                          : null,
+                      backgroundImage: profileProvider,
+                      backgroundColor: scheme.primaryContainer,
+                      child: profileProvider == null
                           ? const Icon(Icons.person, size: 30)
                           : null,
                     ),
@@ -70,47 +79,22 @@ class ProfileHeaderCard extends StatelessWidget {
           const SizedBox(height: 38),
           Padding(
             padding: const EdgeInsets.only(left: 12),
-            child: Text(
-              greeting,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: Text(greeting, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 12),
-            child: Text(
-              operatorName,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            child: Text(operatorName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 12),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'ID: $userId',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                Text('ID: $userId', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
                 const SizedBox(width: 4),
                 InkWell(
-                  onTap: () async {
-                    await Clipboard.setData(
-                      ClipboardData(text: userId),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.content_copy,
-                    size: 15,
-                  ),
+                  onTap: () => Clipboard.setData(ClipboardData(text: userId)),
+                  child: const Icon(Icons.content_copy, size: 15),
                 ),
               ],
             ),
