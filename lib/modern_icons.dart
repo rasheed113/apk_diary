@@ -16,7 +16,7 @@ class Icon extends StatelessWidget {
     this.size,
     this.color,
     this.shadows,
-    this.semanticLabel,
+    semanticLabel,
     double? fill,
     double? weight,
     double? grade,
@@ -44,15 +44,20 @@ class Icon extends StatelessWidget {
       case Icons.settings:
       case Icons.settings_rounded:
         return '🎛️';
+      case Icons.refresh:
       case Icons.refresh_rounded:
         return '🔄';
-      case Icons.add_circle_outline:
       case Icons.add:
+      case Icons.add_circle_outline:
+      case Icons.add_circle_outline_rounded:
         return '➕';
       case Icons.list_alt_rounded:
         return '📋';
-      case Icons.inventory_2_rounded:
+      case Icons.format_list_numbered_rounded:
+        return '🔢';
       case Icons.inventory_2:
+      case Icons.inventory_2_rounded:
+      case Icons.inventory_2_outlined:
         return '👜';
       case Icons.today_rounded:
         return '📆';
@@ -67,6 +72,7 @@ class Icon extends StatelessWidget {
         return '💵';
       case Icons.auto_awesome_rounded:
         return '✨';
+      case Icons.schedule:
       case Icons.schedule_rounded:
         return '🕖';
       case Icons.search:
@@ -74,22 +80,24 @@ class Icon extends StatelessWidget {
       case Icons.chevron_right:
         return '👉';
       case Icons.edit:
+      case Icons.edit_rounded:
         return '🖊️';
-      case Icons.delete_forever:
       case Icons.delete:
+      case Icons.delete_forever:
+      case Icons.delete_outline_rounded:
         return '🗑️';
       case Icons.account_balance:
+      case Icons.account_balance_rounded:
         return '🏦';
       case Icons.receipt:
+      case Icons.receipt_long_rounded:
         return '🧾';
       case Icons.currency_exchange:
         return '💱';
       case Icons.work_outline:
         return '💼';
       case Icons.checkroom:
-        return '👔';
-      case Icons.inventory_2_outlined:
-        return '👜';
+        return '👕';
       case Icons.grid_view:
         return '📐';
       case Icons.numbers:
@@ -99,11 +107,22 @@ class Icon extends StatelessWidget {
       case Icons.notes:
         return '📝';
       case Icons.save:
+      case Icons.save_rounded:
         return '💾';
       case Icons.person:
         return '👤';
+      case Icons.phone:
+        return '📱';
+      case Icons.business:
+        return '🏢';
+      case Icons.precision_manufacturing:
+        return '⚙️';
+      case Icons.palette:
+        return '🎨';
+      case Icons.image:
+        return '🖼️';
       default:
-        return '🔹';
+        return '❔';
     }
   }
 
