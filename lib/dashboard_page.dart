@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Icon;
 import 'package:marquee/marquee.dart';
 
+import 'modern_icons.dart';
 import 'database_helper.dart';
 import 'finance_page.dart';
 import 'history_page.dart';
@@ -79,88 +80,8 @@ class _DashboardPageState extends State<DashboardPage> {
   String get dateLabel =>
       '${currentTime.day.toString().padLeft(2, '0')} / ${currentTime.month.toString().padLeft(2, '0')} / ${currentTime.year}';
 
-  Widget build3DIcon(
-    IconData icon, {
-    double size = 22,
-    Color? color,
-  }) {
-    final s = Theme.of(context).colorScheme;
-    final base = color ?? s.primary;
-
-    final iconLight = switch (icon) {
-      Icons.add_circle_outline => const Color(0xFF7C4DFF),
-      Icons.history_rounded => const Color(0xFF26A69A),
-      Icons.account_balance_wallet_rounded => const Color(0xFFFFA726),
-      Icons.settings_rounded => const Color(0xFF42A5F5),
-      Icons.list_alt_rounded => const Color(0xFF5C6BC0),
-      Icons.inventory_2_rounded => const Color(0xFFAB47BC),
-      Icons.today_rounded => const Color(0xFFEF5350),
-      Icons.calendar_view_week_rounded => const Color(0xFF26C6DA),
-      Icons.calendar_month_rounded => const Color(0xFFEC407A),
-      Icons.payments_rounded => const Color(0xFF66BB6A),
-      Icons.auto_awesome_rounded => const Color(0xFFFFCA28),
-      _ => base,
-    };
-    final iconDeep = Color.alphaBlend(Colors.black.withValues(alpha: .18), iconLight);
-
-    return Container(
-      width: size + 22,
-      height: size + 22,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color.alphaBlend(Colors.white.withValues(alpha: .30), iconLight),
-            iconLight,
-            iconDeep,
-          ],
-        ),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: .88),
-          width: 1.4,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: iconDeep.withValues(alpha: .24),
-            blurRadius: 9,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.white.withValues(alpha: .34),
-            blurRadius: 3,
-            offset: const Offset(-1, -1),
-          ),
-        ],
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.translate(
-            offset: const Offset(1.5, 1.8),
-            child: Icon(icon, size: size, color: Colors.black.withValues(alpha: .22)),
-          ),
-          ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) => LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white,
-                iconLight.withValues(alpha: .98),
-                iconDeep,
-              ],
-            ).createShader(bounds),
-            child: Icon(icon, size: size),
-          ),
-          Transform.translate(
-            offset: const Offset(-1.0, -1.1),
-            child: Icon(icon, size: size * .72, color: Colors.white.withValues(alpha: .28)),
-          ),
-        ],
-      ),
-    );
+  Widget build3DIcon(IconData icon, {double size = 22, Color? color}) {
+    return Icon(icon, size: size);
   }
 
   Widget buildDigitalClock() {
@@ -268,11 +189,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget buildGlowButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
+  Widget buildGlowButton({required IconData icon, required String label, required VoidCallback onPressed}) {
     final s = Theme.of(context).colorScheme;
 
     return Container(
@@ -306,26 +223,14 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             build3DIcon(icon, size: 18),
             const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: s.primary,
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
+            Text(label, style: TextStyle(color: s.primary, fontSize: 14, fontWeight: FontWeight.w900)),
           ],
         ),
       ),
     );
   }
 
-  Widget buildCard({
-    required String title,
-    required String value,
-    required IconData icon,
-    VoidCallback? onTap,
-  }) {
+  Widget buildCard({required String title, required String value, required IconData icon, VoidCallback? onTap}) {
     final s = Theme.of(context).colorScheme;
 
     return InkWell(
@@ -359,23 +264,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: s.primary.withValues(alpha: .60),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  Text(title, style: TextStyle(color: s.primary.withValues(alpha: .60), fontSize: 12, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      color: s.primary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+                  Text(value, style: TextStyle(color: s.primary, fontSize: 16, fontWeight: FontWeight.w900)),
                 ],
               ),
             ),
@@ -393,56 +284,22 @@ class _DashboardPageState extends State<DashboardPage> {
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [s.primary, s.secondary],
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary, s.secondary]),
         border: Border.all(color: Colors.white.withValues(alpha: .62)),
-        boxShadow: [
-          BoxShadow(
-            color: s.primary.withValues(alpha: .10),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 14, offset: const Offset(0, 5))],
       ),
       child: Row(
         children: [
           Stack(
             children: [
-              Text(
-                'WORK EARN',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: .28),
-                  fontSize: 21,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
-                ),
-              ),
+              Text('WORK EARN', style: TextStyle(color: Colors.white.withValues(alpha: .28), fontSize: 21, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
               Transform.translate(
                 offset: const Offset(-1.2, -1.2),
-                child: const Text(
-                  'WORK EARN',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 21,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
-                  ),
-                ),
+                child: const Text('WORK EARN', style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
               ),
               Transform.translate(
                 offset: const Offset(1.6, 2),
-                child: Text(
-                  'WORK EARN',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: .22),
-                    fontSize: 21,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
-                  ),
-                ),
+                child: Text('WORK EARN', style: TextStyle(color: Colors.white.withValues(alpha: .22), fontSize: 21, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
               ),
             ],
           ),
@@ -451,15 +308,8 @@ class _DashboardPageState extends State<DashboardPage> {
             width: 72,
             height: 64,
             padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              color: Colors.white.withValues(alpha: .13),
-              border: Border.all(color: Colors.white.withValues(alpha: .45)),
-            ),
-            child: Image.asset(
-              'assets/branding/workearn_logo.png',
-              fit: BoxFit.contain,
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), color: Colors.white.withValues(alpha: .13), border: Border.all(color: Colors.white.withValues(alpha: .45))),
+            child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain),
           ),
         ],
       ),
@@ -478,78 +328,37 @@ class _DashboardPageState extends State<DashboardPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(fontWeight: FontWeight.w900),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: loadDashboard,
-          ),
-        ],
+        title: const Text('Dashboard', style: TextStyle(fontWeight: FontWeight.w900)),
+        actions: [IconButton(icon: const Icon(Icons.refresh_rounded), onPressed: loadDashboard)],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [s.surface, Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        decoration: BoxDecoration(gradient: LinearGradient(colors: [s.surface, Colors.white], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(18, 6, 18, 18),
           child: Column(
             children: [
               buildHeader(),
               const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerRight,
-                child: buildDigitalClock(),
-              ),
+              Align(alignment: Alignment.centerRight, child: buildDigitalClock()),
               const SizedBox(height: 12),
               Container(
                 height: 78,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(23),
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [s.primary, s.secondary],
-                  ),
+                  gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [s.primary, s.secondary]),
                   border: Border.all(color: Colors.white.withValues(alpha: .35)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: s.primary.withValues(alpha: .09),
-                      blurRadius: 14,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .09), blurRadius: 14, offset: const Offset(0, 5))],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(23),
                   child: Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: build3DIcon(
-                          Icons.auto_awesome_rounded,
-                          size: 23,
-                          color: Colors.white,
-                        ),
-                      ),
+                      Padding(padding: const EdgeInsets.only(left: 10), child: build3DIcon(Icons.auto_awesome_rounded, size: 23)),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Marquee(
-                          text: tickerMessage.isEmpty
-                              ? '✨ Welcome to WorkEarn  •  Turn every stitch into progress'
-                              : tickerMessage,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: .25,
-                          ),
+                          text: tickerMessage.isEmpty ? '✨ Welcome to WorkEarn  •  Turn every stitch into progress' : tickerMessage,
+                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: .25),
                           scrollAxis: Axis.horizontal,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           blankSpace: 80,
@@ -563,104 +372,28 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.add_circle_outline,
-                      label: 'New Entry',
-                      onPressed: () async {
-                        final r = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const WorkPage()),
-                        );
-                        if (r == true) loadDashboard();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.history_rounded,
-                      label: 'History',
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const HistoryPage()),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              Row(children: [
+                Expanded(child: buildGlowButton(icon: Icons.add_circle_outline, label: 'New Entry', onPressed: () async {
+                  final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage()));
+                  if (r == true) loadDashboard();
+                })),
+                const SizedBox(width: 8),
+                Expanded(child: buildGlowButton(icon: Icons.history_rounded, label: 'History', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage())))),
+              ]),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.account_balance_wallet_rounded,
-                      label: 'Finance',
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const FinancePage()),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: buildGlowButton(
-                      icon: Icons.settings_rounded,
-                      label: 'Settings',
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SettingsPage()),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              Row(children: [
+                Expanded(child: buildGlowButton(icon: Icons.account_balance_wallet_rounded, label: 'Finance', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage())))),
+                const SizedBox(width: 8),
+                Expanded(child: buildGlowButton(icon: Icons.settings_rounded, label: 'Settings', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())))),
+              ]),
               const SizedBox(height: 8),
-              buildCard(
-                title: 'Current Balance',
-                value: 'Rs. ${currentBalance.toStringAsFixed(2)}',
-                icon: Icons.account_balance_wallet_rounded,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const FinancePage()),
-                ),
-              ),
-              buildCard(
-                title: 'Total Entries',
-                value: totalEntries.toString(),
-                icon: Icons.list_alt_rounded,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HistoryPage()),
-                ),
-              ),
-              buildCard(
-                title: 'Total Pieces',
-                value: totalPieces.toString(),
-                icon: Icons.inventory_2_rounded,
-              ),
-              buildCard(
-                title: "Today's Earnings",
-                value: 'Rs. ${todayEarning.toStringAsFixed(2)}',
-                icon: Icons.today_rounded,
-              ),
-              buildCard(
-                title: 'Weekly Earnings',
-                value: 'Rs. ${weeklyEarning.toStringAsFixed(2)}',
-                icon: Icons.calendar_view_week_rounded,
-              ),
-              buildCard(
-                title: 'Monthly Earnings',
-                value: 'Rs. ${monthlyEarning.toStringAsFixed(2)}',
-                icon: Icons.calendar_month_rounded,
-              ),
-              buildCard(
-                title: 'Total Earnings',
-                value: 'Rs. ${totalEarning.toStringAsFixed(2)}',
-                icon: Icons.payments_rounded,
-              ),
+              buildCard(title: 'Current Balance', value: 'Rs. ${currentBalance.toStringAsFixed(2)}', icon: Icons.account_balance_wallet_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()))),
+              buildCard(title: 'Total Entries', value: totalEntries.toString(), icon: Icons.list_alt_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()))),
+              buildCard(title: 'Total Pieces', value: totalPieces.toString(), icon: Icons.inventory_2_rounded),
+              buildCard(title: "Today's Earnings", value: 'Rs. ${todayEarning.toStringAsFixed(2)}', icon: Icons.today_rounded),
+              buildCard(title: 'Weekly Earnings', value: 'Rs. ${weeklyEarning.toStringAsFixed(2)}', icon: Icons.calendar_view_week_rounded),
+              buildCard(title: 'Monthly Earnings', value: 'Rs. ${monthlyEarning.toStringAsFixed(2)}', icon: Icons.calendar_month_rounded),
+              buildCard(title: 'Total Earnings', value: 'Rs. ${totalEarning.toStringAsFixed(2)}', icon: Icons.payments_rounded),
             ],
           ),
         ),
