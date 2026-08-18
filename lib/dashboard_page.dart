@@ -7,10 +7,7 @@ import 'history_page.dart';
 import 'finance_page.dart';
 import 'settings_page.dart';
 
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
-  @override State<DashboardPage> createState() => _DashboardPageState();
-}
+class DashboardPage extends StatefulWidget { const DashboardPage({super.key}); @override State<DashboardPage> createState() => _DashboardPageState(); }
 
 class _DashboardPageState extends State<DashboardPage> {
   int totalEntries = 0, totalPieces = 0;
@@ -19,155 +16,40 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime currentTime = DateTime.now();
   Timer? clockTimer;
 
-  @override
-  void initState() {
-    super.initState();
-    clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() => currentTime = DateTime.now());
-    });
-    loadDashboard();
-  }
-
+  @override void initState() { super.initState(); clockTimer = Timer.periodic(const Duration(seconds: 1), (_) { if (mounted) setState(() => currentTime = DateTime.now()); }); loadDashboard(); }
   Future<void> loadDashboard() async {
-    final b = await DatabaseHelper.instance.getBalance();
-    final e = await DatabaseHelper.instance.getTotalEntries();
-    final p = await DatabaseHelper.instance.getTotalPieces();
-    final t = await DatabaseHelper.instance.getTotalEarning();
-    final d = await DatabaseHelper.instance.getTodayEarning();
-    final w = await DatabaseHelper.instance.getWeeklyEarning();
-    final m = await DatabaseHelper.instance.getMonthlyEarning();
-    await DatabaseHelper.instance.getProfile();
-    if (!mounted) return;
-    setState(() {
-      currentBalance = b; totalEntries = e; totalPieces = p; totalEarning = t;
-      todayEarning = d; weeklyEarning = w; monthlyEarning = m; tickerMessage = getTickerMessage();
-    });
+    final b = await DatabaseHelper.instance.getBalance(); final e = await DatabaseHelper.instance.getTotalEntries(); final p = await DatabaseHelper.instance.getTotalPieces(); final t = await DatabaseHelper.instance.getTotalEarning(); final d = await DatabaseHelper.instance.getTodayEarning(); final w = await DatabaseHelper.instance.getWeeklyEarning(); final m = await DatabaseHelper.instance.getMonthlyEarning();
+    await DatabaseHelper.instance.getProfile(); if (!mounted) return;
+    setState(() { currentBalance=b; totalEntries=e; totalPieces=p; totalEarning=t; todayEarning=d; weeklyEarning=w; monthlyEarning=m; tickerMessage=getTickerMessage(); });
   }
+  String getTickerMessage() { if (totalEarning <= 0) return '✨ Welcome to WorkEarn  •  Turn every stitch into progress  •  Add your first entry'; if (todayEarning > 0) return '💎 Today Rs ${todayEarning.toStringAsFixed(0)}   •   📅 Week Rs ${weeklyEarning.toStringAsFixed(0)}   •   🏆 Month Rs ${monthlyEarning.toStringAsFixed(0)}   •   Keep earning, keep growing'; return '📅 Week Rs ${weeklyEarning.toStringAsFixed(0)}   •   🏆 Month Rs ${monthlyEarning.toStringAsFixed(0)}   •   💼 Total Rs ${totalEarning.toStringAsFixed(0)}   •   Keep growing'; }
+  String get digitalTime { final h=currentTime.hour%12==0?12:currentTime.hour%12; return '${h.toString().padLeft(2,'0')}:${currentTime.minute.toString().padLeft(2,'0')}:${currentTime.second.toString().padLeft(2,'0')}'; }
+  String get period => currentTime.hour >= 12 ? 'PM' : 'AM';
+  String get dateLabel => '${currentTime.day.toString().padLeft(2,'0')} / ${currentTime.month.toString().padLeft(2,'0')} / ${currentTime.year}';
 
-  String getTickerMessage() {
-    if (totalEarning <= 0) return '🚀 Welcome to WorkEarn • Add your first work entry today';
-    if (todayEarning > 0) return '💰 Today: Rs ${todayEarning.toStringAsFixed(0)} • 📅 Week: Rs ${weeklyEarning.toStringAsFixed(0)} • 🏆 Month: Rs ${monthlyEarning.toStringAsFixed(0)}';
-    return '📅 Week: Rs ${weeklyEarning.toStringAsFixed(0)} • 🏆 Month: Rs ${monthlyEarning.toStringAsFixed(0)} • 💼 Total: Rs ${totalEarning.toStringAsFixed(0)}';
+  Widget build3DIcon(IconData icon,{double size=22,Color? color}) {
+    final s=Theme.of(context).colorScheme; final c=color??s.primary;
+    return Container(width:size+19,height:size+19,decoration:BoxDecoration(shape:BoxShape.circle,gradient:LinearGradient(begin:Alignment.topLeft,end:Alignment.bottomRight,colors:[s.secondary.withValues(alpha:.95),c.withValues(alpha:.9)]),border:Border.all(color:Colors.white.withValues(alpha:.85),width:1.4),boxShadow:[BoxShadow(color:c.withValues(alpha:.22),blurRadius:7,offset:const Offset(0,3))]),child:Stack(alignment:Alignment.center,children:[Transform.translate(offset:const Offset(-.8,-.8),child:Icon(icon,size:size,color:Colors.white)),Transform.translate(offset:const Offset(.8,.9),child:Icon(icon,size:size,color:c.withValues(alpha:.42)))]));
   }
-
-  String get digitalTime {
-    final h = currentTime.hour % 12 == 0 ? 12 : currentTime.hour % 12;
-    return '${h.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}:${currentTime.second.toString().padLeft(2, '0')} ${currentTime.hour >= 12 ? 'PM' : 'AM'}';
-  }
-
-  Widget build3DIcon(IconData icon, {double size = 22, Color? color}) {
-    final c = color ?? Theme.of(context).colorScheme.primary;
-    return Stack(alignment: Alignment.center, children: [
-      Transform.translate(offset: const Offset(-.7, -.7), child: Icon(icon, size: size, color: Colors.white)),
-      Transform.translate(offset: const Offset(.7, .8), child: Icon(icon, size: size, color: c)),
-    ]);
-  }
-
   Widget buildDigitalClock() {
-    final s = Theme.of(context).colorScheme;
-    return Container(
-      height: 54,
-      padding: const EdgeInsets.symmetric(horizontal: 13),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(colors: [s.primary.withValues(alpha: .95), s.secondary.withValues(alpha: .95)]),
-        border: Border.all(color: Colors.white.withValues(alpha: .35)),
-      ),
-      child: Center(child: Text(digitalTime, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900, letterSpacing: 1.1, shadows: [Shadow(color: Colors.white, blurRadius: 5), Shadow(color: Colors.white70, blurRadius: 2, offset: Offset(1, 2))]))),
-    );
+    final s=Theme.of(context).colorScheme;
+    return Container(width:188,height:82,padding:const EdgeInsets.symmetric(horizontal:14,vertical:8),decoration:BoxDecoration(borderRadius:BorderRadius.circular(24),gradient:LinearGradient(begin:Alignment.topLeft,end:Alignment.bottomRight,colors:[Colors.white,s.primary.withValues(alpha:.07)]),border:Border.all(color:s.primary.withValues(alpha:.18),width:1.2),boxShadow:[BoxShadow(color:s.primary.withValues(alpha:.12),blurRadius:18,offset:const Offset(0,7))]),child:Row(children:[Container(width:40,height:40,decoration:BoxDecoration(shape:BoxShape.circle,gradient:LinearGradient(colors:[s.primary,s.secondary]),boxShadow:[BoxShadow(color:s.primary.withValues(alpha:.22),blurRadius:9)]),child:const Icon(Icons.schedule_rounded,color:Colors.white,size:22)),const SizedBox(width:10),Column(mainAxisAlignment:MainAxisAlignment.center,crossAxisAlignment:CrossAxisAlignment.start,children:[Row(crossAxisAlignment:CrossAxisAlignment.end,children:[Text(digitalTime,style:TextStyle(color:s.primary,fontSize:19,fontWeight:FontWeight.w900,letterSpacing:1.1)),const SizedBox(width:4),Text(period,style:TextStyle(color:s.secondary,fontSize:10,fontWeight:FontWeight.w900))]),Text(dateLabel,style:TextStyle(color:s.primary.withValues(alpha:.58),fontSize:9,fontWeight:FontWeight.w800,letterSpacing:.5))])]));
   }
-
-  Widget buildGlowButton({required IconData icon, required String label, required VoidCallback onPressed}) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(elevation: 0, minimumSize: const Size(double.infinity, 60), backgroundColor: Colors.transparent, shadowColor: Colors.transparent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22))),
-      onPressed: onPressed,
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [build3DIcon(icon, size: 19), const SizedBox(width: 8), Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900))]),
-    );
+  Widget buildGlowButton({required IconData icon,required String label,required VoidCallback onPressed}) {
+    final s=Theme.of(context).colorScheme;
+    return Container(height:62,decoration:BoxDecoration(borderRadius:BorderRadius.circular(20),gradient:LinearGradient(begin:Alignment.topLeft,end:Alignment.bottomRight,colors:[Colors.white,s.primary.withValues(alpha:.06)]),border:Border.all(color:s.primary.withValues(alpha:.18)),boxShadow:[BoxShadow(color:s.primary.withValues(alpha:.08),blurRadius:10,offset:const Offset(0,4))]),child:ElevatedButton(style:ElevatedButton.styleFrom(elevation:0,backgroundColor:Colors.transparent,shadowColor:Colors.transparent,shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(20))),onPressed:onPressed,child:Row(mainAxisAlignment:MainAxisAlignment.center,children:[build3DIcon(icon,size:18),const SizedBox(width:8),Text(label,style:TextStyle(color:s.primary,fontSize:15,fontWeight:FontWeight.w900))])));
   }
-
-  Widget buildCard({required String title, required String value, required IconData icon, VoidCallback? onTap}) {
-    final s = Theme.of(context).colorScheme;
-    return InkWell(
-      borderRadius: BorderRadius.circular(18), onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          gradient: LinearGradient(colors: [Theme.of(context).cardColor.withValues(alpha: .96), s.primary.withValues(alpha: .1)]),
-          border: Border.all(color: s.primary.withValues(alpha: .24)),
-        ),
-        child: Row(children: [
-          Container(width: 42, height: 42, decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [s.primary.withValues(alpha: .22), s.primary.withValues(alpha: .06)]), border: Border.all(color: s.primary.withValues(alpha: .18))), child: Center(child: build3DIcon(icon, size: 19))),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            Text(title, style: TextStyle(color: s.secondary.withValues(alpha: .8), fontSize: 12, fontWeight: FontWeight.w600)),
-            Text(value, style: TextStyle(color: s.primary, fontSize: 16, fontWeight: FontWeight.w800, shadows: const [Shadow(color: Colors.white38, blurRadius: 1, offset: Offset(-.5, -.5)), Shadow(color: Colors.white70, blurRadius: 1, offset: Offset(1, 1))])),
-          ])),
-        ]),
-      ),
-    );
+  Widget buildCard({required String title,required String value,required IconData icon,VoidCallback? onTap}) {
+    final s=Theme.of(context).colorScheme;
+    return InkWell(borderRadius:BorderRadius.circular(20),onTap:onTap,child:Container(margin:const EdgeInsets.symmetric(vertical:5,horizontal:2),padding:const EdgeInsets.symmetric(horizontal:14,vertical:12),decoration:BoxDecoration(borderRadius:BorderRadius.circular(20),gradient:LinearGradient(begin:Alignment.topLeft,end:Alignment.bottomRight,colors:[Colors.white,s.primary.withValues(alpha:.04)]),border:Border.all(color:s.primary.withValues(alpha:.14)),boxShadow:[BoxShadow(color:s.primary.withValues(alpha:.06),blurRadius:10,offset:const Offset(0,4))]),child:Row(children:[build3DIcon(icon,size:19),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisSize:MainAxisSize.min,children:[Text(title,style:TextStyle(color:s.primary.withValues(alpha:.62),fontSize:12,fontWeight:FontWeight.w700)),const SizedBox(height:2),Text(value,style:TextStyle(color:s.primary,fontSize:16,fontWeight:FontWeight.w900))]))]));
   }
-
   Widget buildHeader() {
-    final s = Theme.of(context).colorScheme;
-    return Container(
-      height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), gradient: LinearGradient(colors: [s.primary, s.secondary]), border: Border.all(color: Colors.white.withValues(alpha: .25))),
-      child: Row(children: [
-        const Expanded(child: Text('WORK EARN', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: .8, shadows: [Shadow(color: Colors.white54, blurRadius: 2, offset: Offset(1.2, 1.8))]))),
-        Image.asset('assets/branding/workearn_logo.png', height: 52, width: 86, fit: BoxFit.contain),
-      ]),
-    );
+    final s=Theme.of(context).colorScheme;
+    return Container(height:74,padding:const EdgeInsets.symmetric(horizontal:14),decoration:BoxDecoration(borderRadius:BorderRadius.circular(22),gradient:LinearGradient(begin:Alignment.topLeft,end:Alignment.bottomRight,colors:[s.primary,s.secondary]),border:Border.all(color:Colors.white.withValues(alpha:.55)),boxShadow:[BoxShadow(color:s.primary.withValues(alpha:.14),blurRadius:14,offset:const Offset(0,5))]),child:Row(children:[Stack(children:[Text('WORK EARN',style:TextStyle(color:Colors.white.withValues(alpha:.32),fontSize:20,fontWeight:FontWeight.w900,letterSpacing:1.2)),Transform.translate(offset:const Offset(-1,-1),child:const Text('WORK EARN',style:TextStyle(color:Colors.white,fontSize:20,fontWeight:FontWeight.w900,letterSpacing:1.2))),Transform.translate(offset:const Offset(1.5,2),child:Text('WORK EARN',style:TextStyle(color:Colors.white.withValues(alpha:.25),fontSize:20,fontWeight:FontWeight.w900,letterSpacing:1.2)))]),const Spacer(),Container(width:68,height:58,decoration:BoxDecoration(borderRadius:BorderRadius.circular(16),color:Colors.white.withValues(alpha:.16),border:Border.all(color:Colors.white.withValues(alpha:.45))),child:Image.asset('assets/branding/workearn_logo.png',fit:BoxFit.contain))]);
   }
-
-  @override void dispose() { clockTimer?.cancel(); super.dispose(); }
-
-  @override
-  Widget build(BuildContext context) {
-    final s = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard', style: TextStyle(fontWeight: FontWeight.w800)), actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: loadDashboard)]),
-      body: Container(
-        decoration: BoxDecoration(gradient: LinearGradient(colors: [s.surface, s.primary.withValues(alpha: .08)], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(18, 6, 18, 18),
-          child: Column(children: [
-            buildHeader(), const SizedBox(height: 10),
-            Align(alignment: Alignment.centerRight, child: buildDigitalClock()), const SizedBox(height: 10),
-            Container(
-              height: 72,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), gradient: LinearGradient(colors: [s.primary, s.secondary], begin: Alignment.topLeft, end: Alignment.bottomRight), border: Border.all(color: Colors.white.withValues(alpha: .24))),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: Row(children: [
-                  Padding(padding: const EdgeInsets.only(left: 10), child: Container(width: 46, height: 54, decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), color: Colors.white.withValues(alpha: .18), border: Border.all(color: Colors.white.withValues(alpha: .3))), child: build3DIcon(Icons.insights_rounded, size: 27, color: s.onPrimary))),
-                  Expanded(child: Padding(padding: const EdgeInsets.only(left: 10), child: Marquee(text: tickerMessage.isEmpty ? '🚀 Welcome to WorkEarn' : tickerMessage, style: TextStyle(color: s.onPrimary, fontSize: 20, fontWeight: FontWeight.w800, shadows: const [Shadow(color: Colors.white54, blurRadius: 1.5, offset: Offset(1.5, 2))]), scrollAxis: Axis.horizontal, crossAxisAlignment: CrossAxisAlignment.center, blankSpace: 72, velocity: 32, pauseAfterRound: const Duration(seconds: 1), startPadding: 12))),
-                ]),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(child: buildGlowButton(icon: Icons.add, label: 'New Entry', onPressed: () async { final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage())); if (r == true) loadDashboard(); })),
-              const SizedBox(width: 8),
-              Expanded(child: buildGlowButton(icon: Icons.history, label: 'History', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage())))),
-            ]),
-            Row(children: [
-              Expanded(child: buildGlowButton(icon: Icons.account_balance_wallet, label: 'Finance', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage())))),
-              const SizedBox(width: 8),
-              Expanded(child: buildGlowButton(icon: Icons.settings, label: 'Settings', onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())))),
-            ]),
-            buildCard(title: 'Current Balance', value: 'Rs. ${currentBalance.toStringAsFixed(2)}', icon: Icons.account_balance_wallet, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()))),
-            buildCard(title: 'Total Entries', value: totalEntries.toString(), icon: Icons.list_alt, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()))),
-            buildCard(title: 'Total Pieces', value: totalPieces.toString(), icon: Icons.inventory_2),
-            buildCard(title: 'Total Earnings', value: 'Rs. ${totalEarning.toStringAsFixed(2)}', icon: Icons.payments),
-            buildCard(title: "Today's Earnings", value: 'Rs. ${todayEarning.toStringAsFixed(2)}', icon: Icons.today),
-            buildCard(title: 'Weekly Earnings', value: 'Rs. ${weeklyEarning.toStringAsFixed(2)}', icon: Icons.calendar_view_week),
-            buildCard(title: 'Monthly Earnings', value: 'Rs. ${monthlyEarning.toStringAsFixed(2)}', icon: Icons.calendar_month),
-          ]),
-        ),
-      ),
-    );
+  @override void dispose(){clockTimer?.cancel();super.dispose();}
+  @override Widget build(BuildContext context) {
+    final s=Theme.of(context).colorScheme;
+    return Scaffold(appBar:AppBar(title:const Text('Dashboard',style:TextStyle(fontWeight:FontWeight.w900)),actions:[IconButton(icon:const Icon(Icons.refresh_rounded),onPressed:loadDashboard)]),body:Container(decoration:BoxDecoration(gradient:LinearGradient(colors:[s.surface,Colors.white],begin:Alignment.topCenter,end:Alignment.bottomCenter)),child:SingleChildScrollView(padding:const EdgeInsets.fromLTRB(18,6,18,18),child:Column(children:[buildHeader(),const SizedBox(height:12),Align(alignment:Alignment.centerRight,child:buildDigitalClock()),const SizedBox(height:12),Container(height:76,decoration:BoxDecoration(borderRadius:BorderRadius.circular(22),gradient:LinearGradient(begin:Alignment.centerLeft,end:Alignment.centerRight,colors:[s.primary,s.secondary]),boxShadow:[BoxShadow(color:s.primary.withValues(alpha:.14),blurRadius:14,offset:const Offset(0,5))]),child:ClipRRect(borderRadius:BorderRadius.circular(22),child:Row(children:[Padding(padding:const EdgeInsets.only(left:10),child:build3DIcon(Icons.auto_awesome_rounded,size:23,color:Colors.white)),const SizedBox(width:10),Expanded(child:Marquee(text:tickerMessage.isEmpty?'✨ Welcome to WorkEarn':tickerMessage,style:const TextStyle(color:Colors.white,fontSize:16,fontWeight:FontWeight.w900,letterSpacing:.25),scrollAxis:Axis.horizontal,crossAxisAlignment:CrossAxisAlignment.center,blankSpace:80,velocity:28,pauseAfterRound:const Duration(seconds:2),startPadding:8))]))),const SizedBox(height:12),Row(children:[Expanded(child:buildGlowButton(icon:Icons.add_circle_outline,label:'New Entry',onPressed:()async{final r=await Navigator.push(context,MaterialPageRoute(builder:(_)=>const WorkPage()));if(r==true)loadDashboard();})),const SizedBox(width:8),Expanded(child:buildGlowButton(icon:Icons.history_rounded,label:'History',onPressed:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const HistoryPage()))))]),const SizedBox(height:8),Row(children:[Expanded(child:buildGlowButton(icon:Icons.account_balance_wallet_rounded,label:'Finance',onPressed:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const FinancePage())))),const SizedBox(width:8),Expanded(child:buildGlowButton(icon:Icons.settings_rounded,label:'Settings',onPressed:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const SettingsPage()))))]),const SizedBox(height:8),buildCard(title:'Current Balance',value:'Rs. ${currentBalance.toStringAsFixed(2)}',icon:Icons.account_balance_wallet_rounded,onTap:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const FinancePage()))),buildCard(title:'Total Entries',value:totalEntries.toString(),icon:Icons.list_alt_rounded,onTap:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const HistoryPage()))),buildCard(title:'Total Pieces',value:totalPieces.toString(),icon:Icons.inventory_2_rounded),buildCard(title:"Today's Earnings",value:'Rs. ${todayEarning.toStringAsFixed(2)}',icon:Icons.today_rounded),buildCard(title:'Weekly Earnings',value:'Rs. ${weeklyEarning.toStringAsFixed(2)}',icon:Icons.calendar_view_week_rounded),buildCard(title:'Monthly Earnings',value:'Rs. ${monthlyEarning.toStringAsFixed(2)}',icon:Icons.calendar_month_rounded),buildCard(title:'Total Earnings',value:'Rs. ${totalEarning.toStringAsFixed(2)}',icon:Icons.payments_rounded)]))));
   }
 }
