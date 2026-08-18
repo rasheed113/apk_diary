@@ -145,6 +145,12 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                       const SizedBox(width: 8),
                       ChoiceChip(
+                        label: const Text('This Week'),
+                        selected: selectedFilter == 'This Week',
+                        onSelected: (_) => setState(() => selectedFilter = 'This Week'),
+                      ),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
                         label: const Text('This Month'),
                         selected: selectedFilter == 'This Month',
                         onSelected: (_) => setState(() => selectedFilter = 'This Month'),
