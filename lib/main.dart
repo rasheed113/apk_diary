@@ -135,13 +135,41 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> pages = const [DashboardPage(), WorkPage(), HistoryPage(), FinancePage(), SettingsPage()];
 
   Widget nav3D(IconData icon) {
-    final c = Theme.of(context).colorScheme.primary;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Transform.translate(offset: const Offset(-.7, -.7), child: Icon(icon, size: 22, color: Colors.white)),
-        Transform.translate(offset: const Offset(.7, .8), child: Icon(icon, size: 22, color: c)),
-      ],
+    final iconLight = switch (icon) {
+      Icons.dashboard => const Color(0xFF7C4DFF),
+      Icons.work => const Color(0xFF26A69A),
+      Icons.history => const Color(0xFF42A5F5),
+      Icons.account_balance_wallet => const Color(0xFFFFA726),
+      Icons.settings => const Color(0xFFAB47BC),
+      _ => Theme.of(context).colorScheme.primary,
+    };
+    final iconDeep = Color.alphaBlend(Colors.black.withValues(alpha: .18), iconLight);
+
+    return SizedBox(
+      width: 26,
+      height: 26,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Transform.translate(
+            offset: const Offset(1.2, 1.5),
+            child: Icon(icon, size: 18, color: Colors.black.withValues(alpha: .22)),
+          ),
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) => LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.white, iconLight, iconDeep],
+            ).createShader(bounds),
+            child: Icon(icon, size: 18),
+          ),
+          Transform.translate(
+            offset: const Offset(-.8, -.8),
+            child: Icon(icon, size: 13, color: Colors.white.withValues(alpha: .28)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -151,20 +179,20 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: pages[selectedIndex],
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.only(left: 14, right: 14, bottom: 12),
+        margin: const EdgeInsets.only(left: 10, right: 10, bottom: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(24),
           color: t.cardColor,
-          border: Border.all(color: t.colorScheme.primary.withValues(alpha: .22)),
-          boxShadow: [BoxShadow(color: t.colorScheme.primary.withValues(alpha: .12), blurRadius: 10, offset: const Offset(0, 4))],
+          border: Border.all(color: t.colorScheme.primary.withValues(alpha: .20)),
+          boxShadow: [BoxShadow(color: t.colorScheme.primary.withValues(alpha: .10), blurRadius: 9, offset: const Offset(0, 3))],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(24),
           child: NavigationBar(
-            height: 72,
+            height: 64,
             elevation: 0,
             backgroundColor: t.cardColor,
-            indicatorColor: t.colorScheme.primary.withValues(alpha: .14),
+            indicatorColor: t.colorScheme.primary.withValues(alpha: .12),
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
             selectedIndex: selectedIndex,
             destinations: [
