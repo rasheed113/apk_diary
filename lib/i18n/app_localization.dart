@@ -127,6 +127,7 @@ class AppLocalization {
   String get entrySavedSuccessfully => _value('entrySavedSuccessfully', AppStrings.entrySavedSuccessfully);
   String get entryUpdatedSuccessfully => _value('entryUpdatedSuccessfully', AppStrings.entryUpdatedSuccessfully);
   String get entryDeletedSuccessfully => _value('entryDeletedSuccessfully', AppStrings.entryDeletedSuccessfully);
+  String get entrySaveFailed => _value('entrySaveFailed', AppStrings.entrySaveFailed);
   String get financeRecordSaved => _value('financeRecordSaved', AppStrings.financeRecordSaved);
   String get financeRecordUpdated => _value('financeRecordUpdated', AppStrings.financeRecordUpdated);
   String get financeRecordDeletedSuccessfully => _value('financeRecordDeletedSuccessfully', AppStrings.financeRecordDeletedSuccessfully);
