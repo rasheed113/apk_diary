@@ -11,7 +11,6 @@ import 'work_page.dart';
 import 'theme_manager.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
-import 'i18n/app_strings.dart';
 import 'i18n/app_localization.dart';
 import 'i18n/app_language_controller.dart';
 
@@ -45,10 +44,7 @@ class _MyAppState extends State<MyApp> {
           locale: language.locale,
           supportedLocales: AppLanguage.values.map((item) => item.locale).toList(growable: false),
           theme: ThemeManager.getTheme(theme),
-          builder: (context, child) => Directionality(
-            textDirection: language.textDirection,
-            child: child ?? const SizedBox.shrink(),
-          ),
+          builder: (context, child) => Directionality(textDirection: language.textDirection, child: child ?? const SizedBox.shrink()),
           home: const SplashScreen(),
         );
       },
@@ -83,6 +79,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme;
+    final l = AppLocalization(AppLanguageController.currentLanguage.value);
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -90,11 +87,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         child: Center(child: FadeTransition(opacity: _fade, child: ScaleTransition(scale: _scale, child: Column(mainAxisSize: MainAxisSize.min, children: [
           Image.asset('assets/branding/workearn_logo.png', width: 170, height: 170, fit: BoxFit.contain),
           const SizedBox(height: 22),
-          Text(AppStrings.workEarn, style: TextStyle(color: s.primary, fontSize: 25, fontWeight: FontWeight.w900, letterSpacing: 2.2, shadows: [Shadow(color: s.primary.withValues(alpha: .28), blurRadius: 5, offset: const Offset(1, 2)), const Shadow(color: Colors.white70, blurRadius: 2, offset: Offset(-1, -1))])),
+          Text(l.workEarn, style: TextStyle(color: s.primary, fontSize: 25, fontWeight: FontWeight.w900, letterSpacing: 2.2, shadows: [Shadow(color: s.primary.withValues(alpha: .28), blurRadius: 5, offset: const Offset(1, 2)), const Shadow(color: Colors.white70, blurRadius: 2, offset: Offset(-1, -1))])),
           const SizedBox(height: 10),
-          Text(AppStrings.foundation, textAlign: TextAlign.center, style: TextStyle(color: s.onSurface, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .65)),
+          Text(l.foundation, textAlign: TextAlign.center, style: TextStyle(color: s.onSurface, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .65)),
           const SizedBox(height: 3),
-          Text(AppStrings.founder, style: TextStyle(color: s.onSurface.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: .35)),
+          Text(l.founder, style: TextStyle(color: s.onSurface.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: .35)),
         ]))))),
     );
   }
@@ -113,6 +110,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context);
+    final l = AppLocalization(AppLanguageController.currentLanguage.value);
     return Scaffold(
       body: pages[selectedIndex],
       bottomNavigationBar: Container(
@@ -121,11 +119,11 @@ class _HomePageState extends State<HomePage> {
         child: ClipRRect(borderRadius: BorderRadius.circular(24), child: NavigationBar(
           height: 64, elevation: 0, backgroundColor: t.cardColor, indicatorColor: t.colorScheme.primary.withValues(alpha: .12), labelBehavior: NavigationDestinationLabelBehavior.alwaysShow, selectedIndex: selectedIndex,
           destinations: [
-            NavigationDestination(icon: nav3D(Icons.dashboard), label: AppStrings.dashboard),
-            NavigationDestination(icon: nav3D(Icons.work), label: AppStrings.work),
-            NavigationDestination(icon: nav3D(Icons.history), label: AppStrings.history),
-            NavigationDestination(icon: nav3D(Icons.account_balance_wallet), label: AppStrings.finance),
-            NavigationDestination(icon: nav3D(Icons.settings), label: AppStrings.settings),
+            NavigationDestination(icon: nav3D(Icons.dashboard), label: l.dashboard),
+            NavigationDestination(icon: nav3D(Icons.work), label: l.work),
+            NavigationDestination(icon: nav3D(Icons.history), label: l.history),
+            NavigationDestination(icon: nav3D(Icons.account_balance_wallet), label: l.finance),
+            NavigationDestination(icon: nav3D(Icons.settings), label: l.settings),
           ],
           onDestinationSelected: (index) => setState(() => selectedIndex = index),
         )),
