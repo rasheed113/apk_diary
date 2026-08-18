@@ -211,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: jobType,
-                    decoration: themedInput(context, 'Default Job Type', Icons.assignment),
+                    decoration: themedInput(context, 'Default Job Type', Icons.checkroom),
                     items: const [
                       DropdownMenuItem(value: 'Full Piece', child: Text('Full Piece')),
                       DropdownMenuItem(value: 'Half Piece', child: Text('Half Piece')),
@@ -222,7 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: currency,
-                    decoration: themedInput(context, 'Currency', Icons.currency_rupee),
+                    decoration: themedInput(context, 'Currency', Icons.payments),
                     items: const [DropdownMenuItem(value: 'PKR', child: Text('PKR'))],
                     onChanged: (value) { if (value != null) setState(() => currency = value); },
                   ),
