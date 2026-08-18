@@ -1,34 +1,20 @@
 import 'package:flutter/widgets.dart';
-
 import 'app_strings.dart';
 import 'urdu_translations.dart';
 
-/// Supported application languages.
-enum AppLanguage {
-  english,
-  urdu,
-}
+enum AppLanguage { english, urdu }
 
 extension AppLanguageCode on AppLanguage {
   String get code => switch (this) {
         AppLanguage.english => 'en',
         AppLanguage.urdu => 'ur',
       };
-
-  TextDirection get textDirection => this == AppLanguage.urdu
-      ? TextDirection.rtl
-      : TextDirection.ltr;
-
+  TextDirection get textDirection => this == AppLanguage.urdu ? TextDirection.rtl : TextDirection.ltr;
   Locale get locale => Locale(code);
 }
 
-/// Localised values for the existing AppStrings keys.
-///
-/// English AppStrings values remain the source-of-truth fallback. Urdu values
-/// are supplied only by the dedicated Urdu catalogue.
 class AppLocalization {
   const AppLocalization(this.language);
-
   final AppLanguage language;
 
   String get appName => _value('appName', AppStrings.appName);
@@ -37,16 +23,13 @@ class AppLocalization {
   String get history => _value('history', AppStrings.history);
   String get finance => _value('finance', AppStrings.finance);
   String get settings => _value('settings', AppStrings.settings);
-
   String get languageLabel => _value('language', AppStrings.language);
   String get britishEnglish => _value('britishEnglish', AppStrings.britishEnglish);
   String get urduPakistan => _value('urduPakistan', AppStrings.urduPakistan);
   String get switchLanguage => _value('switchLanguage', AppStrings.switchLanguage);
-
   String get workEarn => _value('workEarn', AppStrings.workEarn);
   String get foundation => _value('foundation', AppStrings.foundation);
   String get founder => _value('founder', AppStrings.founder);
-
   String get save => _value('save', AppStrings.save);
   String get update => _value('update', AppStrings.update);
   String get delete => _value('delete', AppStrings.delete);
@@ -123,6 +106,7 @@ class AppLocalization {
   String get monthlyEarnings => _value('monthlyEarnings', AppStrings.monthlyEarnings);
   String get totalEarnings => _value('totalEarnings', AppStrings.totalEarnings);
 
+  String get profilePicture => _value('profilePicture', AppStrings.profilePicture);
   String get profileAndCover => _value('profileAndCover', AppStrings.profileAndCover);
   String get addCoverImage => _value('addCoverImage', AppStrings.addCoverImage);
   String get operatorName => _value('operatorName', AppStrings.operatorName);
@@ -151,10 +135,5 @@ class AppLocalization {
   String get rateMustBeGreaterThanZero => _value('rateMustBeGreaterThanZero', AppStrings.rateMustBeGreaterThanZero);
   String get pleaseEnterAnItem => _value('pleaseEnterAnItem', AppStrings.pleaseEnterAnItem);
 
-  String _value(String key, String english) {
-    if (language == AppLanguage.urdu) {
-      return urduTranslations[key] ?? english;
-    }
-    return english;
-  }
+  String _value(String key, String english) => language == AppLanguage.urdu ? urduTranslations[key] ?? english : english;
 }
