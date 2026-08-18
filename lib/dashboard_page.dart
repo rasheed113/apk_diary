@@ -87,6 +87,22 @@ class _DashboardPageState extends State<DashboardPage> {
     final s = Theme.of(context).colorScheme;
     final base = color ?? s.primary;
 
+    final iconLight = switch (icon) {
+      Icons.add_circle_outline => const Color(0xFF7C4DFF),
+      Icons.history_rounded => const Color(0xFF26A69A),
+      Icons.account_balance_wallet_rounded => const Color(0xFFFFA726),
+      Icons.settings_rounded => const Color(0xFF42A5F5),
+      Icons.list_alt_rounded => const Color(0xFF5C6BC0),
+      Icons.inventory_2_rounded => const Color(0xFFAB47BC),
+      Icons.today_rounded => const Color(0xFFEF5350),
+      Icons.calendar_view_week_rounded => const Color(0xFF26C6DA),
+      Icons.calendar_month_rounded => const Color(0xFFEC407A),
+      Icons.payments_rounded => const Color(0xFF66BB6A),
+      Icons.auto_awesome_rounded => const Color(0xFFFFCA28),
+      _ => base,
+    };
+    final iconDeep = Color.alphaBlend(Colors.black.withValues(alpha: .18), iconLight);
+
     return Container(
       width: size + 22,
       height: size + 22,
@@ -96,9 +112,9 @@ class _DashboardPageState extends State<DashboardPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            s.secondary.withValues(alpha: .98),
-            base.withValues(alpha: .90),
-            s.primary.withValues(alpha: .82),
+            Color.alphaBlend(Colors.white.withValues(alpha: .30), iconLight),
+            iconLight,
+            iconDeep,
           ],
         ),
         border: Border.all(
@@ -107,9 +123,14 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: base.withValues(alpha: .16),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: iconDeep.withValues(alpha: .24),
+            blurRadius: 9,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: .34),
+            blurRadius: 3,
+            offset: const Offset(-1, -1),
           ),
         ],
       ),
@@ -117,12 +138,25 @@ class _DashboardPageState extends State<DashboardPage> {
         alignment: Alignment.center,
         children: [
           Transform.translate(
-            offset: const Offset(1.1, 1.3),
-            child: Icon(icon, size: size, color: Colors.white.withValues(alpha: .35)),
+            offset: const Offset(1.5, 1.8),
+            child: Icon(icon, size: size, color: Colors.black.withValues(alpha: .22)),
+          ),
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) => LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                iconLight.withValues(alpha: .98),
+                iconDeep,
+              ],
+            ).createShader(bounds),
+            child: Icon(icon, size: size),
           ),
           Transform.translate(
-            offset: const Offset(-.8, -.9),
-            child: Icon(icon, size: size, color: Colors.white),
+            offset: const Offset(-1.0, -1.1),
+            child: Icon(icon, size: size * .72, color: Colors.white.withValues(alpha: .28)),
           ),
         ],
       ),
