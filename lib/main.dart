@@ -20,6 +20,7 @@ Future<void> main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+  await AppLanguageController.initialize();
   final savedTheme = await DatabaseHelper.instance.getTheme();
   AppThemeController.currentTheme.value = AppTheme.values.firstWhere((e) => e.name == savedTheme, orElse: () => AppTheme.classicLight);
   runApp(const MyApp());
