@@ -335,6 +335,15 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               buildCard(title: 'Total Pieces', value: totalPieces.toString(), icon: Icons.inventory_2),
               buildCard(title: 'Total Earnings', value: 'Rs. ${totalEarning.toStringAsFixed(2)}', icon: Icons.payments),
+              buildCard(
+                title: 'Grand Total',
+                value: 'Rs. ${totalEarning.toStringAsFixed(2)}',
+                icon: Icons.emoji_events,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryPage()),
+                ),
+              ),
               buildCard(title: "Today's Earnings", value: 'Rs. ${todayEarning.toStringAsFixed(2)}', icon: Icons.today),
               buildCard(
                 title: 'Weekly Earnings',
