@@ -29,12 +29,12 @@ class Icon extends StatelessWidget {
 
   static String _emoji(IconData? icon) {
     switch (icon) {
-      // Dashboard / navigation
       case Icons.dashboard:
       case Icons.dashboard_rounded:
         return '🖥️';
       case Icons.work:
       case Icons.work_rounded:
+      case Icons.work_outline:
         return '💼';
       case Icons.history:
       case Icons.history_rounded:
@@ -48,7 +48,6 @@ class Icon extends StatelessWidget {
       case Icons.refresh_rounded:
         return '🔄';
 
-      // Dashboard cards / time / progress
       case Icons.add_circle_outline:
       case Icons.add:
         return '➕';
@@ -56,7 +55,8 @@ class Icon extends StatelessWidget {
         return '📋';
       case Icons.inventory_2_rounded:
       case Icons.inventory_2:
-        return '👜';
+      case Icons.inventory_2_outlined:
+        return '📦';
       case Icons.today_rounded:
         return '📆';
       case Icons.calendar_view_week:
@@ -73,7 +73,6 @@ class Icon extends StatelessWidget {
       case Icons.schedule_rounded:
         return '🕖';
 
-      // History / search / actions
       case Icons.search:
         return '🔎';
       case Icons.chevron_right:
@@ -84,21 +83,17 @@ class Icon extends StatelessWidget {
       case Icons.delete:
         return '🗑️';
 
-      // Finance
       case Icons.account_balance:
         return '🏦';
       case Icons.receipt:
         return '🧾';
       case Icons.currency_exchange:
         return '💱';
+      case Icons.currency_rupee:
+        return '🪙';
 
-      // New Entry / work
-      case Icons.work_outline:
-        return '💼';
       case Icons.checkroom:
         return '👔';
-      case Icons.inventory_2_outlined:
-        return '👜';
       case Icons.grid_view:
         return '📐';
       case Icons.numbers:
@@ -109,10 +104,40 @@ class Icon extends StatelessWidget {
         return '📝';
       case Icons.save:
         return '💾';
+      case Icons.calendar_today:
+        return '📆';
 
-      // Settings / profile
       case Icons.person:
         return '👤';
+      case Icons.phone:
+        return '📱';
+      case Icons.business:
+        return '🏢';
+      case Icons.precision_manufacturing:
+        return '⚙️';
+      case Icons.assignment:
+        return '📋';
+      case Icons.palette:
+        return '🎨';
+      case Icons.image:
+      case Icons.photo_library:
+      case Icons.photo_camera:
+        return '🖼️';
+      case Icons.notifications:
+      case Icons.notifications_none:
+        return '🔔';
+      case Icons.language:
+        return '🌐';
+      case Icons.lock:
+      case Icons.lock_outline:
+        return '🔐';
+      case Icons.tune:
+        return '🎛️';
+      case Icons.build:
+        return '🔧';
+      case Icons.done:
+      case Icons.check:
+        return '✅';
 
       default:
         return '🔹';
