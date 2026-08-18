@@ -5,23 +5,26 @@ enum AppTheme { classicLight, shadowDark, goldLegend, platinumPro, cyberBlue, ne
 class ThemeManager {
   static ThemeData getTheme(AppTheme theme) {
     final schemes = <AppTheme, ColorScheme>{
-      AppTheme.classicLight: const ColorScheme.light(primary: Color(0xFF3F51B5), secondary: Color(0xFF5C6BC0)),
-      AppTheme.shadowDark: const ColorScheme.light(primary: Color(0xFF9C27B0), secondary: Color(0xFFE040FB)),
-      AppTheme.goldLegend: const ColorScheme.light(primary: Color(0xFFE0A800), secondary: Color(0xFFFFC107)),
-      AppTheme.platinumPro: const ColorScheme.light(primary: Color(0xFF607080), secondary: Color(0xFF90A4AE)),
-      AppTheme.cyberBlue: const ColorScheme.light(primary: Color(0xFF008CFF), secondary: Color(0xFF42A5F5)),
-      AppTheme.neonGreen: const ColorScheme.light(primary: Color(0xFF159B00), secondary: Color(0xFF39C91F)),
-      AppTheme.rubyRed: const ColorScheme.light(primary: Color(0xFFE31845), secondary: Color(0xFFFF5252)),
+      AppTheme.classicLight: const ColorScheme.light(primary: Color(0xFF4F6BFF), secondary: Color(0xFF7C5CFF), surface: Color(0xFFF9FBFF)),
+      AppTheme.shadowDark: const ColorScheme.light(primary: Color(0xFF8B63F7), secondary: Color(0xFFC18CFF), surface: Color(0xFFFBF9FF)),
+      AppTheme.goldLegend: const ColorScheme.light(primary: Color(0xFFD89B18), secondary: Color(0xFFF3C64B), surface: Color(0xFFFFFCF5)),
+      AppTheme.platinumPro: const ColorScheme.light(primary: Color(0xFF607D8B), secondary: Color(0xFF90A4AE), surface: Color(0xFFF8FAFB)),
+      AppTheme.cyberBlue: const ColorScheme.light(primary: Color(0xFF168BFF), secondary: Color(0xFF49B7FF), surface: Color(0xFFF5FAFF)),
+      AppTheme.neonGreen: const ColorScheme.light(primary: Color(0xFF20A83A), secondary: Color(0xFF65D85D), surface: Color(0xFFF6FFF7)),
+      AppTheme.rubyRed: const ColorScheme.light(primary: Color(0xFFD92B52), secondary: Color(0xFFFF6B7F), surface: Color(0xFFFFF7F9)),
     };
     final scheme = schemes[theme]!;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF7F9FC),
+      scaffoldBackgroundColor: scheme.surface,
       cardColor: Colors.white,
       colorScheme: scheme,
-      appBarTheme: AppBarTheme(backgroundColor: scheme.primary, foregroundColor: Colors.white, elevation: 0),
+      splashColor: scheme.primary.withValues(alpha: .08),
+      highlightColor: scheme.primary.withValues(alpha: .04),
+      appBarTheme: AppBarTheme(backgroundColor: scheme.surface, foregroundColor: scheme.primary, elevation: 0, centerTitle: false),
       navigationBarTheme: NavigationBarThemeData(backgroundColor: Colors.white, elevation: 0, indicatorColor: scheme.primary.withValues(alpha: .12)),
+      cardTheme: const CardThemeData(elevation: 0, surfaceTintColor: Colors.transparent),
     );
   }
 }
