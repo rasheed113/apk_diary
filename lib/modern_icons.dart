@@ -11,5 +11,6 @@ class Icon extends material.StatelessWidget {
 
   const Icon(this.icon,{super.key,this.size,this.color,this.shadows,this.semanticLabel,double? fill,double? weight,double? grade,double? opticalSize,material.TextDirection? textDirection,bool? applyTextScaling,material.BlendMode? blendMode,material.FontWeight? fontWeight});
 
-  @override material.Widget build(material.BuildContext context) => material.Icon(icon,size:size,color:color,shadows:shadows,semanticLabel:semanticLabel);
+  @override
+  material.Widget build(material.BuildContext context) => material.Icon(icon,size:size,color:color,shadows:shadows,semanticLabel:semanticLabel);
 }
