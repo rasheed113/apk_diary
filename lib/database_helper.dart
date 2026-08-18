@@ -267,11 +267,18 @@ class DatabaseHelper {
 
   Future<void> saveTheme(String theme) async {
     final db = await database;
+    final existing = await db.query('profile', columns: ['id'], limit: 1);
+
+    if (existing.isEmpty) {
+      await db.insert('profile', {'selected_theme': theme});
+      return;
+    }
+
     await db.update(
       'profile',
       {'selected_theme': theme},
       where: 'id = ?',
-      whereArgs: [1],
+      whereArgs: [existing.first['id']],
     );
   }
 
@@ -280,8 +287,8 @@ class DatabaseHelper {
     final result = await db.query(
       'profile',
       columns: ['selected_theme'],
-      where: 'id = ?',
-      whereArgs: [1],
+      orderBy: 'id ASC',
+      limit: 1,
     );
     if (result.isNotEmpty) {
       return result.first['selected_theme']?.toString() ?? 'classicLight';
