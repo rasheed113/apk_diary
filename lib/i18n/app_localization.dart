@@ -4,9 +4,6 @@ import 'app_strings.dart';
 import 'urdu_translations.dart';
 
 /// Supported application languages.
-///
-/// English remains the authoritative source language. Urdu is introduced as
-/// a translation layer without changing the existing AppStrings API.
 enum AppLanguage {
   english,
   urdu,
@@ -27,7 +24,7 @@ extension AppLanguageCode on AppLanguage {
 
 /// Localised values for the existing AppStrings keys.
 ///
-/// The English AppStrings values remain the fallback authority. Urdu values
+/// English AppStrings values remain the source-of-truth fallback. Urdu values
 /// are supplied only by the dedicated Urdu catalogue.
 class AppLocalization {
   const AppLocalization(this.language);
@@ -40,6 +37,11 @@ class AppLocalization {
   String get history => _value('history', AppStrings.history);
   String get finance => _value('finance', AppStrings.finance);
   String get settings => _value('settings', AppStrings.settings);
+
+  String get language => _value('language', AppStrings.language);
+  String get britishEnglish => _value('britishEnglish', AppStrings.britishEnglish);
+  String get urduPakistan => _value('urduPakistan', AppStrings.urduPakistan);
+  String get switchLanguage => _value('switchLanguage', AppStrings.switchLanguage);
 
   String get workEarn => _value('workEarn', AppStrings.workEarn);
   String get foundation => _value('foundation', AppStrings.foundation);
@@ -69,9 +71,16 @@ class AppLocalization {
   String get updateEntry => _value('updateEntry', AppStrings.updateEntry);
   String get selectSizes => _value('selectSizes', AppStrings.selectSizes);
   String get customSizes => _value('customSizes', AppStrings.customSizes);
+  String get itemShirt => _value('itemShirt', AppStrings.itemShirt);
+  String get itemPant => _value('itemPant', AppStrings.itemPant);
+  String get itemKameez => _value('itemKameez', AppStrings.itemKameez);
+  String get selectSizesPrompt => _value('selectSizesPrompt', AppStrings.selectSizesPrompt);
 
   String get addFinanceRecord => _value('addFinanceRecord', AppStrings.addFinanceRecord);
   String get editFinanceRecord => _value('editFinanceRecord', AppStrings.editFinanceRecord);
+  String get deleteFinanceRecord => _value('deleteFinanceRecord', AppStrings.deleteFinanceRecord);
+  String get deleteFinanceRecordConfirmation => _value('deleteFinanceRecordConfirmation', AppStrings.deleteFinanceRecordConfirmation);
+  String get financeType => _value('financeType', AppStrings.financeType);
   String get salaryReceived => _value('salaryReceived', AppStrings.salaryReceived);
   String get advanceReceived => _value('advanceReceived', AppStrings.advanceReceived);
   String get other => _value('other', AppStrings.other);
@@ -89,6 +98,13 @@ class AppLocalization {
   String get searchItemOrDate => _value('searchItemOrDate', AppStrings.searchItemOrDate);
   String get selectedWeek => _value('selectedWeek', AppStrings.selectedWeek);
   String get selectedMonth => _value('selectedMonth', AppStrings.selectedMonth);
+  String get selectAnyDateInMonth => _value('selectAnyDateInMonth', AppStrings.selectAnyDateInMonth);
+  String get monthLabel => _value('monthLabel', AppStrings.monthLabel);
+  String get item => _value('item', AppStrings.item);
+  String get size => _value('size', AppStrings.size);
+  String get errorPrefix => _value('errorPrefix', AppStrings.errorPrefix);
+  String get deleteEntry => _value('deleteEntry', AppStrings.deleteEntry);
+  String get deleteEntryConfirmation => _value('deleteEntryConfirmation', AppStrings.deleteEntryConfirmation);
   String get entries => _value('entries', AppStrings.entries);
   String get earnings => _value('earnings', AppStrings.earnings);
   String get noEntriesYet => _value('noEntriesYet', AppStrings.noEntriesYet);
