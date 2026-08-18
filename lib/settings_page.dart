@@ -57,16 +57,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> pickImage() async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => profileImage = File(picked.path));
-    }
+    if (picked != null) setState(() => profileImage = File(picked.path));
   }
 
   Future<void> pickCoverImage() async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => coverImage = File(picked.path));
-    }
+    if (picked != null) setState(() => coverImage = File(picked.path));
   }
 
   Future<void> saveProfile() async {
@@ -89,9 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
     AppThemeController.currentTheme.value = theme;
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile Saved Successfully')),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile Saved Successfully')));
   }
 
   @override
@@ -113,17 +107,15 @@ class _SettingsPageState extends State<SettingsPage> {
         borderRadius: BorderRadius.circular(18),
         side: BorderSide(color: colors.primary.withValues(alpha: 0.12)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: child,
-      ),
+      child: Padding(padding: const EdgeInsets.all(14), child: child),
     );
   }
 
-  InputDecoration themedInput(BuildContext context, String label) {
+  InputDecoration themedInput(BuildContext context, String label, IconData icon) {
     final colors = Theme.of(context).colorScheme;
     return InputDecoration(
       labelText: label,
+      prefixIcon: Icon(icon),
       labelStyle: TextStyle(color: colors.onSurfaceVariant),
       filled: true,
       fillColor: colors.surface,
@@ -149,11 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: AppBar(
-        title: const Text('Settings'),
-        backgroundColor: colors.surface,
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Settings'), backgroundColor: colors.surface, elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -172,7 +160,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text('Profile & Cover', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface)),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.person, size: 20), const SizedBox(width: 7), Text('Profile & Cover', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface))]),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: pickCoverImage,
@@ -186,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
                       ),
                       child: coverImage == null
-                          ? Center(child: Text('Add Cover Image', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700)))
+                          ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.image, size: 24), const SizedBox(width: 8), Text('Add Cover Image', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700))])
                           : null,
                     ),
                   ),
@@ -197,11 +185,11 @@ class _SettingsPageState extends State<SettingsPage> {
               context,
               child: Column(
                 children: [
-                  TextField(controller: nameController, decoration: themedInput(context, 'Operator Name')),
+                  TextField(controller: nameController, decoration: themedInput(context, 'Operator Name', Icons.person)),
                   const SizedBox(height: 12),
-                  TextField(controller: mobileController, keyboardType: TextInputType.phone, decoration: themedInput(context, 'Mobile Number (Optional)')),
+                  TextField(controller: mobileController, keyboardType: TextInputType.phone, decoration: themedInput(context, 'Mobile Number (Optional)', Icons.phone)),
                   const SizedBox(height: 12),
-                  TextField(controller: companyController, decoration: themedInput(context, 'Company Name (Optional)')),
+                  TextField(controller: companyController, decoration: themedInput(context, 'Company Name (Optional)', Icons.business)),
                 ],
               ),
             ),
@@ -211,7 +199,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   DropdownButtonFormField<String>(
                     initialValue: machineType,
-                    decoration: themedInput(context, 'Default Machine Type'),
+                    decoration: themedInput(context, 'Default Machine Type', Icons.precision_manufacturing),
                     items: const [
                       DropdownMenuItem(value: 'Single Needle', child: Text('Single Needle')),
                       DropdownMenuItem(value: 'Over Lock', child: Text('Over Lock')),
@@ -223,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: jobType,
-                    decoration: themedInput(context, 'Default Job Type'),
+                    decoration: themedInput(context, 'Default Job Type', Icons.assignment),
                     items: const [
                       DropdownMenuItem(value: 'Full Piece', child: Text('Full Piece')),
                       DropdownMenuItem(value: 'Half Piece', child: Text('Half Piece')),
@@ -234,14 +222,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: currency,
-                    decoration: themedInput(context, 'Currency'),
+                    decoration: themedInput(context, 'Currency', Icons.currency_rupee),
                     items: const [DropdownMenuItem(value: 'PKR', child: Text('PKR'))],
                     onChanged: (value) { if (value != null) setState(() => currency = value); },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: selectedTheme,
-                    decoration: themedInput(context, 'Theme'),
+                    decoration: themedInput(context, 'Theme', Icons.palette),
                     items: const [
                       DropdownMenuItem(value: 'classicLight', child: Text('Classic Light')),
                       DropdownMenuItem(value: 'shadowDark', child: Text('Shadow Dark')),
@@ -262,7 +250,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            SizedBox(width: double.infinity, height: 55, child: ElevatedButton(onPressed: saveProfile, child: const Text('Save Settings'))),
+            SizedBox(width: double.infinity, height: 55, child: ElevatedButton.icon(onPressed: saveProfile, icon: Icon(Icons.build), label: const Text('Save Settings'))),
           ],
         ),
       ),
