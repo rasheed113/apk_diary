@@ -7,7 +7,6 @@ import 'modern_icons.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
 import 'theme_manager.dart';
-import 'i18n/app_strings.dart';
 import 'i18n/app_language_controller.dart';
 import 'i18n/app_localization.dart';
 
@@ -89,9 +88,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(AppStrings.profileSavedSuccessfully)),
+      SnackBar(content: Text(_l.profileSavedSuccessfully)),
     );
   }
+
+  AppLocalization get _l => AppLocalization(AppLanguageController.currentLanguage.value);
 
   @override
   void dispose() {
@@ -143,11 +144,12 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final l = _l;
     final language = AppLanguageController.currentLanguage.value;
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: AppBar(title: const Text(AppStrings.settings), backgroundColor: colors.surface, elevation: 0),
+      appBar: AppBar(title: Text(l.settings), backgroundColor: colors.surface, elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -157,12 +159,8 @@ class _SettingsPageState extends State<SettingsPage> {
               child: SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 secondary: const Text('🌎', style: TextStyle(fontSize: 25)),
-                title: const Text('Language'),
-                subtitle: Text(
-                  language == AppLanguage.urdu
-                      ? '🇵🇰 Urdu'
-                      : '🇬🇧 British English',
-                ),
+                title: Text(l.languageLabel),
+                subtitle: Text(language == AppLanguage.urdu ? '🇵🇰 ${l.urduPakistan}' : '🇬🇧 ${l.britishEnglish}'),
                 value: language == AppLanguage.urdu,
                 onChanged: (useUrdu) {
                   AppLanguageController.setLanguage(
@@ -185,7 +183,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.person, size: 20), const SizedBox(width: 7), Text(AppStrings.profileAndCover, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface))]),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.person, size: 20), const SizedBox(width: 7), Text(l.profileAndCover, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface))]),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: pickCoverImage,
@@ -199,7 +197,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
                       ),
                       child: coverImage == null
-                          ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.image, size: 24), const SizedBox(width: 8), Text(AppStrings.addCoverImage, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700))])
+                          ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.image, size: 24), const SizedBox(width: 8), Text(l.addCoverImage, style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700))])
                           : null,
                     ),
                   ),
@@ -210,11 +208,11 @@ class _SettingsPageState extends State<SettingsPage> {
               context,
               child: Column(
                 children: [
-                  TextField(controller: nameController, decoration: themedInput(context, AppStrings.operatorName, Icons.person)),
+                  TextField(controller: nameController, decoration: themedInput(context, l.operatorName, Icons.person)),
                   const SizedBox(height: 12),
-                  TextField(controller: mobileController, keyboardType: TextInputType.phone, decoration: themedInput(context, AppStrings.mobileNumberOptional, Icons.phone)),
+                  TextField(controller: mobileController, keyboardType: TextInputType.phone, decoration: themedInput(context, l.mobileNumberOptional, Icons.phone)),
                   const SizedBox(height: 12),
-                  TextField(controller: companyController, decoration: themedInput(context, AppStrings.companyNameOptional, Icons.business)),
+                  TextField(controller: companyController, decoration: themedInput(context, l.companyNameOptional, Icons.business)),
                 ],
               ),
             ),
@@ -224,37 +222,37 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   DropdownButtonFormField<String>(
                     initialValue: machineType,
-                    decoration: themedInput(context, AppStrings.defaultMachineType, Icons.precision_manufacturing),
-                    items: const [
-                      DropdownMenuItem(value: 'Single Needle', child: Text(AppStrings.singleNeedle)),
-                      DropdownMenuItem(value: 'Over Lock', child: Text(AppStrings.overLock)),
-                      DropdownMenuItem(value: 'Flat Lock', child: Text(AppStrings.flatLock)),
-                      DropdownMenuItem(value: 'Other', child: Text(AppStrings.other)),
+                    decoration: themedInput(context, l.defaultMachineType, Icons.precision_manufacturing),
+                    items: [
+                      DropdownMenuItem(value: 'Single Needle', child: Text(l.singleNeedle)),
+                      DropdownMenuItem(value: 'Over Lock', child: Text(l.overLock)),
+                      DropdownMenuItem(value: 'Flat Lock', child: Text(l.flatLock)),
+                      DropdownMenuItem(value: 'Other', child: Text(l.other)),
                     ],
                     onChanged: (value) { if (value != null) setState(() => machineType = value); },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: jobType,
-                    decoration: themedInput(context, AppStrings.defaultJobType, Icons.checkroom),
-                    items: const [
-                      DropdownMenuItem(value: 'Full Piece', child: Text(AppStrings.fullPiece)),
-                      DropdownMenuItem(value: 'Half Piece', child: Text(AppStrings.halfPiece)),
-                      DropdownMenuItem(value: 'Contract', child: Text(AppStrings.contract)),
+                    decoration: themedInput(context, l.defaultJobType, Icons.checkroom),
+                    items: [
+                      DropdownMenuItem(value: 'Full Piece', child: Text(l.fullPiece)),
+                      DropdownMenuItem(value: 'Half Piece', child: Text(l.halfPiece)),
+                      DropdownMenuItem(value: 'Contract', child: Text(l.contract)),
                     ],
                     onChanged: (value) { if (value != null) setState(() => jobType = value); },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: currency,
-                    decoration: themedInput(context, AppStrings.currency, Icons.payments),
+                    decoration: themedInput(context, l.currency, Icons.payments),
                     items: const [DropdownMenuItem(value: 'PKR', child: Text('PKR'))],
                     onChanged: (value) { if (value != null) setState(() => currency = value); },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: selectedTheme,
-                    decoration: themedInput(context, AppStrings.theme, Icons.palette),
+                    decoration: themedInput(context, l.theme, Icons.palette),
                     items: const [
                       DropdownMenuItem(value: 'classicLight', child: Text('Classic Light')),
                       DropdownMenuItem(value: 'shadowDark', child: Text('Shadow Dark')),
@@ -275,7 +273,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            SizedBox(width: double.infinity, height: 55, child: ElevatedButton.icon(onPressed: saveProfile, icon: Icon(Icons.build), label: const Text(AppStrings.saveSettings))),
+            SizedBox(width: double.infinity, height: 55, child: ElevatedButton.icon(onPressed: saveProfile, icon: Icon(Icons.build), label: Text(l.saveSettings))),
           ],
         ),
       ),
