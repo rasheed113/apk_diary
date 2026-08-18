@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Icon;
 import 'package:image_picker/image_picker.dart';
 
+import 'modern_icons.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
 import 'theme_manager.dart';
@@ -167,20 +168,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       radius: 50,
                       backgroundColor: colors.primary.withValues(alpha: 0.10),
                       backgroundImage: profileImage != null ? FileImage(profileImage!) : null,
-                      child: profileImage == null
-                          ? Icon(Icons.person, size: 50, color: colors.primary)
-                          : null,
+                      child: profileImage == null ? Icon(Icons.person, size: 50) : null,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    'Profile & Cover',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: colors.onSurface,
-                    ),
-                  ),
+                  Text('Profile & Cover', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: colors.onSurface)),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: pickCoverImage,
@@ -190,21 +182,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
                         color: colors.primary.withValues(alpha: 0.06),
-                        image: coverImage != null
-                            ? DecorationImage(image: FileImage(coverImage!), fit: BoxFit.cover)
-                            : null,
+                        image: coverImage != null ? DecorationImage(image: FileImage(coverImage!), fit: BoxFit.cover) : null,
                         border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
                       ),
                       child: coverImage == null
-                          ? Center(
-                              child: Text(
-                                'Add Cover Image',
-                                style: TextStyle(
-                                  color: colors.primary,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            )
+                          ? Center(child: Text('Add Cover Image', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700)))
                           : null,
                     ),
                   ),
@@ -217,11 +199,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   TextField(controller: nameController, decoration: themedInput(context, 'Operator Name')),
                   const SizedBox(height: 12),
-                  TextField(
-                    controller: mobileController,
-                    keyboardType: TextInputType.phone,
-                    decoration: themedInput(context, 'Mobile Number (Optional)'),
-                  ),
+                  TextField(controller: mobileController, keyboardType: TextInputType.phone, decoration: themedInput(context, 'Mobile Number (Optional)')),
                   const SizedBox(height: 12),
                   TextField(controller: companyController, decoration: themedInput(context, 'Company Name (Optional)')),
                 ],
@@ -240,9 +218,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       DropdownMenuItem(value: 'Flat Lock', child: Text('Flat Lock')),
                       DropdownMenuItem(value: 'Other', child: Text('Other')),
                     ],
-                    onChanged: (value) {
-                      if (value != null) setState(() => machineType = value);
-                    },
+                    onChanged: (value) { if (value != null) setState(() => machineType = value); },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
@@ -253,18 +229,14 @@ class _SettingsPageState extends State<SettingsPage> {
                       DropdownMenuItem(value: 'Half Piece', child: Text('Half Piece')),
                       DropdownMenuItem(value: 'Contract', child: Text('Contract')),
                     ],
-                    onChanged: (value) {
-                      if (value != null) setState(() => jobType = value);
-                    },
+                    onChanged: (value) { if (value != null) setState(() => jobType = value); },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: currency,
                     decoration: themedInput(context, 'Currency'),
                     items: const [DropdownMenuItem(value: 'PKR', child: Text('PKR'))],
-                    onChanged: (value) {
-                      if (value != null) setState(() => currency = value);
-                    },
+                    onChanged: (value) { if (value != null) setState(() => currency = value); },
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
@@ -282,10 +254,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     onChanged: (value) async {
                       if (value == null) return;
                       setState(() => selectedTheme = value);
-                      final theme = AppTheme.values.firstWhere(
-                        (e) => e.name == value,
-                        orElse: () => AppTheme.classicLight,
-                      );
+                      final theme = AppTheme.values.firstWhere((e) => e.name == value, orElse: () => AppTheme.classicLight);
                       AppThemeController.currentTheme.value = theme;
                       await DatabaseHelper.instance.saveTheme(value);
                     },
@@ -293,14 +262,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: saveProfile,
-                child: const Text('Save Settings'),
-              ),
-            ),
+            SizedBox(width: double.infinity, height: 55, child: ElevatedButton(onPressed: saveProfile, child: const Text('Save Settings'))),
           ],
         ),
       ),
