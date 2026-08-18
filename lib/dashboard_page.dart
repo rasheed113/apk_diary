@@ -286,50 +286,126 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
 
               const SizedBox(height: 10),
-              Card(
-                elevation: 20,
-                shadowColor: Theme.of(
-                  context,
-                ).colorScheme.secondary.withValues(alpha: 0.9),
-                color: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Container(
-                  height: 64,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.secondary,
-                      ],
+
+              // Premium 3D ticker: data and right-to-left marquee behaviour unchanged.
+              Container(
+                height: 72,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.secondary,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.24),
+                    width: 1.4,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.34),
+                      blurRadius: 18,
+                      offset: const Offset(0, 7),
                     ),
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.5),
-                        blurRadius: 30,
-                        spreadRadius: 5,
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.white.withValues(alpha: 0.16),
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.10),
+                              ],
+                              stops: const [0.0, 0.42, 1.0],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 10,
+                        top: 9,
+                        bottom: 9,
+                        child: Container(
+                          width: 46,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(13),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white.withValues(alpha: 0.30),
+                                Colors.white.withValues(alpha: 0.08),
+                              ],
+                            ),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.30),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.20),
+                                blurRadius: 7,
+                                offset: const Offset(2, 3),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.insights_rounded,
+                            size: 27,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black38,
+                                blurRadius: 2,
+                                offset: Offset(1.5, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 66),
+                        child: Marquee(
+                          text: tickerMessage.isEmpty
+                              ? "🚀 Welcome to WorkEarn"
+                              : tickerMessage,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.25,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black45,
+                                blurRadius: 1.5,
+                                offset: Offset(1.5, 2),
+                              ),
+                              Shadow(
+                                color: Colors.white24,
+                                blurRadius: 1,
+                                offset: Offset(-0.7, -0.7),
+                              ),
+                            ],
+                          ),
+                          scrollAxis: Axis.horizontal,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          blankSpace: 72,
+                          velocity: 32,
+                          pauseAfterRound: const Duration(seconds: 1),
+                          startPadding: 12,
+                        ),
                       ),
                     ],
-                  ),
-                  child: Marquee(
-                    text: tickerMessage.isEmpty
-                        ? "🚀 Welcome to WorkEarn"
-                        : tickerMessage,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    scrollAxis: Axis.horizontal,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    blankSpace: 60,
-                    velocity: 32,
-                    pauseAfterRound: const Duration(seconds: 1),
-                    startPadding: 20,
                   ),
                 ),
               ),
