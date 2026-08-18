@@ -2,8 +2,7 @@
 ///
 /// English is the authoritative source language for all user-facing strings.
 /// UI pages should consume these getters instead of embedding user-facing text
-/// directly. Urdu will be added as a language layer later; no language UI is
-/// introduced by this file.
+/// directly. Every user-facing key is mirrored by the Urdu translation layer.
 class AppStrings {
   const AppStrings._();
 
@@ -14,6 +13,12 @@ class AppStrings {
   static const history = 'History';
   static const finance = 'Finance';
   static const settings = 'Settings';
+
+  // Language
+  static const language = 'Language';
+  static const britishEnglish = 'British English';
+  static const urduPakistan = 'Urdu (Pakistan)';
+  static const switchLanguage = 'Switch';
 
   // Splash / branding
   static const workEarn = 'WORK EARN';
@@ -46,10 +51,17 @@ class AppStrings {
   static const updateEntry = 'Update Entry';
   static const selectSizes = 'Select Sizes';
   static const customSizes = 'Custom Sizes';
+  static const itemShirt = 'Shirt';
+  static const itemPant = 'Pant';
+  static const itemKameez = 'Kameez';
+  static const selectSizesPrompt = 'Select sizes';
 
   // Finance
   static const addFinanceRecord = 'Add Finance Record';
   static const editFinanceRecord = 'Edit Finance Record';
+  static const deleteFinanceRecord = 'Delete Finance Record';
+  static const deleteFinanceRecordConfirmation = 'Are you sure you want to delete this finance record?';
+  static const financeType = 'Finance Type';
   static const salaryReceived = 'Salary Received';
   static const advanceReceived = 'Advance Received';
   static const other = 'Other';
@@ -68,6 +80,13 @@ class AppStrings {
   static const searchItemOrDate = 'Search Item or Date...';
   static const selectedWeek = 'Selected Week';
   static const selectedMonth = 'Selected Month';
+  static const selectAnyDateInMonth = 'Select any date in the month';
+  static const monthLabel = 'Month';
+  static const item = 'Item';
+  static const size = 'Size';
+  static const errorPrefix = 'Error';
+  static const deleteEntry = 'Delete Entry';
+  static const deleteEntryConfirmation = 'Are you sure you want to delete this entry?';
   static const entries = 'Entries';
   static const earnings = 'Earnings';
   static const noEntriesYet = 'No Entries Yet';
