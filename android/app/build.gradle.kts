@@ -3,7 +3,7 @@ import java.io.File
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -36,12 +36,11 @@ android {
                 throw GradleException("Missing WorkEarn release keystore. Configure the GitHub Actions signing secrets before building a release APK.")
             }
             storeFile = keystoreFile
-            storePassword = System.getenv("WORKEARN_KEYSTORE_PASSWORD")
+            val signingPassword = System.getenv("WORKEARN_KEYSTORE_PASSWORD")
                 ?: throw GradleException("Missing WORKEARN_KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("WORKEARN_KEY_ALIAS")
-                ?: throw GradleException("Missing WORKEARN_KEY_ALIAS")
-            keyPassword = System.getenv("WORKEARN_KEY_PASSWORD")
-                ?: throw GradleException("Missing WORKEARN_KEY_PASSWORD")
+            storePassword = signingPassword
+            keyAlias = "workearn"
+            keyPassword = signingPassword
         }
     }
 
