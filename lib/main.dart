@@ -45,14 +45,14 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fade;
-  late final Animation<double> _credits;
+  late final Animation<double> _creditsAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 10));
     _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.18, curve: Curves.easeOut));
-    _credits = CurvedAnimation(parent: _controller, curve: const Interval(0.25, 0.92, curve: Curves.easeInOut));
+    _creditsAnimation = CurvedAnimation(parent: _controller, curve: const Interval(0.25, 0.92, curve: Curves.easeInOut));
     _controller.forward();
     Timer(const Duration(seconds: 11), () {
       if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
@@ -99,9 +99,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   Widget _credits(double height) {
     return AnimatedBuilder(
-      animation: _credits,
+      animation: _creditsAnimation,
       builder: (context, child) {
-        final offset = height * .52 - _credits.value * height * 1.28;
+        final offset = height * .52 - _creditsAnimation.value * height * 1.28;
         return Transform.translate(offset: Offset(0, offset), child: child);
       },
       child: Column(mainAxisSize: MainAxisSize.min, children: [
