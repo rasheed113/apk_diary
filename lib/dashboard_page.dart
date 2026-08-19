@@ -8,7 +8,6 @@ import 'history_page.dart';
 import 'settings_page.dart';
 import 'work_page.dart';
 import 'i18n/app_localization.dart';
-import 'i18n/app_language_controller.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -21,8 +20,9 @@ class _DashboardPageState extends State<DashboardPage> {
   String tickerMessage = '';
   DateTime currentTime = DateTime.now();
   Timer? clockTimer;
+  bool _loading = false;
 
-  AppLocalization get l => AppLocalization(AppLanguage.english);
+  AppLocalization get l => AppLocalization.english();
 
   @override
   void initState() {
@@ -30,29 +30,42 @@ class _DashboardPageState extends State<DashboardPage> {
     clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() => currentTime = DateTime.now());
     });
-    loadDashboard();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) loadDashboard();
+    });
   }
 
   Future<void> loadDashboard() async {
-    final b = await DatabaseHelper.instance.getBalance();
-    final e = await DatabaseHelper.instance.getTotalEntries();
-    final p = await DatabaseHelper.instance.getTotalPieces();
-    final t = await DatabaseHelper.instance.getTotalEarning();
-    final d = await DatabaseHelper.instance.getTodayEarning();
-    final w = await DatabaseHelper.instance.getWeeklyEarning();
-    final m = await DatabaseHelper.instance.getMonthlyEarning();
-    await DatabaseHelper.instance.getProfile();
-    if (!mounted) return;
-    setState(() {
-      currentBalance = b;
-      totalEntries = e;
-      totalPieces = p;
-      totalEarning = t;
-      todayEarning = d;
-      weeklyEarning = w;
-      monthlyEarning = m;
-      tickerMessage = getTickerMessage();
-    });
+    if (_loading) return;
+    _loading = true;
+    try {
+      final b = await DatabaseHelper.instance.getBalance();
+      final e = await DatabaseHelper.instance.getTotalEntries();
+      final p = await DatabaseHelper.instance.getTotalPieces();
+      final t = await DatabaseHelper.instance.getTotalEarning();
+      final d = await DatabaseHelper.instance.getTodayEarning();
+      final w = await DatabaseHelper.instance.getWeeklyEarning();
+      final m = await DatabaseHelper.instance.getMonthlyEarning();
+      if (!mounted) return;
+      setState(() {
+        currentBalance = b;
+        totalEntries = e;
+        totalPieces = p;
+        totalEarning = t;
+        todayEarning = d;
+        weeklyEarning = w;
+        monthlyEarning = m;
+        tickerMessage = getTickerMessage();
+      });
+    } catch (_) {
+      // A completed entry must never turn the Dashboard into a blank screen.
+      // Keep the last known dashboard values if a refresh query fails.
+      if (mounted && tickerMessage.isEmpty) {
+        setState(() => tickerMessage = getTickerMessage());
+      }
+    } finally {
+      _loading = false;
+    }
   }
 
   String getTickerMessage() {
@@ -70,10 +83,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget buildDigitalClock() {
     final s = Theme.of(context).colorScheme;
-    return Container(width: 220, height: 96, padding: const EdgeInsets.all(10), decoration: BoxDecoration(borderRadius: BorderRadius.circular(26), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white, s.primary.withValues(alpha: .045)]), border: Border.all(color: s.primary.withValues(alpha: .16), width: 1.2), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .09), blurRadius: 18, offset: const Offset(0, 7))]), child: Row(children: [
-      Container(width: 58, height: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(19), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.secondary, s.primary]), border: Border.all(color: Colors.white.withValues(alpha: .7)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .14), blurRadius: 10, offset: const Offset(0, 4))]), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.schedule_rounded, color: Colors.white, size: 28), const SizedBox(height: 3), Text(period, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1))])),
-      const SizedBox(width: 12), Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(digitalTime, maxLines: 1, style: TextStyle(color: s.primary, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1.1)), const SizedBox(height: 5), Text(dateLabel, maxLines: 1, style: TextStyle(color: s.primary.withValues(alpha: .56), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .45)), const SizedBox(height: 5), Container(height: 3, width: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), gradient: LinearGradient(colors: [s.secondary, s.primary]))) ]))
-    ]));
+    return Container(width: 220, height: 96, padding: const EdgeInsets.all(10), decoration: BoxDecoration(borderRadius: BorderRadius.circular(26), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white, s.primary.withValues(alpha: .045)]), border: Border.all(color: s.primary.withValues(alpha: .16), width: 1.2), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .09), blurRadius: 18, offset: const Offset(0, 7))]), child: Row(children: [Container(width: 58, height: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(19), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.secondary, s.primary]), border: Border.all(color: Colors.white.withValues(alpha: .7)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .14), blurRadius: 10, offset: const Offset(0, 4))]), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.schedule_rounded, color: Colors.white, size: 28), const SizedBox(height: 3), Text(period, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1))])), const SizedBox(width: 12), Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(digitalTime, maxLines: 1, style: TextStyle(color: s.primary, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1.1)), const SizedBox(height: 5), Text(dateLabel, maxLines: 1, style: TextStyle(color: s.primary.withValues(alpha: .56), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .45)), const SizedBox(height: 5), Container(height: 3, width: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), gradient: LinearGradient(colors: [s.secondary, s.primary]))) ]))]));
   }
 
   Widget buildGlowButton({required IconData icon, required String label, required VoidCallback onPressed}) {
@@ -95,6 +105,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme;
-    return Scaffold(appBar: AppBar(title: Text(l.dashboard, style: const TextStyle(fontWeight: FontWeight.w900)), actions: [IconButton(icon: const Icon(Icons.refresh_rounded), onPressed: loadDashboard)]), body: Container(decoration: BoxDecoration(gradient: LinearGradient(colors: [s.surface, Colors.white], begin: Alignment.topCenter, end: Alignment.bottomCenter)), child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(18, 6, 18, 18), child: Column(children: [buildHeader(), const SizedBox(height: 12), Align(alignment: Alignment.centerRight, child: buildDigitalClock()), const SizedBox(height: 12), Container(height: 78, decoration: BoxDecoration(borderRadius: BorderRadius.circular(23), gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [s.primary, s.secondary]), border: Border.all(color: Colors.white.withValues(alpha: .35)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .09), blurRadius: 14, offset: const Offset(0, 5))]), child: ClipRRect(borderRadius: BorderRadius.circular(23), child: Row(children: [Padding(padding: const EdgeInsets.only(left: 10), child: build3DIcon(Icons.auto_awesome_rounded, size: 23)), const SizedBox(width: 10), Expanded(child: Marquee(text: tickerMessage.isEmpty ? '✨ ${l.welcomeToWorkEarn}  •  ${l.turnEveryStitchIntoProgress}' : tickerMessage, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: .25), scrollAxis: Axis.horizontal, crossAxisAlignment: CrossAxisAlignment.center, blankSpace: 80, velocity: 28, pauseAfterRound: const Duration(seconds: 2), startPadding: 8))]))), const SizedBox(height: 12), Row(children: [Expanded(child: buildGlowButton(icon: Icons.add_circle_outline_rounded, label: l.newEntry, onPressed: () async { final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage())); if (r == true) loadDashboard(); })), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.history_rounded, label: l.history, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()))))]), const SizedBox(height: 8), Row(children: [Expanded(child: buildGlowButton(icon: Icons.account_balance_wallet_rounded, label: l.finance, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage())))), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.settings_rounded, label: l.settings, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()))))]), const SizedBox(height: 8), buildCard(title: l.currentBalance, value: 'Rs. ${currentBalance.toStringAsFixed(2)}', icon: Icons.account_balance_wallet_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()))), buildCard(title: l.totalPieces, value: totalPieces.toString(), icon: Icons.inventory_2_rounded), buildCard(title: l.todaysEarnings, value: 'Rs. ${todayEarning.toStringAsFixed(2)}', icon: Icons.today_rounded), buildCard(title: l.weeklyEarnings, value: 'Rs. ${weeklyEarning.toStringAsFixed(2)}', icon: Icons.calendar_view_week_rounded), buildCard(title: l.monthlyEarnings, value: 'Rs. ${monthlyEarning.toStringAsFixed(2)}', icon: Icons.calendar_month_rounded), buildCard(title: l.totalEntries, value: totalEntries.toString(), icon: Icons.format_list_numbered_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()))), buildCard(title: l.totalEarnings, value: 'Rs. ${totalEarning.toStringAsFixed(2)}', icon: Icons.payments_rounded)]))));
+    return Scaffold(appBar: AppBar(title: Text(l.dashboard, style: const TextStyle(fontWeight: FontWeight.w900)), actions: [IconButton(icon: const Icon(Icons.refresh_rounded), onPressed: loadDashboard)]), body: Container(decoration: BoxDecoration(gradient: LinearGradient(colors: [s.surface, Colors.white], begin: Alignment.topCenter, end: Alignment.bottomCenter)), child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(18, 6, 18, 18), child: Column(children: [buildHeader(), const SizedBox(height: 12), Align(alignment: Alignment.centerRight, child: buildDigitalClock()), const SizedBox(height: 12), Container(height: 78, decoration: BoxDecoration(borderRadius: BorderRadius.circular(23), gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [s.primary, s.secondary]), border: Border.all(color: Colors.white.withValues(alpha: .35)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .09), blurRadius: 14, offset: const Offset(0, 5))]), child: ClipRRect(borderRadius: BorderRadius.circular(23), child: Row(children: [Padding(padding: const EdgeInsets.only(left: 10), child: build3DIcon(Icons.auto_awesome_rounded, size: 23)), const SizedBox(width: 10), Expanded(child: Marquee(text: tickerMessage.isEmpty ? '✨ ${l.welcomeToWorkEarn}  •  ${l.turnEveryStitchIntoProgress}' : tickerMessage, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: .25), scrollAxis: Axis.horizontal, crossAxisAlignment: CrossAxisAlignment.center, blankSpace: 80, velocity: 28, pauseAfterRound: const Duration(seconds: 2), startPadding: 8))]))), const SizedBox(height: 12), Row(children: [Expanded(child: buildGlowButton(icon: Icons.add_circle_outline_rounded, label: l.newEntry, onPressed: () async { final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage())); if (r == true && mounted) await loadDashboard(); })), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.history_rounded, label: l.history, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage())))]), const SizedBox(height: 8), Row(children: [Expanded(child: buildGlowButton(icon: Icons.account_balance_wallet_rounded, label: l.finance, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage())))), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.settings_rounded, label: l.settings, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())))]), const SizedBox(height: 8), buildCard(title: l.currentBalance, value: 'Rs. ${currentBalance.toStringAsFixed(2)}', icon: Icons.account_balance_wallet_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FinancePage()))), buildCard(title: l.totalPieces, value: totalPieces.toString(), icon: Icons.inventory_2_rounded), buildCard(title: l.todaysEarnings, value: 'Rs. ${todayEarning.toStringAsFixed(2)}', icon: Icons.today_rounded), buildCard(title: l.weeklyEarnings, value: 'Rs. ${weeklyEarning.toStringAsFixed(2)}', icon: Icons.calendar_view_week_rounded), buildCard(title: l.monthlyEarnings, value: 'Rs. ${monthlyEarning.toStringAsFixed(2)}', icon: Icons.calendar_month_rounded), buildCard(title: l.totalEntries, value: totalEntries.toString(), icon: Icons.format_list_numbered_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryPage()))), buildCard(title: l.totalEarnings, value: 'Rs. ${totalEarning.toStringAsFixed(2)}', icon: Icons.payments_rounded)]))));
   }
 }
