@@ -117,6 +117,14 @@ class _DashboardPageState extends State<DashboardPage> {
     ]);
   }
 
+  Widget _buildTicker3DText(String text) {
+    return Stack(alignment: Alignment.centerLeft, children: [
+      Transform.translate(offset: const Offset(1.5, 2.2), child: Text(text, maxLines: 1, overflow: TextOverflow.clip, style: const TextStyle(color: Color(0xAA061018), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: .18))),
+      Transform.translate(offset: const Offset(.8, 1.1), child: Text(text, maxLines: 1, overflow: TextOverflow.clip, style: const TextStyle(color: Color(0xCC7EEBFF), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: .18))),
+      Text(text, maxLines: 1, overflow: TextOverflow.clip, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: .18, shadows: [Shadow(color: Color(0xFFFFFFFF), offset: Offset(-.35, -.45), blurRadius: .5), Shadow(color: Color(0x88000000), offset: Offset(1.1, 1.2), blurRadius: 1.2)])),
+    ]);
+  }
+
   Widget buildGlowButton({required IconData icon, required String label, required VoidCallback onPressed}) {
     final s = Theme.of(context).colorScheme;
     return Container(
@@ -167,24 +175,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25)),
           if (companyName.isNotEmpty) ...[const SizedBox(height: 1), Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700))],
         ])),
-        Container(
-          width: 42,
-          height: 40,
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(11),
-            color: Colors.white.withValues(alpha: .16),
-            border: Border.all(color: Colors.white.withValues(alpha: .55)),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: .18), blurRadius: 5, offset: const Offset(2, 3)),
-              BoxShadow(color: Colors.white.withValues(alpha: .22), blurRadius: 3, offset: const Offset(-1, -1)),
-            ],
-          ),
-          child: Stack(children: [
-            Transform.translate(offset: const Offset(1.2, 1.8), child: Opacity(opacity: .28, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))),
-            Transform.translate(offset: const Offset(0, -1), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain)),
-          ]),
-        ),
+        Container(width: 42, height: 40, padding: const EdgeInsets.all(3), decoration: BoxDecoration(borderRadius: BorderRadius.circular(11), color: Colors.white.withValues(alpha: .16), border: Border.all(color: Colors.white.withValues(alpha: .55)), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .18), blurRadius: 5, offset: const Offset(2, 3)), BoxShadow(color: Colors.white.withValues(alpha: .22), blurRadius: 3, offset: const Offset(-1, -1))]), child: Stack(children: [Transform.translate(offset: const Offset(1.2, 1.8), child: Opacity(opacity: .28, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))), Transform.translate(offset: const Offset(0, -1), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))])),
       ]),
     );
   }
@@ -206,7 +197,7 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: const EdgeInsets.fromLTRB(14, 4, 14, 18),
           child: Column(children: [
             buildHeader(), const SizedBox(height: 7), Align(alignment: Alignment.centerRight, child: buildDigitalClock()), const SizedBox(height: 7),
-            Container(height: 42, decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [s.primary, s.secondary]), border: Border.all(color: Colors.white.withValues(alpha: .35)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .07), blurRadius: 8, offset: const Offset(0, 3))]), child: ClipRRect(borderRadius: BorderRadius.circular(14), child: Row(children: [Padding(padding: const EdgeInsets.only(left: 8), child: build3DIcon(Icons.auto_awesome_rounded, size: 17)), const SizedBox(width: 7), Expanded(child: Marquee(text: tickerMessage.isEmpty ? '✨ ${l.welcomeToWorkEarn}  •  ${l.turnEveryStitchIntoProgress}' : tickerMessage, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .18), scrollAxis: Axis.horizontal, crossAxisAlignment: CrossAxisAlignment.center, blankSpace: 50, velocity: 24, pauseAfterRound: const Duration(seconds: 2), startPadding: 6))]))),
+            Container(height: 42, decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [s.primary, s.secondary]), border: Border.all(color: Colors.white.withValues(alpha: .35)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .07), blurRadius: 8, offset: const Offset(0, 3))]), child: ClipRRect(borderRadius: BorderRadius.circular(14), child: Row(children: [Padding(padding: const EdgeInsets.only(left: 8), child: build3DIcon(Icons.auto_awesome_rounded, size: 17)), const SizedBox(width: 7), Expanded(child: Marquee(text: tickerMessage.isEmpty ? '✨ ${l.welcomeToWorkEarn}  •  ${l.turnEveryStitchIntoProgress}' : tickerMessage, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: .18), scrollAxis: Axis.horizontal, crossAxisAlignment: CrossAxisAlignment.center, blankSpace: 50, velocity: 24, pauseAfterRound: const Duration(seconds: 2), startPadding: 6, ))]))),
             const SizedBox(height: 7),
             Row(children: [Expanded(child: buildGlowButton(icon: Icons.add_circle_outline_rounded, label: l.newEntry, onPressed: () async { final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage())); if (r == true && mounted) await loadDashboard(); })), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.history_rounded, label: l.history, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => HistoryPage(initialFilter: 'Today')))))]),
             const SizedBox(height: 8),
