@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:io';
 import 'package:flutter/material.dart' hide Icon;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -52,40 +53,122 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _scale;
   late final Animation<double> _fade;
+  late final Animation<double> _titleScale;
+  late final Animation<double> _credits;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
-    _scale = CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 10));
+    _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.18, curve: Curves.easeOut));
+    _titleScale = CurvedAnimation(parent: _controller, curve: const Interval(0.08, 0.32, curve: Curves.easeOutBack));
+    _credits = CurvedAnimation(parent: _controller, curve: const Interval(0.25, 0.92, curve: Curves.easeInOut));
     _controller.forward();
-    Timer(const Duration(milliseconds: 2300), () {
+    Timer(const Duration(seconds: 11), () {
       if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
     });
   }
 
-  @override void dispose() { _controller.dispose(); super.dispose(); }
+  @override
+  void dispose() { _controller.dispose(); super.dispose(); }
+
+  Widget _star(double size, double left, double top, double phase, Color color) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final p = (_controller.value + phase) % 1.0;
+        final x = left - p * 90;
+        final y = top + p * 180;
+        final twinkle = .45 + .55 * math.sin((p * math.pi * 2) + phase * 6).abs();
+        return Positioned(left: x, top: y, child: Opacity(opacity: twinkle, child: Transform.rotate(angle: p * math.pi, child: child)));
+      },
+      child: Text('✦', style: TextStyle(fontSize: size, color: color, shadows: [Shadow(color: color.withValues(alpha: .85), blurRadius: size * .8)])),
+    );
+  }
+
+  Widget _rocket() {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final p = Curves.easeInOut.transform((_controller.value * 1.08).clamp(0.0, 1.0));
+        final dx = -30 + p * 150;
+        final dy = 420 - p * 520;
+        return Positioned(left: dx, top: dy, child: Transform.rotate(angle: -.30, child: child));
+      },
+      child: const Text('🚀', style: TextStyle(fontSize: 34, shadows: [Shadow(color: Colors.cyanAccent, blurRadius: 10)])),
+    );
+  }
+
+  Widget _threeDText(String text, {double size = 20, TextAlign align = TextAlign.center, bool hero = false}) {
+    final face = hero ? Colors.white : const Color(0xFFEAF7FF);
+    final glow = hero ? const Color(0xFF38D9FF) : const Color(0xFF66E6FF);
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Text(text, textAlign: align, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.4 : .8, color: Colors.black87, shadows: [const Shadow(color: Colors.black, blurRadius: 1, offset: Offset(4, 5)), Shadow(color: glow.withValues(alpha: .8), blurRadius: 9, offset: const Offset(0, 0))])),
+        Text(text, textAlign: align, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.4 : .8, color: face, shadows: [Shadow(color: glow, blurRadius: 5), const Shadow(color: Colors.white54, blurRadius: 1, offset: Offset(-1, -1))])),
+      ],
+    );
+  }
+
+  Widget _credits(double height) {
+    return AnimatedBuilder(
+      animation: _credits,
+      builder: (context, child) {
+        final offset = height * .52 - _credits.value * height * 1.28;
+        return Transform.translate(offset: Offset(0, offset), child: child);
+      },
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        _threeDText('WORK EARN APP', size: 34, hero: true),
+        const SizedBox(height: 55),
+        _threeDText('Produced by', size: 18),
+        const SizedBox(height: 8),
+        _threeDText('Dynamics Technology Foundation', size: 21),
+        const SizedBox(height: 48),
+        _threeDText('Founder', size: 18),
+        const SizedBox(height: 8),
+        _threeDText('Rasheed Afridi', size: 27, hero: true),
+        const SizedBox(height: 55),
+        _threeDText('Keep track of your work.', size: 20),
+        const SizedBox(height: 12),
+        _threeDText('Keep track of your earnings.', size: 20),
+        const SizedBox(height: 55),
+        _threeDText('Thank you for using', size: 17),
+        const SizedBox(height: 8),
+        _threeDText('Work Earn App', size: 25, hero: true),
+        const SizedBox(height: 80),
+      ]),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final s = Theme.of(context).colorScheme;
-    final l = AppLocalization.english();
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.surface, s.primary.withValues(alpha: .12)])),
-        child: Center(child: FadeTransition(opacity: _fade, child: ScaleTransition(scale: _scale, child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Image.asset('assets/branding/workearn_logo.png', width: 170, height: 170, fit: BoxFit.contain),
-          const SizedBox(height: 22),
-          Text(l.workEarn, style: TextStyle(color: s.primary, fontSize: 25, fontWeight: FontWeight.w900, letterSpacing: 2.2, shadows: [Shadow(color: s.primary.withValues(alpha: .28), blurRadius: 5, offset: const Offset(1, 2)), const Shadow(color: Colors.white70, blurRadius: 2, offset: Offset(-1, -1))])),
-          const SizedBox(height: 10),
-          Text(l.foundation, textAlign: TextAlign.center, style: TextStyle(color: s.onSurface, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .65)),
-          const SizedBox(height: 3),
-          Text(l.founder, style: TextStyle(color: s.onSurface.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700, letterSpacing: .35)),
-        ]))))),
+      backgroundColor: const Color(0xFF02040A),
+      body: LayoutBuilder(builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        final h = constraints.maxHeight;
+        return ClipRect(
+          child: Stack(children: [
+            Positioned.fill(child: Container(decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.25), radius: 1.05, colors: [Color(0xFF111B35), Color(0xFF050810), Color(0xFF010205)])))),
+            Positioned.fill(child: Opacity(opacity: .14, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))),
+            Positioned(top: 22, right: 24, child: Text('☾', style: TextStyle(fontSize: 58, color: const Color(0xFFEAF4FF), shadows: [Shadow(color: const Color(0xFF8EDCFF).withValues(alpha: .8), blurRadius: 24)]))),
+            _star(11, w * .82, -20, .03, const Color(0xFF8DEBFF)),
+            _star(16, w * .58, 35, .21, const Color(0xFFFFE89A)),
+            _star(9, w * .34, -10, .44, const Color(0xFFB8A7FF)),
+            _star(14, w * .94, 170, .62, const Color(0xFF8DEBFF)),
+            _star(8, w * .70, 260, .77, const Color(0xFFFFC8F2)),
+            _star(12, w * .25, 180, .37, const Color(0xFFFFE89A)),
+            _star(7, w * .50, 320, .89, const Color(0xFF8DEBFF)),
+            _star(13, w * .08, 90, .56, const Color(0xFFB8A7FF)),
+            _rocket(),
+            Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .25), Colors.black.withValues(alpha: .55)])))),
+            FadeTransition(opacity: _fade, child: SizedBox(height: h, width: w, child: _credits(h))),
+            Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: .04), width: 1))))),
+          ]),
+        );
+      }),
     );
   }
 }
