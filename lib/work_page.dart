@@ -149,7 +149,20 @@ class _WorkPageState extends State<WorkPage> {
     }
 
     if (!mounted) return;
-    Navigator.of(context).pop<bool>(true);
+
+    // WorkPage can be opened in two different ways:
+    // 1) pushed from Dashboard -> it is safe to pop back to Dashboard;
+    // 2) displayed directly as HomePage's Work tab -> popping would remove
+    //    the root HomePage and leave a black screen. Guard the pop accordingly.
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop<bool>(true);
+    } else {
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isEditMode ? l10n.updateEntry : l10n.saveEntry)),
+      );
+    }
   }
 
   InputDecoration fieldDecoration(String label, IconData icon) => InputDecoration(labelText: label, prefixIcon: Icon(icon), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), isDense: true);
