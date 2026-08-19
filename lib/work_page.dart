@@ -148,9 +148,6 @@ class _WorkPageState extends State<WorkPage> {
       return;
     }
 
-    // The database operation is complete. Do not rebuild this route, show a
-    // post-save snackbar, or schedule work against this State. Return exactly
-    // once with the result owned by the caller.
     if (!mounted) return;
     Navigator.of(context).pop<bool>(true);
   }
@@ -198,7 +195,7 @@ class _WorkPageState extends State<WorkPage> {
           const SizedBox(height: 10),
           field(DropdownButtonFormField<String>(initialValue: selectedItem, decoration: fieldDecoration(l10n.itemName, Icons.checkroom), items: itemList.map((e) => DropdownMenuItem(value: e, child: Row(children: [itemOptionIcon(e), const SizedBox(width: 10), Text(localizedItemName(e))]))).toList(), onChanged: (value) { if (value != null) setState(() => selectedItem = value); })),
           if (selectedItem == 'Other') field(TextField(controller: customItemController, decoration: fieldDecoration(l10n.customItem, Icons.inventory_2))),
-          field(Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: selectSizes, icon: const Icon(Icons.grid_view), label: Text(selectedSizes.isEmpty ? l10n.selectSizes : selectedSizes.join(', ')))),
+          field(Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: selectSizes, icon: const Icon(Icons.grid_view), label: Text(selectedSizes.isEmpty ? l10n.selectSizes : selectedSizes.join(', '))))),
           field(TextField(controller: piecesController, keyboardType: TextInputType.number, decoration: fieldDecoration(l10n.pieces, Icons.numbers), onChanged: (_) => calculateTotal())),
           field(TextField(controller: rateController, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: fieldDecoration(l10n.rate, Icons.payments), onChanged: (_) => calculateTotal())),
           field(DropdownButtonFormField<String>(initialValue: selectedRateType, decoration: fieldDecoration(l10n.rateType, Icons.category), items: rateTypes.map((e) => DropdownMenuItem(value: e, child: Text(localizedRateType(e)))).toList(), onChanged: (value) { if (value != null) { setState(() => selectedRateType = value); } })),
