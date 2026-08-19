@@ -117,5 +117,22 @@ class _FreshObjectsPainter extends CustomPainter {
 class HomePage extends StatefulWidget { const HomePage({super.key}); @override State<HomePage> createState()=>_HomePageState(); }
 class _HomePageState extends State<HomePage> {
   int selectedIndex=0; final List<Widget> pages=[const DashboardPage(),const WorkPage(embedded:true),const HistoryPage(),const FinancePage(),const SettingsPage()]; Widget nav3D(IconData icon)=>Icon(icon,size:20);
-  @override Widget build(BuildContext context) { final t=Theme.of(context); final l=AppLocalization.english(); return Scaffold(body:pages[selectedIndex],bottomNavigationBar:Container(margin:const EdgeInsets.only(left:10,right:10,bottom:8),decoration:BoxDecoration(borderRadius:BorderRadius.circular(24),color:t.cardColor,border:Border.all(color:t.colorScheme.primary.withValues(alpha:.20)),boxShadow:[BoxShadow(color:t.colorScheme.primary.withValues(alpha:.10),blurRadius:9,offset:const Offset(0,3))]),child:ClipRRect(borderRadius:BorderRadius.circular(24),child:NavigationBar(height:64,elevation:0,backgroundColor:t.cardColor,indicatorColor:t.colorScheme.primary.withValues(alpha:.12),labelBehavior:NavigationDestinationLabelBehavior.alwaysShow,selectedIndex:selectedIndex,destinations:[NavigationDestination(icon:nav3D(Icons.dashboard),label:l.dashboard),NavigationDestination(icon:nav3D(Icons.work),label:l.work),NavigationDestination(icon:nav3D(Icons.history),label:l.history),NavigationDestination(icon:nav3D(Icons.account_balance_wallet),label:l.finance),NavigationDestination(icon:nav3D(Icons.settings),label:l.settings)],onDestinationSelected:(index)=>setState(()=>selectedIndex=index)))); }
+  @override Widget build(BuildContext context) {
+    final t=Theme.of(context); final l=AppLocalization.english();
+    return Scaffold(
+      body: pages[selectedIndex],
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(left:10,right:10,bottom:8),
+        decoration: BoxDecoration(borderRadius:BorderRadius.circular(24),color:t.cardColor,border:Border.all(color:t.colorScheme.primary.withValues(alpha:.20)),boxShadow:[BoxShadow(color:t.colorScheme.primary.withValues(alpha:.10),blurRadius:9,offset:const Offset(0,3))]),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: NavigationBar(
+            height:64,elevation:0,backgroundColor:t.cardColor,indicatorColor:t.colorScheme.primary.withValues(alpha:.12),labelBehavior:NavigationDestinationLabelBehavior.alwaysShow,selectedIndex:selectedIndex,
+            destinations:[NavigationDestination(icon:nav3D(Icons.dashboard),label:l.dashboard),NavigationDestination(icon:nav3D(Icons.work),label:l.work),NavigationDestination(icon:nav3D(Icons.history),label:l.history),NavigationDestination(icon:nav3D(Icons.account_balance_wallet),label:l.finance),NavigationDestination(icon:nav3D(Icons.settings),label:l.settings)],
+            onDestinationSelected:(index)=>setState(()=>selectedIndex=index),
+          ),
+        ),
+      ),
+    );
+  }
 }
