@@ -172,8 +172,19 @@ class _DashboardPageState extends State<DashboardPage> {
         CircleAvatar(radius: 19, backgroundColor: Colors.white.withValues(alpha: .18), backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null, child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 22)),
         const SizedBox(width: 9),
         Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25)),
-          if (companyName.isNotEmpty) ...[const SizedBox(height: 1), Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700))],
+          Stack(clipBehavior: Clip.none, children: [
+            Transform.translate(offset: const Offset(1.2, 1.8), child: Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xAA061018), fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25))),
+            Transform.translate(offset: const Offset(.55, .85), child: Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xCC7EEBFF), fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25))),
+            Transform.translate(offset: const Offset(0, -.55), child: Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25, shadows: [Shadow(color: Color(0xFFFFFFFF), offset: Offset(-.35, -.45), blurRadius: .5), Shadow(color: Color(0x88000000), offset: Offset(1, 1.2), blurRadius: 1.1)]))),
+          ]),
+          if (companyName.isNotEmpty) ...[
+            const SizedBox(height: 1),
+            Stack(clipBehavior: Clip.none, children: [
+              Transform.translate(offset: const Offset(.9, 1.3), child: Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0x99061018), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .18))),
+              Transform.translate(offset: const Offset(.4, .6), child: Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xBB7EEBFF), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .18))),
+              Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xEFFFFFFF), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .18, shadows: [Shadow(color: Color(0xCCFFFFFF), offset: Offset(-.25, -.3), blurRadius: .35), Shadow(color: Color(0x77000000), offset: Offset(.7, .8), blurRadius: .8)])),
+            ]),
+          ],
         ])),
         Container(width: 42, height: 40, padding: const EdgeInsets.all(3), decoration: BoxDecoration(borderRadius: BorderRadius.circular(11), color: Colors.white.withValues(alpha: .16), border: Border.all(color: Colors.white.withValues(alpha: .55)), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .18), blurRadius: 5, offset: const Offset(2, 3)), BoxShadow(color: Colors.white.withValues(alpha: .22), blurRadius: 3, offset: const Offset(-1, -1))]), child: Stack(children: [Transform.translate(offset: const Offset(1.2, 1.8), child: Opacity(opacity: .28, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))), Transform.translate(offset: const Offset(0, -1), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))])),
       ]),
