@@ -66,7 +66,6 @@ jobs:
           echo "Release keystore verified."
 
       - run: flutter clean
-
       - run: flutter pub get
 
       - name: Build signed release APK
@@ -84,7 +83,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          apksigner verify --verbose build/app/outputs/flutter-apk/app-release.apk
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -x "$APKSIGNER"
+          echo "Using apksigner: $APKSIGNER"
+          "$APKSIGNER" verify --verbose build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
