@@ -50,13 +50,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    // The visual animation lasts 3 seconds; the final frame is then held briefly
-    // so the cinematic sequence is actually visible before entering the app.
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 3));
     _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.10, curve: Curves.easeOut));
     _creditsAnimation = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 1.0, curve: Curves.easeInOutCubic));
     _controller.forward();
-    Timer(const Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 4), () {
       if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
     });
   }
@@ -93,9 +91,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   Widget _credits(double height) {
     return AnimatedBuilder(animation: _creditsAnimation, builder: (context, child) {
-      // Start just below the screen and finish just above it. The complete
-      // credit stack therefore travels through the viewport instead of
-      // starting halfway through and showing only the final line.
       const contentTravel = 980.0;
       final offset = height * .82 - _creditsAnimation.value * contentTravel;
       return Transform.translate(offset: Offset(0, offset), child: child);
