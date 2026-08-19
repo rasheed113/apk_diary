@@ -7,7 +7,8 @@ import 'i18n/app_localization.dart';
 
 class WorkPage extends StatefulWidget {
   final DiaryEntry? entry;
-  const WorkPage({super.key, this.entry});
+  final bool embedded;
+  const WorkPage({super.key, this.entry, this.embedded = false});
   @override State<WorkPage> createState() => _WorkPageState();
 }
 
@@ -150,19 +151,17 @@ class _WorkPageState extends State<WorkPage> {
 
     if (!mounted) return;
 
-    // WorkPage can be opened in two different ways:
-    // 1) pushed from Dashboard -> it is safe to pop back to Dashboard;
-    // 2) displayed directly as HomePage's Work tab -> popping would remove
-    //    the root HomePage and leave a black screen. Guard the pop accordingly.
-    final navigator = Navigator.of(context);
-    if (navigator.canPop()) {
-      navigator.pop<bool>(true);
-    } else {
+    // WorkPage is either a pushed route (embedded == false) or the Work tab
+    // owned by HomePage (embedded == true). Only the pushed route may pop.
+    if (widget.embedded) {
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isEditMode ? l10n.updateEntry : l10n.saveEntry)),
+        SnackBar(content: Text(isEditMode ? l10n.updateEntry : l10n.entrySavedSuccessfully)),
       );
+      return;
     }
+
+    Navigator.of(context).pop<bool>(true);
   }
 
   InputDecoration fieldDecoration(String label, IconData icon) => InputDecoration(labelText: label, prefixIcon: Icon(icon), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), isDense: true);
