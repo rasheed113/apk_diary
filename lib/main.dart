@@ -21,27 +21,18 @@ Future<void> main() async {
     databaseFactory = databaseFactoryFfi;
   }
   final savedTheme = await DatabaseHelper.instance.getTheme();
-  AppThemeController.currentTheme.value = AppTheme.values.firstWhere(
-    (e) => e.name == savedTheme,
-    orElse: () => AppTheme.classicLight,
-  );
+  AppThemeController.currentTheme.value = AppTheme.values.firstWhere((e) => e.name == savedTheme, orElse: () => AppTheme.classicLight);
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     final localization = AppLocalization.english();
     return ValueListenableBuilder<AppTheme>(
       valueListenable: AppThemeController.currentTheme,
-      builder: (context, theme, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: localization.appName,
-        theme: ThemeManager.getTheme(theme),
-        home: const SplashScreen(),
-      ),
+      builder: (context, theme, child) => MaterialApp(debugShowCheckedModeBanner: false, title: localization.appName, theme: ThemeManager.getTheme(theme), home: const SplashScreen()),
     );
   }
 }
@@ -54,7 +45,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fade;
-  late final Animation<double> _titleScale;
   late final Animation<double> _credits;
 
   @override
@@ -62,7 +52,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 10));
     _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.18, curve: Curves.easeOut));
-    _titleScale = CurvedAnimation(parent: _controller, curve: const Interval(0.08, 0.32, curve: Curves.easeOutBack));
     _credits = CurvedAnimation(parent: _controller, curve: const Interval(0.25, 0.92, curve: Curves.easeInOut));
     _controller.forward();
     Timer(const Duration(seconds: 11), () {
@@ -70,8 +59,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     });
   }
 
-  @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  @override void dispose() { _controller.dispose(); super.dispose(); }
 
   Widget _star(double size, double left, double top, double phase, Color color) {
     return AnimatedBuilder(
@@ -103,13 +91,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Widget _threeDText(String text, {double size = 20, TextAlign align = TextAlign.center, bool hero = false}) {
     final face = hero ? Colors.white : const Color(0xFFEAF7FF);
     final glow = hero ? const Color(0xFF38D9FF) : const Color(0xFF66E6FF);
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Text(text, textAlign: align, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.4 : .8, color: Colors.black87, shadows: [const Shadow(color: Colors.black, blurRadius: 1, offset: Offset(4, 5)), Shadow(color: glow.withValues(alpha: .8), blurRadius: 9, offset: const Offset(0, 0))])),
-        Text(text, textAlign: align, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.4 : .8, color: face, shadows: [Shadow(color: glow, blurRadius: 5), const Shadow(color: Colors.white54, blurRadius: 1, offset: Offset(-1, -1))])),
-      ],
-    );
+    return Stack(alignment: Alignment.center, children: [
+      Text(text, textAlign: align, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.4 : .8, color: Colors.black87, shadows: [const Shadow(color: Colors.black, blurRadius: 1, offset: Offset(4, 5)), Shadow(color: glow.withValues(alpha: .8), blurRadius: 9)])),
+      Text(text, textAlign: align, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.4 : .8, color: face, shadows: [Shadow(color: glow, blurRadius: 5), const Shadow(color: Colors.white54, blurRadius: 1, offset: Offset(-1, -1))])),
+    ]);
   }
 
   Widget _credits(double height) {
@@ -124,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         const SizedBox(height: 55),
         _threeDText('Produced by', size: 18),
         const SizedBox(height: 8),
-        _threeDText('Dynamics Technology Foundation', size: 21),
+        _threeDText('ERGS Dynamics Foundation Technology', size: 21),
         const SizedBox(height: 48),
         _threeDText('Founder', size: 18),
         const SizedBox(height: 8),
@@ -149,25 +134,25 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       body: LayoutBuilder(builder: (context, constraints) {
         final w = constraints.maxWidth;
         final h = constraints.maxHeight;
-        return ClipRect(
-          child: Stack(children: [
-            Positioned.fill(child: Container(decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.25), radius: 1.05, colors: [Color(0xFF111B35), Color(0xFF050810), Color(0xFF010205)])))),
-            Positioned.fill(child: Opacity(opacity: .14, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))),
-            Positioned(top: 22, right: 24, child: Text('☾', style: TextStyle(fontSize: 58, color: const Color(0xFFEAF4FF), shadows: [Shadow(color: const Color(0xFF8EDCFF).withValues(alpha: .8), blurRadius: 24)]))),
-            _star(11, w * .82, -20, .03, const Color(0xFF8DEBFF)),
-            _star(16, w * .58, 35, .21, const Color(0xFFFFE89A)),
-            _star(9, w * .34, -10, .44, const Color(0xFFB8A7FF)),
-            _star(14, w * .94, 170, .62, const Color(0xFF8DEBFF)),
-            _star(8, w * .70, 260, .77, const Color(0xFFFFC8F2)),
-            _star(12, w * .25, 180, .37, const Color(0xFFFFE89A)),
-            _star(7, w * .50, 320, .89, const Color(0xFF8DEBFF)),
-            _star(13, w * .08, 90, .56, const Color(0xFFB8A7FF)),
-            _rocket(),
-            Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .25), Colors.black.withValues(alpha: .55)])))),
-            FadeTransition(opacity: _fade, child: SizedBox(height: h, width: w, child: _credits(h))),
-            Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: .04), width: 1))))),
-          ]),
-        );
+        return ClipRect(child: Stack(children: [
+          Positioned.fill(child: Container(decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.25), radius: 1.05, colors: [Color(0xFF111B35), Color(0xFF050810), Color(0xFF010205)])))),
+          Positioned.fill(child: Opacity(opacity: .14, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))),
+          Positioned(top: 22, right: 24, child: Text('☾', style: TextStyle(fontSize: 58, color: const Color(0xFFEAF4FF), shadows: [Shadow(color: const Color(0xFF8EDCFF).withValues(alpha: .8), blurRadius: 24)]))),
+          Positioned(top: h * .18, left: 0, right: 0, child: IgnorePointer(child: _threeDText('ERGS DYNAMICS', size: 31))),
+          Positioned(top: h * .235, left: 0, right: 0, child: IgnorePointer(child: Opacity(opacity: .42, child: _threeDText('FOUNDATION TECHNOLOGY', size: 18)))),
+          _star(11, w * .82, -20, .03, const Color(0xFF8DEBFF)),
+          _star(16, w * .58, 35, .21, const Color(0xFFFFE89A)),
+          _star(9, w * .34, -10, .44, const Color(0xFFB8A7FF)),
+          _star(14, w * .94, 170, .62, const Color(0xFF8DEBFF)),
+          _star(8, w * .70, 260, .77, const Color(0xFFFFC8F2)),
+          _star(12, w * .25, 180, .37, const Color(0xFFFFE89A)),
+          _star(7, w * .50, 320, .89, const Color(0xFF8DEBFF)),
+          _star(13, w * .08, 90, .56, const Color(0xFFB8A7FF)),
+          _rocket(),
+          Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .25), Colors.black.withValues(alpha: .55)])))),
+          FadeTransition(opacity: _fade, child: SizedBox(height: h, width: w, child: _credits(h))),
+          Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: .04), width: 1))))),
+        ]));
       }),
     );
   }
@@ -182,7 +167,6 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   final List<Widget> pages = [const DashboardPage(), const WorkPage(embedded: true), const HistoryPage(), const FinancePage(), const SettingsPage()];
   Widget nav3D(IconData icon) => Icon(icon, size: 20);
-
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context);
