@@ -12,7 +12,6 @@ import 'theme_manager.dart';
 import 'app_theme_controller.dart';
 import 'database_helper.dart';
 import 'i18n/app_localization.dart';
-import 'i18n/app_language_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,37 +19,30 @@ Future<void> main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
-  await AppLanguageController.initialize();
   final savedTheme = await DatabaseHelper.instance.getTheme();
-  AppThemeController.currentTheme.value = AppTheme.values.firstWhere((e) => e.name == savedTheme, orElse: () => AppTheme.classicLight);
+  AppThemeController.currentTheme.value = AppTheme.values.firstWhere(
+    (e) => e.name == savedTheme,
+    orElse: () => AppTheme.classicLight,
+  );
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  @override State<MyApp> createState() => _MyAppState();
-}
 
-class _MyAppState extends State<MyApp> {
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder<AppLanguage>(
-    valueListenable: AppLanguageController.currentLanguage,
-    builder: (context, language, child) => ValueListenableBuilder<AppTheme>(
+  Widget build(BuildContext context) {
+    final localization = AppLocalization.english();
+    return ValueListenableBuilder<AppTheme>(
       valueListenable: AppThemeController.currentTheme,
-      builder: (context, theme, child) {
-        final localization = AppLocalization(language);
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: localization.appName,
-          locale: language.locale,
-          supportedLocales: AppLanguage.values.map((item) => item.locale).toList(growable: false),
-          theme: ThemeManager.getTheme(theme),
-          builder: (context, child) => Directionality(textDirection: language.textDirection, child: child ?? const SizedBox.shrink()),
-          home: const SplashScreen(),
-        );
-      },
-    ),
-  );
+      builder: (context, theme, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: localization.appName,
+        theme: ThemeManager.getTheme(theme),
+        home: const SplashScreen(),
+      ),
+    );
+  }
 }
 
 class SplashScreen extends StatefulWidget {
@@ -80,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme;
-    final l = AppLocalization(AppLanguageController.currentLanguage.value);
+    final l = AppLocalization.english();
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -111,7 +103,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context);
-    final l = AppLocalization(AppLanguageController.currentLanguage.value);
+    final l = AppLocalization.english();
     return Scaffold(
       body: pages[selectedIndex],
       bottomNavigationBar: Container(
