@@ -130,63 +130,48 @@ class _DashboardPageState extends State<DashboardPage> {
     return Container(
       height: 64,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white, s.primary.withValues(alpha: .045)]), border: Border.all(color: s.primary.withValues(alpha: .14)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .07), blurRadius: 10, offset: const Offset(0, 4))]),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(elevation: 0, backgroundColor: Colors.transparent, shadowColor: Colors.transparent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-        onPressed: onPressed,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [build3DIcon(icon, size: 20), const SizedBox(width: 8), Text(label, style: TextStyle(color: s.primary, fontSize: 14, fontWeight: FontWeight.w900))]),
-      ),
+      child: ElevatedButton(style: ElevatedButton.styleFrom(elevation: 0, backgroundColor: Colors.transparent, shadowColor: Colors.transparent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))), onPressed: onPressed, child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [build3DIcon(icon, size: 20), const SizedBox(width: 8), Text(label, style: TextStyle(color: s.primary, fontSize: 14, fontWeight: FontWeight.w900))])),
     );
   }
 
   Widget buildCard({required String title, required String value, required IconData icon, VoidCallback? onTap}) {
     final s = Theme.of(context).colorScheme;
-    return InkWell(
-      borderRadius: BorderRadius.circular(20), onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 2), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white, s.primary.withValues(alpha: .035)]), border: Border.all(color: s.primary.withValues(alpha: .12)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .055), blurRadius: 10, offset: const Offset(0, 4))]),
-        child: Row(children: [
-          Container(width: 40, height: 40, decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary.withValues(alpha: .10), s.secondary.withValues(alpha: .06)]), border: Border.all(color: s.primary.withValues(alpha: .12)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .07), blurRadius: 7, offset: const Offset(0, 3))]), child: Center(child: build3DIcon(icon, size: 19, color: s.primary))),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Text(title, style: TextStyle(color: s.primary.withValues(alpha: .60), fontSize: 12, fontWeight: FontWeight.w700)), const SizedBox(height: 2), Text(value, style: TextStyle(color: s.primary, fontSize: 16, fontWeight: FontWeight.w900))])),
-        ]),
-      ),
-    );
+    return InkWell(borderRadius: BorderRadius.circular(20), onTap: onTap, child: Container(margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 2), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white, s.primary.withValues(alpha: .035)]), border: Border.all(color: s.primary.withValues(alpha: .12)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .055), blurRadius: 10, offset: const Offset(0, 4))]), child: Row(children: [Container(width: 40, height: 40, decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary.withValues(alpha: .10), s.secondary.withValues(alpha: .06)]), border: Border.all(color: s.primary.withValues(alpha: .12)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .07), blurRadius: 7, offset: const Offset(0, 3))]), child: Center(child: build3DIcon(icon, size: 19, color: s.primary))), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Text(title, style: TextStyle(color: s.primary.withValues(alpha: .60), fontSize: 12, fontWeight: FontWeight.w700)), const SizedBox(height: 2), Text(value, style: TextStyle(color: s.primary, fontSize: 16, fontWeight: FontWeight.w900))]))]))));
   }
 
   Widget buildHeader() {
     final s = Theme.of(context).colorScheme;
     final hasCover = coverImagePath != null && File(coverImagePath!).existsSync();
     final hasProfile = profileImagePath != null && File(profileImagePath!).existsSync();
-    return Container(
-      height: 58,
-      padding: const EdgeInsets.symmetric(horizontal: 11),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: hasCover ? null : LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary, s.secondary]),
-        image: hasCover ? DecorationImage(image: FileImage(File(coverImagePath!)), fit: BoxFit.cover, colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: .18), BlendMode.darken)) : null,
-        border: Border.all(color: Colors.white.withValues(alpha: .62)),
-        boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 3))],
-      ),
-      child: Row(children: [
-        CircleAvatar(radius: 19, backgroundColor: Colors.white.withValues(alpha: .18), backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null, child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 22)),
-        const SizedBox(width: 9),
-        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+    final displayName = profileName.isEmpty ? l.workEarn : profileName;
+    return SizedBox(
+      height: 92,
+      child: Stack(clipBehavior: Clip.none, children: [
+        Positioned(left: 0, right: 0, top: 0, height: 58, child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            gradient: hasCover ? null : LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary, s.secondary]),
+            image: hasCover ? DecorationImage(image: FileImage(File(coverImagePath!)), fit: BoxFit.cover, colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: .18), BlendMode.darken)) : null,
+            border: Border.all(color: Colors.white.withValues(alpha: .62)),
+            boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 3))],
+          ),
+          child: Stack(children: [
+            Positioned(left: 0, top: 9, child: CircleAvatar(radius: 19, backgroundColor: Colors.white.withValues(alpha: .18), backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null, child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 22))),
+            Positioned(right: 0, top: 9, child: Container(width: 42, height: 40, padding: const EdgeInsets.all(3), decoration: BoxDecoration(borderRadius: BorderRadius.circular(11), color: Colors.white.withValues(alpha: .16), border: Border.all(color: Colors.white.withValues(alpha: .55)), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .18), blurRadius: 5, offset: const Offset(2, 3)), BoxShadow(color: Colors.white.withValues(alpha: .22), blurRadius: 3, offset: const Offset(-1, -1))]), child: Stack(children: [Transform.translate(offset: const Offset(1.2, 1.8), child: Opacity(opacity: .28, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))), Transform.translate(offset: const Offset(0, -1), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))]))),
+          ]),
+        )),
+        Positioned(left: 11, right: 52, top: 61, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Stack(clipBehavior: Clip.none, children: [
-            Transform.translate(offset: const Offset(1.2, 1.8), child: Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xAA061018), fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25))),
-            Transform.translate(offset: const Offset(.55, .85), child: Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xCC7EEBFF), fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25))),
-            Transform.translate(offset: const Offset(0, -.55), child: Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25, shadows: [Shadow(color: Color(0xFFFFFFFF), offset: Offset(-.35, -.45), blurRadius: .5), Shadow(color: Color(0x88000000), offset: Offset(1, 1.2), blurRadius: 1.1)]))),
+            Transform.translate(offset: const Offset(1.2, 1.8), child: Text(displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xAA061018), fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25))),
+            Transform.translate(offset: const Offset(.55, .85), child: Text(displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xCC7EEBFF), fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25))),
+            Transform.translate(offset: const Offset(0, -.55), child: Text(displayName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF061018), fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25, shadows: [Shadow(color: Color(0x66FFFFFF), offset: Offset(-.35, -.45), blurRadius: .5), Shadow(color: Color(0x66000000), offset: Offset(1, 1.2), blurRadius: 1.1)]))),
           ]),
           if (companyName.isNotEmpty) ...[
-            const SizedBox(height: 1),
-            Stack(clipBehavior: Clip.none, children: [
-              Transform.translate(offset: const Offset(.9, 1.3), child: Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0x99061018), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .18))),
-              Transform.translate(offset: const Offset(.4, .6), child: Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xBB7EEBFF), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .18))),
-              Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xEFFFFFFF), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .18, shadows: [Shadow(color: Color(0xCCFFFFFF), offset: Offset(-.25, -.3), blurRadius: .35), Shadow(color: Color(0x77000000), offset: Offset(.7, .8), blurRadius: .8)])),
-            ]),
+            const SizedBox(height: 0),
+            Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF18324A), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .18)),
           ],
         ])),
-        Container(width: 42, height: 40, padding: const EdgeInsets.all(3), decoration: BoxDecoration(borderRadius: BorderRadius.circular(11), color: Colors.white.withValues(alpha: .16), border: Border.all(color: Colors.white.withValues(alpha: .55)), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .18), blurRadius: 5, offset: const Offset(2, 3)), BoxShadow(color: Colors.white.withValues(alpha: .22), blurRadius: 3, offset: const Offset(-1, -1))]), child: Stack(children: [Transform.translate(offset: const Offset(1.2, 1.8), child: Opacity(opacity: .28, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))), Transform.translate(offset: const Offset(0, -1), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))])),
       ]),
     );
   }
