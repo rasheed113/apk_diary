@@ -37,12 +37,20 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  final ScrollController _creditsScroll = ScrollController();
+
   @override void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 3))..forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_creditsScroll.hasClients && _creditsScroll.position.maxScrollExtent > 0) {
+        _creditsScroll.animateTo(_creditsScroll.position.maxScrollExtent, duration: const Duration(seconds: 3), curve: Curves.linear);
+      }
+    });
     Timer(const Duration(seconds: 4), () { if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage())); });
   }
-  @override void dispose() { _controller.dispose(); super.dispose(); }
+
+  @override void dispose() { _creditsScroll.dispose(); _controller.dispose(); super.dispose(); }
 
   Widget _text3D(String text, double size, {bool hero = false}) {
     final glow = hero ? const Color(0xFF42E8FF) : const Color(0xFF6BDFFF);
@@ -72,10 +80,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override Widget build(BuildContext context) {
     return Scaffold(backgroundColor: const Color(0xFF01030A), body: LayoutBuilder(builder: (context, constraints) {
       final width = constraints.maxWidth;
+      final height = constraints.maxHeight;
       return ClipRect(child: Stack(fit: StackFit.expand, children: [
         const _FreshDarkSky(),
         AnimatedBuilder(animation: _controller, builder: (context, child) => CustomPaint(painter: _FreshObjectsPainter(progress: _controller.value))),
-        Positioned.fill(child: ClipRect(child: Align(alignment: Alignment.center, child: SlideTransition(position: Tween<Offset>(begin: const Offset(0, 1.18), end: const Offset(0, -1.18)).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic)), child: _credits(width))))),
+        Positioned.fill(child: ClipRect(child: SingleChildScrollView(controller: _creditsScroll, physics: const NeverScrollableScrollPhysics(), child: Column(children: [SizedBox(height: height), _credits(width), SizedBox(height: height)])))),
         Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: .08), Colors.transparent, Colors.black.withValues(alpha: .22)]))))),
       ]));
     }));
