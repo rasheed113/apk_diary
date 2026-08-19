@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart' hide Icon;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'modern_icons.dart';
@@ -32,126 +32,272 @@ class MyApp extends StatelessWidget {
     final localization = AppLocalization.english();
     return ValueListenableBuilder<AppTheme>(
       valueListenable: AppThemeController.currentTheme,
-      builder: (context, theme, child) => MaterialApp(debugShowCheckedModeBanner: false, title: localization.appName, theme: ThemeManager.getTheme(theme), home: const SplashScreen()),
+      builder: (context, theme, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: localization.appName,
+        theme: ThemeManager.getTheme(theme),
+        home: const SplashScreen(),
+      ),
     );
   }
 }
 
+// Fresh cinematic intro. It is intentionally hard-coded branding and does not use i18n.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
-  @override State<SplashScreen> createState() => _SplashScreenState();
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late final AnimationController _animation;
-  late final Animation<double> _credits;
-  late final Animation<double> _objects;
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _animation = AnimationController(vsync: this, duration: const Duration(seconds: 3));
-    _credits = CurvedAnimation(parent: _animation, curve: Curves.easeInOutCubic);
-    _objects = CurvedAnimation(parent: _animation, curve: Curves.easeInOut);
-    _animation.forward();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 3))..forward();
     Timer(const Duration(seconds: 4), () {
       if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
     });
   }
 
-  @override void dispose() { _animation.dispose(); super.dispose(); }
-
-  Widget _depthText(String text, {double size = 20, bool hero = false}) {
-    final face = hero ? const Color(0xFFF7FDFF) : const Color(0xFFE8F8FF);
-    final glow = hero ? const Color(0xFF45E8FF) : const Color(0xFF79DFFF);
-    return Stack(alignment: Alignment.center, children: [
-      Transform.translate(offset: const Offset(5, 7), child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.8 : 1.0, color: const Color(0xFF06101A), shadows: [Shadow(color: glow.withValues(alpha: .85), blurRadius: 12)]))),
-      Transform.translate(offset: const Offset(2.5, 3.5), child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.8 : 1.0, color: const Color(0xFF1D7188)))),
-      Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.8 : 1.0, color: face, shadows: [Shadow(color: glow, blurRadius: 8), const Shadow(color: Colors.white, blurRadius: 1, offset: Offset(-1, -1))])),
-    ]);
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
-  Widget _scrollingCredits(double h, double w) {
-    final travel = h * 2.15;
-    return Positioned.fill(
-      child: ClipRect(
-        child: AnimatedBuilder(
-          animation: _credits,
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: w * .06, vertical: h * .035),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                _depthText('WORK EARN', size: math.min(42, w * .105), hero: true), const SizedBox(height: 3), _depthText('APP', size: math.min(30, w * .075), hero: true), const SizedBox(height: 48),
-                _depthText('Produced by', size: math.min(18, w * .045)), const SizedBox(height: 8), _depthText('ERGS Dynamics Foundation Technology', size: math.min(22, w * .052), hero: true), const SizedBox(height: 52),
-                _depthText('Founder', size: math.min(18, w * .045)), const SizedBox(height: 8), _depthText('Rasheed Afridi', size: math.min(29, w * .07), hero: true), const SizedBox(height: 54),
-                _depthText('Thanks for using', size: math.min(18, w * .045)), const SizedBox(height: 8), _depthText('Work Earn App', size: math.min(28, w * .068), hero: true), const SizedBox(height: 38),
-                _depthText('Track your jobs.', size: math.min(20, w * .048)), const SizedBox(height: 10), _depthText('Track your payments.', size: math.min(20, w * .048)), const SizedBox(height: 10), _depthText('Save your working journey.', size: math.min(20, w * .048)), const SizedBox(height: 70),
-              ]),
-            ),
-          ),
-          builder: (context, child) => Transform.translate(offset: Offset(0, h - _credits.value * travel), child: child),
+  Widget _text3D(String text, double size, {bool hero = false}) {
+    final glow = hero ? const Color(0xFF42E8FF) : const Color(0xFF6BDFFF);
+    final face = hero ? Colors.white : const Color(0xFFE9FAFF);
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Transform.translate(
+          offset: const Offset(6, 8),
+          child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.5 : .9, color: const Color(0xFF02070D), shadows: [Shadow(color: glow.withValues(alpha: .9), blurRadius: 14)])),
         ),
+        Transform.translate(
+          offset: const Offset(3, 4),
+          child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.5 : .9, color: const Color(0xFF247C96))),
+        ),
+        Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, letterSpacing: hero ? 2.5 : .9, color: face, shadows: [Shadow(color: glow, blurRadius: 9), const Shadow(color: Colors.white, blurRadius: 1, offset: Offset(-1, -1))])),
+      ],
+    );
+  }
+
+  Widget _logo(double width) {
+    final logoSize = math.min(width * .46, 190.0);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [BoxShadow(color: const Color(0xFF39D9FF).withValues(alpha: .35), blurRadius: 28, spreadRadius: 3)],
+      ),
+      child: Image.asset('assets/branding/workearn_logo.png', width: logoSize, fit: BoxFit.contain),
+    );
+  }
+
+  Widget _credits(double width) {
+    final titleSize = math.min(width * .105, 43.0);
+    final bodySize = math.min(width * .047, 20.0);
+    final companySize = math.min(width * .053, 22.0);
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: width * .07),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _logo(width),
+          const SizedBox(height: 18),
+          _text3D('WORK EARN APP', titleSize, hero: true),
+          const SizedBox(height: 34),
+          _text3D('Produced by', bodySize),
+          const SizedBox(height: 7),
+          _text3D('ERGS Dynamics Foundation Technology', companySize, hero: true),
+          const SizedBox(height: 34),
+          _text3D('Founder', bodySize),
+          const SizedBox(height: 7),
+          _text3D('Rasheed Afridi', math.min(width * .068, 29.0), hero: true),
+          const SizedBox(height: 38),
+          _text3D('Thanks for using Work Earn App', bodySize, hero: true),
+          const SizedBox(height: 14),
+          _text3D('Track your jobs', bodySize),
+          const SizedBox(height: 7),
+          _text3D('Track your payments', bodySize),
+          const SizedBox(height: 7),
+          _text3D('Save your working journey', bodySize),
+          const SizedBox(height: 55),
+        ],
       ),
     );
   }
 
-  @override Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: const Color(0xFF01030A), body: LayoutBuilder(builder: (context, constraints) {
-      final w = constraints.maxWidth; final h = constraints.maxHeight;
-      return ClipRect(child: Stack(fit: StackFit.expand, children: [
-        const _DarkSky(),
-        AnimatedBuilder(animation: _objects, builder: (context, child) => CustomPaint(painter: _CinematicObjectsPainter(progress: _objects.value, width: w, height: h))),
-        _scrollingCredits(h, w),
-        Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: .08), Colors.transparent, Colors.black.withValues(alpha: .25)]))))),
-      ]));
-    }));
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF01030A),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final height = constraints.maxHeight;
+          return ClipRect(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                const _FreshDarkSky(),
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) => CustomPaint(painter: _FreshObjectsPainter(progress: _controller.value)),
+                ),
+                Positioned.fill(
+                  child: ClipRect(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: SlideTransition(
+                        position: Tween<Offset>(begin: const Offset(0, 1.18), end: const Offset(0, -1.18)).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic)),
+                        child: _credits(width),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: .08), Colors.transparent, Colors.black.withValues(alpha: .22)])),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 
-class _DarkSky extends StatelessWidget {
-  const _DarkSky();
-  @override Widget build(BuildContext context) => DecoratedBox(decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.35), radius: 1.15, colors: [Color(0xFF0D1730), Color(0xFF040711), Color(0xFF000105)])), child: CustomPaint(painter: _AtmospherePainter()));
+class _FreshDarkSky extends StatelessWidget {
+  const _FreshDarkSky();
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(center: Alignment(0, -.35), radius: 1.15, colors: [Color(0xFF0C1730), Color(0xFF030611), Color(0xFF000105)]),
+      ),
+      child: const SizedBox.expand(),
+    );
+  }
 }
 
-class _AtmospherePainter extends CustomPainter {
-  @override void paint(Canvas canvas, Size size) { final glow = Paint()..shader = RadialGradient(colors: [const Color(0xFF123A66).withValues(alpha: .22), Colors.transparent]).createShader(Rect.fromCircle(center: Offset(size.width * .5, size.height * .32), radius: math.min(size.width, size.height) * .72)); canvas.drawRect(Offset.zero & size, glow); }
-  @override bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+class _FreshObjectsPainter extends CustomPainter {
+  final double progress;
+  _FreshObjectsPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _moon(canvas, size);
+    _stars(canvas, size);
+    _rocket(canvas, size);
+    _backgroundBrand(canvas, size);
+  }
+
+  void _moon(Canvas canvas, Size size) {
+    final r = math.min(size.width, size.height) * .055;
+    final centre = Offset(size.width * .84, size.height * .13);
+    final glow = Paint()..shader = RadialGradient(colors: [const Color(0xFFBDEEFF).withValues(alpha: .38), Colors.transparent]).createShader(Rect.fromCircle(center: centre, radius: r * 2.8));
+    canvas.drawCircle(centre, r * 2.8, glow);
+    final moon = Paint()..shader = RadialGradient(colors: [Colors.white, const Color(0xFFA6E3F7), const Color(0xFF426780)]).createShader(Rect.fromCircle(center: centre, radius: r));
+    canvas.drawCircle(centre, r, moon);
+  }
+
+  void _stars(Canvas canvas, Size size) {
+    const data = <List<double>>[
+      [.10, .16, 7, .02], [.27, .09, 5, .19], [.45, .22, 8, .36], [.65, .12, 6, .54], [.90, .25, 8, .71],
+      [.07, .40, 5, .12], [.23, .56, 7, .48], [.49, .46, 5, .79], [.72, .58, 8, .30], [.92, .70, 5, .63],
+      [.15, .80, 6, .43], [.40, .74, 8, .09], [.63, .84, 5, .88], [.84, .89, 7, .25],
+    ];
+    for (final s in data) {
+      final p = (progress + s[3]) % 1.0;
+      final x = (s[0] * size.width - p * size.width * .08 + size.width) % size.width;
+      final y = (s[1] * size.height + p * size.height * .09) % size.height;
+      final c = Offset(x, y);
+      final r = s[2] * .5;
+      final glow = Paint()..shader = RadialGradient(colors: [Colors.white.withValues(alpha: .95), const Color(0xFF62E7FF).withValues(alpha: .55), Colors.transparent]).createShader(Rect.fromCircle(center: c, radius: r * 4));
+      canvas.drawCircle(c, r * 4, glow);
+      canvas.drawCircle(c, r, Paint()..color = Colors.white);
+    }
+  }
+
+  void _rocket(Canvas canvas, Size size) {
+    final p = Curves.easeInOutCubic.transform(progress);
+    final start = Offset(size.width * .07, size.height * .82);
+    final end = Offset(size.width * .78, size.height * .18);
+    final pos = Offset.lerp(start, end, p)!;
+    canvas.save();
+    canvas.translate(pos.dx, pos.dy);
+    canvas.rotate(-.72);
+    final trail = Paint()..shader = LinearGradient(colors: [const Color(0xFFFFE76B), const Color(0xFFFF7A3D).withValues(alpha: .55), Colors.transparent]).createShader(const Rect.fromLTWH(-90, -12, 100, 24));
+    canvas.drawOval(const Rect.fromLTWH(-88, -8, 90, 16), trail);
+    final body = Paint()..shader = LinearGradient(colors: [Colors.white, const Color(0xFF9DEBFF), const Color(0xFF35668E)]).createShader(const Rect.fromLTWH(-25, -12, 50, 24));
+    canvas.drawOval(const Rect.fromLTWH(-25, -12, 48, 24), body);
+    final nose = Path()..moveTo(23, 0)..quadraticBezierTo(9, -11, 3, -10)..quadraticBezierTo(12, 0, 3, 10)..quadraticBezierTo(9, 11, 23, 0)..close();
+    canvas.drawPath(nose, body);
+    canvas.drawCircle(const Offset(5, -2), 6, Paint()..shader = RadialGradient(colors: [Colors.white, const Color(0xFF39D9FF), const Color(0xFF2450A0)]).createShader(const Rect.fromCircle(center: Offset(5, -2), radius: 6)));
+    canvas.drawPath(Path()..moveTo(-9, 8)..lineTo(-18, 17)..lineTo(2, 10)..close(), Paint()..color = const Color(0xFFB84BFF));
+    canvas.restore();
+  }
+
+  void _backgroundBrand(Canvas canvas, Size size) {
+    final painter = TextPainter(
+      textDirection: TextDirection.ltr,
+      text: const TextSpan(text: 'ERGS DYNAMICS FOUNDATION TECHNOLOGY', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2.2, color: Color(0xFF18314A))),
+    )..layout(maxWidth: size.width * .92);
+    painter.paint(canvas, Offset((size.width - painter.width) / 2, size.height * .42));
+  }
+
+  @override
+  bool shouldRepaint(covariant _FreshObjectsPainter oldDelegate) => oldDelegate.progress != progress;
 }
 
-class _CinematicObjectsPainter extends CustomPainter {
-  final double progress; final double width; final double height;
-  _CinematicObjectsPainter({required this.progress, required this.width, required this.height});
-  @override void paint(Canvas canvas, Size size) { _paintMoon(canvas, size); _paintStars(canvas, size); _paintRocket(canvas, size); _paintBackgroundBrand(canvas, size); }
-
-  void _paintMoon(Canvas canvas, Size size) {
-    final centre = Offset(size.width * .84, size.height * .13); final r = math.min(size.width, size.height) * .055;
-    final glow = Paint()..shader = RadialGradient(colors: [const Color(0xFFBEEFFF).withValues(alpha: .34), Colors.transparent]).createShader(Rect.fromCircle(center: centre, radius: r * 2.5)); canvas.drawCircle(centre, r * 2.5, glow);
-    final moon = Paint()..shader = RadialGradient(center: const Alignment(-.35, -.4), colors: [Colors.white, const Color(0xFF9BD8F2), const Color(0xFF4D718A)]).createShader(Rect.fromCircle(center: centre, radius: r)); canvas.drawCircle(centre, r, moon);
-    final shade = Paint()..color = const Color(0xFF20364A).withValues(alpha: .22); canvas.drawCircle(centre.translate(r * .28, -r * .08), r * .72, shade);
-  }
-
-  void _paintStars(Canvas canvas, Size size) {
-    final stars = <List<double>>[[.12,.18,8,.03],[.28,.10,5,.22],[.46,.20,7,.41],[.67,.12,6,.63],[.92,.25,8,.76],[.08,.42,5,.15],[.23,.55,7,.53],[.48,.46,5,.82],[.72,.58,8,.35],[.91,.70,5,.68],[.16,.80,6,.48],[.40,.74,8,.12],[.62,.84,5,.91],[.84,.88,7,.27]];
-    for (final s in stars) { final phase = (progress + s[3]) % 1.0; final x = (s[0] * size.width - phase * size.width * .10 + size.width) % size.width; final y = (s[1] * size.height + phase * size.height * .12) % size.height; final radius = s[2] * .5; final glow = Paint()..shader = RadialGradient(colors: [Colors.white.withValues(alpha: .95), const Color(0xFF69E8FF).withValues(alpha: .55), Colors.transparent]).createShader(Rect.fromCircle(center: Offset(x,y), radius: radius * 3.5)); canvas.drawCircle(Offset(x,y), radius * 3.5, glow); final core = Paint()..shader = RadialGradient(colors: [Colors.white, const Color(0xFF8CEEFF), const Color(0xFF5B6EFF)]).createShader(Rect.fromCircle(center: Offset(x,y), radius: radius)); canvas.drawCircle(Offset(x,y), radius, core); }
-  }
-
-  void _paintRocket(Canvas canvas, Size size) {
-    final p = Curves.easeInOutCubic.transform(progress); final start = Offset(size.width * .08, size.height * .78); final end = Offset(size.width * .78, size.height * .18); final pos = Offset.lerp(start,end,p)!; final angle = -.72;
-    canvas.save(); canvas.translate(pos.dx,pos.dy); canvas.rotate(angle);
-    final trail = Paint()..shader = LinearGradient(colors: [const Color(0xFFFFE76B).withValues(alpha:.9), const Color(0xFFFF7A3D).withValues(alpha:.55), Colors.transparent]).createShader(const Rect.fromLTWH(-80,-12,90,24)); canvas.drawOval(const Rect.fromLTWH(-78,-8,82,16), trail);
-    final body = Paint()..shader = LinearGradient(colors: [Colors.white,const Color(0xFF9DEBFF),const Color(0xFF3A6A93)]).createShader(const Rect.fromLTWH(-24,-12,48,24)); canvas.drawOval(const Rect.fromLTWH(-25,-12,48,24), body);
-    final nose = Path()..moveTo(23,0)..quadraticBezierTo(8,-11,4,-10)..quadraticBezierTo(12,0,4,10)..quadraticBezierTo(8,11,23,0)..close(); canvas.drawPath(nose,body);
-    final window = Paint()..shader = RadialGradient(colors: [Colors.white,const Color(0xFF39D9FF),const Color(0xFF2450A0)]).createShader(Rect.fromCircle(center: const Offset(5,-2), radius: 6)); canvas.drawCircle(const Offset(5,-2),6,window);
-    final fin = Paint()..color = const Color(0xFFB84BFF); canvas.drawPath(Path()..moveTo(-9,8)..lineTo(-18,17)..lineTo(2,10)..close(),fin); canvas.restore();
-  }
-
-  void _paintBackgroundBrand(Canvas canvas, Size size) { final painter = TextPainter(textDirection: TextDirection.ltr, text: const TextSpan(text:'ERGS DYNAMICS FOUNDATION TECHNOLOGY',style:TextStyle(fontSize:24,fontWeight:FontWeight.w900,letterSpacing:2.2,color:Color(0xFF18314A)))); painter.layout(maxWidth:size.width*.92); painter.paint(canvas,Offset((size.width-painter.width)/2,size.height*.42)); }
-  @override bool shouldRepaint(covariant _CinematicObjectsPainter oldDelegate) => oldDelegate.progress != progress || oldDelegate.width != width || oldDelegate.height != height;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
 }
 
-class HomePage extends StatefulWidget { const HomePage({super.key}); @override State<HomePage> createState()=>_HomePageState(); }
 class _HomePageState extends State<HomePage> {
-  int selectedIndex=0; final List<Widget> pages=[const DashboardPage(),const WorkPage(embedded:true),const HistoryPage(),const FinancePage(),const SettingsPage()]; Widget nav3D(IconData icon)=>Icon(icon,size:20);
-  @override Widget build(BuildContext context){final t=Theme.of(context);final l=AppLocalization.english();return Scaffold(body:pages[selectedIndex],bottomNavigationBar:Container(margin:const EdgeInsets.only(left:10,right:10,bottom:8),decoration:BoxDecoration(borderRadius:BorderRadius.circular(24),color:t.cardColor,border:Border.all(color:t.colorScheme.primary.withValues(alpha:.20)),boxShadow:[BoxShadow(color:t.colorScheme.primary.withValues(alpha:.10),blurRadius:9,offset:const Offset(0,3))]),child:ClipRRect(borderRadius:BorderRadius.circular(24),child:NavigationBar(height:64,elevation:0,backgroundColor:t.cardColor,indicatorColor:t.colorScheme.primary.withValues(alpha:.12),labelBehavior:NavigationDestinationLabelBehavior.alwaysShow,selectedIndex:selectedIndex,destinations:[NavigationDestination(icon:nav3D(Icons.dashboard),label:l.dashboard),NavigationDestination(icon:nav3D(Icons.work),label:l.work),NavigationDestination(icon:nav3D(Icons.history),label:l.history),NavigationDestination(icon:nav3D(Icons.account_balance_wallet),label:l.finance),NavigationDestination(icon:nav3D(Icons.settings),label:l.settings)],onDestinationSelected:(index)=>setState(()=>selectedIndex=index))),));}
+  int selectedIndex = 0;
+  final List<Widget> pages = [const DashboardPage(), const WorkPage(embedded: true), const HistoryPage(), const FinancePage(), const SettingsPage()];
+  Widget nav3D(IconData icon) => Icon(icon, size: 20);
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    final l = AppLocalization.english();
+    return Scaffold(
+      body: pages[selectedIndex],
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(left: 10, right: 10, bottom: 8),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: t.cardColor, border: Border.all(color: t.colorScheme.primary.withValues(alpha: .20)), boxShadow: [BoxShadow(color: t.colorScheme.primary.withValues(alpha: .10), blurRadius: 9, offset: const Offset(0, 3))]),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: NavigationBar(
+            height: 64,
+            elevation: 0,
+            backgroundColor: t.cardColor,
+            indicatorColor: t.colorScheme.primary.withValues(alpha: .12),
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            selectedIndex: selectedIndex,
+            destinations: [
+              NavigationDestination(icon: nav3D(Icons.dashboard), label: l.dashboard),
+              NavigationDestination(icon: nav3D(Icons.work), label: l.work),
+              NavigationDestination(icon: nav3D(Icons.history), label: l.history),
+              NavigationDestination(icon: nav3D(Icons.account_balance_wallet), label: l.finance),
+              NavigationDestination(icon: nav3D(Icons.settings), label: l.settings),
+            ],
+            onDestinationSelected: (index) => setState(() => selectedIndex = index),
+          ),
+        ),
+      ),
+    );
+  }
 }
