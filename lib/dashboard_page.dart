@@ -159,7 +159,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final hasCover = coverImagePath != null && File(coverImagePath!).existsSync();
     final hasProfile = profileImagePath != null && File(profileImagePath!).existsSync();
     return Container(
-      height: 64,
+      height: 58,
       padding: const EdgeInsets.symmetric(horizontal: 11),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
@@ -169,7 +169,7 @@ class _DashboardPageState extends State<DashboardPage> {
         boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: Row(children: [
-        CircleAvatar(radius: 21, backgroundColor: Colors.white.withValues(alpha: .18), backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null, child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 24)),
+        CircleAvatar(radius: 19, backgroundColor: Colors.white.withValues(alpha: .18), backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null, child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 22)),
         const SizedBox(width: 9),
         Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25)),
