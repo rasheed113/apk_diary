@@ -41,13 +41,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 3))..forward();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 6))..forward();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_creditsScroll.hasClients && _creditsScroll.position.maxScrollExtent > 0) {
-        _creditsScroll.animateTo(_creditsScroll.position.maxScrollExtent, duration: const Duration(seconds: 3), curve: Curves.linear);
+        _creditsScroll.animateTo(_creditsScroll.position.maxScrollExtent, duration: const Duration(seconds: 6), curve: Curves.linear);
       }
     });
-    Timer(const Duration(seconds: 4), () { if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage())); });
+    Timer(const Duration(seconds: 6), () { if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage())); });
   }
 
   @override void dispose() { _creditsScroll.dispose(); _controller.dispose(); super.dispose(); }
@@ -67,11 +67,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     return Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(borderRadius: BorderRadius.circular(28), boxShadow: [BoxShadow(color: const Color(0xFF39D9FF).withValues(alpha: .35), blurRadius: 28, spreadRadius: 3)]), child: Image.asset('assets/branding/workearn_logo.png', width: logoSize, fit: BoxFit.contain));
   }
 
+  Widget _ergsCreditLogo(double width) {
+    final logoSize = math.min(width * .22, 92.0);
+    return Padding(padding: const EdgeInsets.only(top: 4, bottom: 2), child: Image.asset('1787132674693.png', width: logoSize, height: logoSize, fit: BoxFit.contain));
+  }
+
   Widget _credits(double width) {
     final titleSize = math.min(width * .105, 43.0); final bodySize = math.min(width * .047, 20.0); final companySize = math.min(width * .053, 22.0);
     return Padding(padding: EdgeInsets.symmetric(horizontal: width * .07), child: Column(mainAxisSize: MainAxisSize.min, children: [
       _logo(width), const SizedBox(height: 18), _text3D('WORK EARN APP', titleSize, hero: true), const SizedBox(height: 34),
-      _text3D('Produced by', bodySize), const SizedBox(height: 7), _text3D('ERGS Dynamics Foundation Technology', companySize, hero: true), const SizedBox(height: 34),
+      _text3D('Produced by', bodySize), const SizedBox(height: 5), _ergsCreditLogo(width), const SizedBox(height: 2), _text3D('ERGS Dynamics Foundation Technology', companySize, hero: true), const SizedBox(height: 34),
       _text3D('Founder', bodySize), const SizedBox(height: 7), _text3D('Rasheed Afridi', math.min(width * .068, 29.0), hero: true), const SizedBox(height: 38),
       _text3D('Thanks for using Work Earn App', bodySize, hero: true), const SizedBox(height: 14), _text3D('Track your jobs', bodySize), const SizedBox(height: 7), _text3D('Track your payments', bodySize), const SizedBox(height: 7), _text3D('Save your working journey', bodySize), const SizedBox(height: 55),
     ]));
@@ -83,6 +88,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       final height = constraints.maxHeight;
       return ClipRect(child: Stack(fit: StackFit.expand, children: [
         const _FreshDarkSky(),
+        Positioned(top: height * .32, left: width * .18, right: width * .18, child: Opacity(opacity: .16, child: Image.asset('1787132674693.png', fit: BoxFit.contain))),
         AnimatedBuilder(animation: _controller, builder: (context, child) => CustomPaint(painter: _FreshObjectsPainter(progress: _controller.value))),
         Positioned.fill(child: ClipRect(child: SingleChildScrollView(controller: _creditsScroll, physics: const NeverScrollableScrollPhysics(), child: Column(children: [SizedBox(height: height), _credits(width), SizedBox(height: height)])))),
         Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: .08), Colors.transparent, Colors.black.withValues(alpha: .22)]))))),
