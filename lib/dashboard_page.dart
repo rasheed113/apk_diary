@@ -99,9 +99,22 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Row(children: [
         Container(width: 58, height: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(19), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.secondary, s.primary]), border: Border.all(color: Colors.white.withValues(alpha: .7)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .14), blurRadius: 10, offset: const Offset(0, 4))]), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.schedule_rounded, color: Colors.white, size: 28), const SizedBox(height: 3), Text(period, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1))])),
         const SizedBox(width: 12),
-        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(digitalTime, maxLines: 1, style: TextStyle(color: s.primary, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1.1)), const SizedBox(height: 5), Text(dateLabel, maxLines: 1, style: TextStyle(color: s.primary.withValues(alpha: .56), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: .45)), const SizedBox(height: 5), Container(height: 3, width: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), gradient: LinearGradient(colors: [s.secondary, s.primary]))) ])),
+        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          _build3DText(digitalTime, color: s.primary, fontSize: 20, letterSpacing: 1.1),
+          const SizedBox(height: 5),
+          _build3DText(dateLabel, color: s.primary.withValues(alpha: .56), fontSize: 9, letterSpacing: .45),
+          const SizedBox(height: 5),
+          Container(height: 3, width: 72, decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), gradient: LinearGradient(colors: [s.secondary, s.primary])))
+        ])),
       ]),
     );
+  }
+
+  Widget _build3DText(String text, {required Color color, required double fontSize, double letterSpacing = 0}) {
+    return Stack(children: [
+      Text(text, maxLines: 1, overflow: TextOverflow.clip, style: TextStyle(color: color.withValues(alpha: .28), fontSize: fontSize, fontWeight: FontWeight.w900, letterSpacing: letterSpacing, shadows: [Shadow(color: Colors.black.withValues(alpha: .20), offset: const Offset(1.2, 1.5), blurRadius: 1)])),
+      Transform.translate(offset: const Offset(0, -1), child: Text(text, maxLines: 1, overflow: TextOverflow.clip, style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.w900, letterSpacing: letterSpacing, shadows: [Shadow(color: Colors.white.withValues(alpha: .62), offset: const Offset(-.6, -.7), blurRadius: .4), Shadow(color: Colors.black.withValues(alpha: .24), offset: const Offset(1.0, 1.2), blurRadius: 1)]))),
+    ]);
   }
 
   Widget buildGlowButton({required IconData icon, required String label, required VoidCallback onPressed}) {
@@ -148,19 +161,11 @@ class _DashboardPageState extends State<DashboardPage> {
         boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: Row(children: [
-        CircleAvatar(
-          radius: 21,
-          backgroundColor: Colors.white.withValues(alpha: .18),
-          backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null,
-          child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 24),
-        ),
+        CircleAvatar(radius: 21, backgroundColor: Colors.white.withValues(alpha: .18), backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null, child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 24)),
         const SizedBox(width: 9),
         Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25)),
-          if (companyName.isNotEmpty) ...[
-            const SizedBox(height: 1),
-            Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700)),
-          ],
+          if (companyName.isNotEmpty) ...[const SizedBox(height: 1), Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700))],
         ])),
         Container(width: 48, height: 46, padding: const EdgeInsets.all(4), decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), color: Colors.white.withValues(alpha: .13), border: Border.all(color: Colors.white.withValues(alpha: .45))), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain)),
       ]),
@@ -183,8 +188,7 @@ class _DashboardPageState extends State<DashboardPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(14, 4, 14, 18),
           child: Column(children: [
-            buildHeader(), const SizedBox(height: 7),
-            Align(alignment: Alignment.centerRight, child: buildDigitalClock()), const SizedBox(height: 7),
+            buildHeader(), const SizedBox(height: 7), Align(alignment: Alignment.centerRight, child: buildDigitalClock()), const SizedBox(height: 7),
             Container(height: 42, decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [s.primary, s.secondary]), border: Border.all(color: Colors.white.withValues(alpha: .35)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .07), blurRadius: 8, offset: const Offset(0, 3))]), child: ClipRRect(borderRadius: BorderRadius.circular(14), child: Row(children: [Padding(padding: const EdgeInsets.only(left: 8), child: build3DIcon(Icons.auto_awesome_rounded, size: 17)), const SizedBox(width: 7), Expanded(child: Marquee(text: tickerMessage.isEmpty ? '✨ ${l.welcomeToWorkEarn}  •  ${l.turnEveryStitchIntoProgress}' : tickerMessage, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .18), scrollAxis: Axis.horizontal, crossAxisAlignment: CrossAxisAlignment.center, blankSpace: 50, velocity: 24, pauseAfterRound: const Duration(seconds: 2), startPadding: 6))]))),
             const SizedBox(height: 7),
             Row(children: [Expanded(child: buildGlowButton(icon: Icons.add_circle_outline_rounded, label: l.newEntry, onPressed: () async { final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => const WorkPage())); if (r == true && mounted) await loadDashboard(); })), const SizedBox(width: 8), Expanded(child: buildGlowButton(icon: Icons.history_rounded, label: l.history, onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => HistoryPage(initialFilter: 'Today')))))]),
