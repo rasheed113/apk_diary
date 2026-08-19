@@ -12,6 +12,9 @@ on:
         default: 'main'
         type: string
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -50,7 +53,30 @@ jobs:
 
       - run: flutter build apk --release
 
-      - uses: actions/upload-artifact@v4
+      - name: Verify APK SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
         with:
           name: apk-release
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Publish APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0
+          name: WorkEarn v1.0.0
+          body: |
+            WorkEarn Android APK release.
+
+            The APK is built by GitHub Actions from the main branch.
+            The release asset is the same APK produced by the successful build job.
+          files: build/app/outputs/flutter-apk/app-release.apk
+          overwrite_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
