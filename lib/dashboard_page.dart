@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart' hide Icon;
 import 'package:marquee/marquee.dart';
 import 'modern_icons.dart';
@@ -21,6 +22,10 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime currentTime = DateTime.now();
   Timer? clockTimer;
   bool _loading = false;
+  String profileName = '';
+  String companyName = '';
+  String? profileImagePath;
+  String? coverImagePath;
 
   AppLocalization get l => AppLocalization.english();
 
@@ -46,6 +51,7 @@ class _DashboardPageState extends State<DashboardPage> {
       final d = await DatabaseHelper.instance.getTodayEarning();
       final w = await DatabaseHelper.instance.getWeeklyEarning();
       final m = await DatabaseHelper.instance.getMonthlyEarning();
+      final profile = await DatabaseHelper.instance.getProfile();
       if (!mounted) return;
       setState(() {
         currentBalance = b;
@@ -56,6 +62,12 @@ class _DashboardPageState extends State<DashboardPage> {
         weeklyEarning = w;
         monthlyEarning = m;
         tickerMessage = getTickerMessage();
+        profileName = profile?['operator_name']?.toString().trim() ?? '';
+        companyName = profile?['company_name']?.toString().trim() ?? '';
+        final profilePath = profile?['profile_image']?.toString().trim() ?? '';
+        final coverPath = profile?['cover_image']?.toString().trim() ?? '';
+        profileImagePath = profilePath.isNotEmpty ? profilePath : null;
+        coverImagePath = coverPath.isNotEmpty ? coverPath : null;
       });
     } catch (_) {
       if (mounted && tickerMessage.isEmpty) {
@@ -123,7 +135,36 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget buildHeader() {
     final s = Theme.of(context).colorScheme;
-    return Container(height: 82, padding: const EdgeInsets.symmetric(horizontal: 14), decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary, s.secondary]), border: Border.all(color: Colors.white.withValues(alpha: .62)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 14, offset: const Offset(0, 5))]), child: Row(children: [Stack(children: [Text(l.workEarn, style: TextStyle(color: Colors.white.withValues(alpha: .28), fontSize: 21, fontWeight: FontWeight.w900, letterSpacing: 1.2)), Transform.translate(offset: const Offset(-1.2, -1.2), child: const Text('WORK EARN', style: TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w900, letterSpacing: 1.2))), Transform.translate(offset: const Offset(1.6, 2), child: Text('WORK EARN', style: TextStyle(color: Colors.white.withValues(alpha: .22), fontSize: 21, fontWeight: FontWeight.w900, letterSpacing: 1.2)))]), const Spacer(), Container(width: 72, height: 64, padding: const EdgeInsets.all(5), decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), color: Colors.white.withValues(alpha: .13), border: Border.all(color: Colors.white.withValues(alpha: .45))), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))]));
+    final hasCover = coverImagePath != null && File(coverImagePath!).existsSync();
+    final hasProfile = profileImagePath != null && File(profileImagePath!).existsSync();
+    return Container(
+      height: 82,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: hasCover ? null : LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary, s.secondary]),
+        image: hasCover ? DecorationImage(image: FileImage(File(coverImagePath!)), fit: BoxFit.cover, colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: .18), BlendMode.darken)) : null,
+        border: Border.all(color: Colors.white.withValues(alpha: .62)),
+        boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 14, offset: const Offset(0, 5))],
+      ),
+      child: Row(children: [
+        CircleAvatar(
+          radius: 27,
+          backgroundColor: Colors.white.withValues(alpha: .18),
+          backgroundImage: hasProfile ? FileImage(File(profileImagePath!)) : null,
+          child: hasProfile ? null : const Icon(Icons.person_rounded, color: Colors.white, size: 30),
+        ),
+        const SizedBox(width: 11),
+        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: .4)),
+          if (companyName.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withValues(alpha: .82), fontSize: 10, fontWeight: FontWeight.w700)),
+          ],
+        ])),
+        Container(width: 60, height: 56, padding: const EdgeInsets.all(5), decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.white.withValues(alpha: .13), border: Border.all(color: Colors.white.withValues(alpha: .45))), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain)),
+      ]),
+    );
   }
 
   @override
