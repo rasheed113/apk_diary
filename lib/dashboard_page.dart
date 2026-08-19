@@ -167,7 +167,24 @@ class _DashboardPageState extends State<DashboardPage> {
           Text(profileName.isEmpty ? l.workEarn : profileName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: .25)),
           if (companyName.isNotEmpty) ...[const SizedBox(height: 1), Text(companyName, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withValues(alpha: .82), fontSize: 9, fontWeight: FontWeight.w700))],
         ])),
-        Container(width: 48, height: 46, padding: const EdgeInsets.all(4), decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), color: Colors.white.withValues(alpha: .13), border: Border.all(color: Colors.white.withValues(alpha: .45))), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain)),
+        Container(
+          width: 42,
+          height: 40,
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(11),
+            color: Colors.white.withValues(alpha: .16),
+            border: Border.all(color: Colors.white.withValues(alpha: .55)),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withValues(alpha: .18), blurRadius: 5, offset: const Offset(2, 3)),
+              BoxShadow(color: Colors.white.withValues(alpha: .22), blurRadius: 3, offset: const Offset(-1, -1)),
+            ],
+          ),
+          child: Stack(children: [
+            Transform.translate(offset: const Offset(1.2, 1.8), child: Opacity(opacity: .28, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))),
+            Transform.translate(offset: const Offset(0, -1), child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain)),
+          ]),
+        ),
       ]),
     );
   }
