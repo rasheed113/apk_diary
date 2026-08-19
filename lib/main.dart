@@ -97,7 +97,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  final List<Widget> pages = const [DashboardPage(), WorkPage(), HistoryPage(), FinancePage(), SettingsPage()];
+  final List<Widget> pages = [const DashboardPage(), const WorkPage(embedded: true), const HistoryPage(), const FinancePage(), const SettingsPage()];
   Widget nav3D(IconData icon) => Icon(icon, size: 20);
 
   @override
