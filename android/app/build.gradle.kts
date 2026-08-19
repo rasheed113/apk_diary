@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -20,21 +22,32 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.apk_diary"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            val keystoreFile = rootProject.file("workearn-release.jks")
+            if (!keystoreFile.exists()) {
+                throw GradleException("Missing WorkEarn release keystore. Configure the GitHub Actions signing secrets before building a release APK.")
+            }
+            storeFile = keystoreFile
+            storePassword = System.getenv("WORKEARN_KEYSTORE_PASSWORD")
+                ?: throw GradleException("Missing WORKEARN_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("WORKEARN_KEY_ALIAS")
+                ?: throw GradleException("Missing WORKEARN_KEY_ALIAS")
+            keyPassword = System.getenv("WORKEARN_KEY_PASSWORD")
+                ?: throw GradleException("Missing WORKEARN_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
