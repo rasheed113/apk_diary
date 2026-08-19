@@ -71,16 +71,29 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     ]);
   }
 
-  Widget _scrollingCredits(double h) {
-    const contentHeight = 1030.0;
-    final travel = h + contentHeight;
-    return AnimatedBuilder(animation: _credits, child: Column(mainAxisSize: MainAxisSize.min, children: [
-      _depthText('WORK EARN', size: 42, hero: true), const SizedBox(height: 3), _depthText('APP', size: 30, hero: true), const SizedBox(height: 48),
-      _depthText('Produced by', size: 18), const SizedBox(height: 8), _depthText('ERGS Dynamics Foundation Technology', size: 22, hero: true), const SizedBox(height: 52),
-      _depthText('Founder', size: 18), const SizedBox(height: 8), _depthText('Rasheed Afridi', size: 29, hero: true), const SizedBox(height: 54),
-      _depthText('Thanks for using', size: 18), const SizedBox(height: 8), _depthText('Work Earn App', size: 28, hero: true), const SizedBox(height: 38),
-      _depthText('Track your jobs.', size: 20), const SizedBox(height: 10), _depthText('Track your payments.', size: 20), const SizedBox(height: 10), _depthText('Save your working journey.', size: 20), const SizedBox(height: 70),
-    ]), builder: (context, child) { final y = h - _credits.value * travel; return Transform.translate(offset: Offset(0, y), child: child); });
+  Widget _scrollingCredits(double h, double w) {
+    final travel = h * 2.15;
+    return Positioned.fill(
+      child: ClipRect(
+        child: AnimatedBuilder(
+          animation: _credits,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: w * .06, vertical: h * .035),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                _depthText('WORK EARN', size: math.min(42, w * .105), hero: true), const SizedBox(height: 3), _depthText('APP', size: math.min(30, w * .075), hero: true), const SizedBox(height: 48),
+                _depthText('Produced by', size: math.min(18, w * .045)), const SizedBox(height: 8), _depthText('ERGS Dynamics Foundation Technology', size: math.min(22, w * .052), hero: true), const SizedBox(height: 52),
+                _depthText('Founder', size: math.min(18, w * .045)), const SizedBox(height: 8), _depthText('Rasheed Afridi', size: math.min(29, w * .07), hero: true), const SizedBox(height: 54),
+                _depthText('Thanks for using', size: math.min(18, w * .045)), const SizedBox(height: 8), _depthText('Work Earn App', size: math.min(28, w * .068), hero: true), const SizedBox(height: 38),
+                _depthText('Track your jobs.', size: math.min(20, w * .048)), const SizedBox(height: 10), _depthText('Track your payments.', size: math.min(20, w * .048)), const SizedBox(height: 10), _depthText('Save your working journey.', size: math.min(20, w * .048)), const SizedBox(height: 70),
+              ]),
+            ),
+          ),
+          builder: (context, child) => Transform.translate(offset: Offset(0, h - _credits.value * travel), child: child),
+        ),
+      ),
+    );
   }
 
   @override Widget build(BuildContext context) {
@@ -89,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       return ClipRect(child: Stack(fit: StackFit.expand, children: [
         const _DarkSky(),
         AnimatedBuilder(animation: _objects, builder: (context, child) => CustomPaint(painter: _CinematicObjectsPainter(progress: _objects.value, width: w, height: h))),
-        Positioned.fill(child: _scrollingCredits(h)),
+        _scrollingCredits(h, w),
         Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: .08), Colors.transparent, Colors.black.withValues(alpha: .25)]))))),
       ]));
     }));
@@ -102,7 +115,7 @@ class _DarkSky extends StatelessWidget {
 }
 
 class _AtmospherePainter extends CustomPainter {
-  @override void paint(Canvas canvas, Size size) { final glow = Paint()..shader = RadialGradient(colors: [const Color(0xFF123A66).withValues(alpha: .22), Colors.transparent]).createShader(Rect.fromCircle(center: Offset(size.width * .5, size.height * .32), radius: size.width * .72)); canvas.drawRect(Offset.zero & size, glow); }
+  @override void paint(Canvas canvas, Size size) { final glow = Paint()..shader = RadialGradient(colors: [const Color(0xFF123A66).withValues(alpha: .22), Colors.transparent]).createShader(Rect.fromCircle(center: Offset(size.width * .5, size.height * .32), radius: math.min(size.width, size.height) * .72)); canvas.drawRect(Offset.zero & size, glow); }
   @override bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
@@ -124,7 +137,7 @@ class _CinematicObjectsPainter extends CustomPainter {
   }
 
   void _paintRocket(Canvas canvas, Size size) {
-    final p = Curves.easeInOutCubic.transform(progress); final start = Offset(size.width * .08, size.height * .78); final end = Offset(size.width * .78, size.height * .18); final pos = Offset(Offset.lerp(start,end,p)!.dx, Offset.lerp(start,end,p)!.dy); final angle = -.72;
+    final p = Curves.easeInOutCubic.transform(progress); final start = Offset(size.width * .08, size.height * .78); final end = Offset(size.width * .78, size.height * .18); final pos = Offset.lerp(start,end,p)!; final angle = -.72;
     canvas.save(); canvas.translate(pos.dx,pos.dy); canvas.rotate(angle);
     final trail = Paint()..shader = LinearGradient(colors: [const Color(0xFFFFE76B).withValues(alpha:.9), const Color(0xFFFF7A3D).withValues(alpha:.55), Colors.transparent]).createShader(const Rect.fromLTWH(-80,-12,90,24)); canvas.drawOval(const Rect.fromLTWH(-78,-8,82,16), trail);
     final body = Paint()..shader = LinearGradient(colors: [Colors.white,const Color(0xFF9DEBFF),const Color(0xFF3A6A93)]).createShader(const Rect.fromLTWH(-24,-12,48,24)); canvas.drawOval(const Rect.fromLTWH(-25,-12,48,24), body);
