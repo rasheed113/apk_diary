@@ -156,7 +156,7 @@ class _WorkPageState extends State<WorkPage> {
     if (widget.embedded) {
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isEditMode ? l10n.updateEntry : l10n.entrySavedSuccessfully)),
+        SnackBar(content: Text(isEditMode ? l10n.updateEntry : l10n.saveEntry)),
       );
       return;
     }
