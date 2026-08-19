@@ -16,10 +16,7 @@ import 'i18n/app_localization.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
+  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) { sqfliteFfiInit(); databaseFactory = databaseFactoryFfi; }
   final savedTheme = await DatabaseHelper.instance.getTheme();
   AppThemeController.currentTheme.value = AppTheme.values.firstWhere((e) => e.name == savedTheme, orElse: () => AppTheme.classicLight);
   runApp(const MyApp());
@@ -27,65 +24,47 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
+  @override Widget build(BuildContext context) {
     final localization = AppLocalization.english();
-    return ValueListenableBuilder<AppTheme>(
-      valueListenable: AppThemeController.currentTheme,
-      builder: (context, theme, child) => MaterialApp(debugShowCheckedModeBanner: false, title: localization.appName, theme: ThemeManager.getTheme(theme), home: const SplashScreen()),
-    );
+    return ValueListenableBuilder<AppTheme>(valueListenable: AppThemeController.currentTheme, builder: (context, theme, child) => MaterialApp(debugShowCheckedModeBanner: false, title: localization.appName, theme: ThemeManager.getTheme(theme), home: const SplashScreen()));
   }
 }
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-  @override State<SplashScreen> createState() => _SplashScreenState();
-}
+class SplashScreen extends StatefulWidget { const SplashScreen({super.key}); @override State<SplashScreen> createState() => _SplashScreenState(); }
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fade;
   late final Animation<double> _creditsAnimation;
 
-  @override
-  void initState() {
+  @override void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 10));
-    _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.18, curve: Curves.easeOut));
-    _creditsAnimation = CurvedAnimation(parent: _controller, curve: const Interval(0.25, 0.92, curve: Curves.easeInOut));
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 12));
+    _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.14, curve: Curves.easeOut));
+    _creditsAnimation = CurvedAnimation(parent: _controller, curve: const Interval(0.06, 0.94, curve: Curves.easeInOutCubic));
     _controller.forward();
-    Timer(const Duration(seconds: 11), () {
-      if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
-    });
+    Timer(const Duration(seconds: 13), () { if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage())); });
   }
 
   @override void dispose() { _controller.dispose(); super.dispose(); }
 
   Widget _star(double size, double left, double top, double phase, Color color) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final p = (_controller.value + phase) % 1.0;
-        final x = left - p * 90;
-        final y = top + p * 180;
-        final twinkle = .45 + .55 * math.sin((p * math.pi * 2) + phase * 6).abs();
-        return Positioned(left: x, top: y, child: Opacity(opacity: twinkle, child: Transform.rotate(angle: p * math.pi, child: child)));
-      },
-      child: Text('✦', style: TextStyle(fontSize: size, color: color, shadows: [Shadow(color: color.withValues(alpha: .85), blurRadius: size * .8)])),
-    );
+    return AnimatedBuilder(animation: _controller, builder: (context, child) {
+      final p = (_controller.value + phase) % 1.0;
+      final x = left - p * 150;
+      final y = top + p * 360;
+      final twinkle = .42 + .58 * math.sin((p * math.pi * 2) + phase * 6).abs();
+      return Positioned(left: x, top: y, child: Opacity(opacity: twinkle, child: Transform.rotate(angle: p * math.pi, child: child)));
+    }, child: Text('✦', style: TextStyle(fontSize: size, color: color, shadows: [Shadow(color: color.withValues(alpha: .9), blurRadius: size * .9)])));
   }
 
   Widget _rocket() {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final p = Curves.easeInOut.transform((_controller.value * 1.08).clamp(0.0, 1.0));
-        final dx = -30 + p * 150;
-        final dy = 420 - p * 520;
-        return Positioned(left: dx, top: dy, child: Transform.rotate(angle: -.30, child: child));
-      },
-      child: const Text('🚀', style: TextStyle(fontSize: 34, shadows: [Shadow(color: Colors.cyanAccent, blurRadius: 10)])),
-    );
+    return AnimatedBuilder(animation: _controller, builder: (context, child) {
+      final p = Curves.easeInOutCubic.transform((_controller.value * 1.05).clamp(0.0, 1.0));
+      final dx = -35 + p * 190;
+      final dy = 480 - p * 610;
+      return Positioned(left: dx, top: dy, child: Transform.rotate(angle: -.30, child: child));
+    }, child: const Text('🚀', style: TextStyle(fontSize: 34, shadows: [Shadow(color: Colors.cyanAccent, blurRadius: 10)])));
   }
 
   Widget _threeDText(String text, {double size = 20, TextAlign align = TextAlign.center, bool hero = false}) {
@@ -98,96 +77,71 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Widget _credits(double height) {
-    return AnimatedBuilder(
-      animation: _creditsAnimation,
-      builder: (context, child) {
-        final offset = height * .52 - _creditsAnimation.value * height * 1.28;
-        return Transform.translate(offset: Offset(0, offset), child: child);
-      },
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        _threeDText('WORK EARN APP', size: 34, hero: true),
-        const SizedBox(height: 55),
-        _threeDText('Produced by', size: 18),
-        const SizedBox(height: 8),
-        _threeDText('ERGS Dynamics Foundation Technology', size: 21),
-        const SizedBox(height: 48),
-        _threeDText('Founder', size: 18),
-        const SizedBox(height: 8),
-        _threeDText('Rasheed Afridi', size: 27, hero: true),
-        const SizedBox(height: 55),
-        _threeDText('Keep track of your work.', size: 20),
-        const SizedBox(height: 12),
-        _threeDText('Keep track of your earnings.', size: 20),
-        const SizedBox(height: 55),
-        _threeDText('Thank you for using', size: 17),
-        const SizedBox(height: 8),
-        _threeDText('Work Earn App', size: 25, hero: true),
-        const SizedBox(height: 80),
-      ]),
-    );
+    return AnimatedBuilder(animation: _creditsAnimation, builder: (context, child) {
+      final offset = height * .92 - _creditsAnimation.value * height * 1.55;
+      return Transform.translate(offset: Offset(0, offset), child: child);
+    }, child: Column(mainAxisSize: MainAxisSize.min, children: [
+      _threeDText('WORK EARN APP', size: 34, hero: true),
+      const SizedBox(height: 55),
+      _threeDText('Produced by', size: 18),
+      const SizedBox(height: 8),
+      _threeDText('ERGS Dynamics Foundation Technology', size: 21),
+      const SizedBox(height: 48),
+      _threeDText('Founder', size: 18),
+      const SizedBox(height: 8),
+      _threeDText('Rasheed Afridi', size: 27, hero: true),
+      const SizedBox(height: 55),
+      _threeDText('Keep track of your work.', size: 20),
+      const SizedBox(height: 12),
+      _threeDText('Keep track of your earnings.', size: 20),
+      const SizedBox(height: 55),
+      _threeDText('Thank you for using', size: 17),
+      const SizedBox(height: 8),
+      _threeDText('Work Earn App', size: 25, hero: true),
+      const SizedBox(height: 80),
+    ]));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF02040A),
-      body: LayoutBuilder(builder: (context, constraints) {
-        final w = constraints.maxWidth;
-        final h = constraints.maxHeight;
-        return ClipRect(child: Stack(children: [
-          Positioned.fill(child: Container(decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.25), radius: 1.05, colors: [Color(0xFF111B35), Color(0xFF050810), Color(0xFF010205)])))),
-          Positioned.fill(child: Opacity(opacity: .14, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))),
-          Positioned(top: 22, right: 24, child: Text('☾', style: TextStyle(fontSize: 58, color: const Color(0xFFEAF4FF), shadows: [Shadow(color: const Color(0xFF8EDCFF).withValues(alpha: .8), blurRadius: 24)]))),
-          Positioned(top: h * .18, left: 0, right: 0, child: IgnorePointer(child: _threeDText('ERGS DYNAMICS', size: 31))),
-          Positioned(top: h * .235, left: 0, right: 0, child: IgnorePointer(child: Opacity(opacity: .42, child: _threeDText('FOUNDATION TECHNOLOGY', size: 18)))),
-          _star(11, w * .82, -20, .03, const Color(0xFF8DEBFF)),
-          _star(16, w * .58, 35, .21, const Color(0xFFFFE89A)),
-          _star(9, w * .34, -10, .44, const Color(0xFFB8A7FF)),
-          _star(14, w * .94, 170, .62, const Color(0xFF8DEBFF)),
-          _star(8, w * .70, 260, .77, const Color(0xFFFFC8F2)),
-          _star(12, w * .25, 180, .37, const Color(0xFFFFE89A)),
-          _star(7, w * .50, 320, .89, const Color(0xFF8DEBFF)),
-          _star(13, w * .08, 90, .56, const Color(0xFFB8A7FF)),
-          _rocket(),
-          Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .25), Colors.black.withValues(alpha: .55)])))),
-          FadeTransition(opacity: _fade, child: SizedBox(height: h, width: w, child: _credits(h))),
-          Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: .04), width: 1))))),
-        ]));
-      }),
-    );
+  @override Widget build(BuildContext context) {
+    return Scaffold(backgroundColor: const Color(0xFF02040A), body: LayoutBuilder(builder: (context, constraints) {
+      final w = constraints.maxWidth; final h = constraints.maxHeight;
+      return ClipRect(child: Stack(children: [
+        Positioned.fill(child: Container(decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.25), radius: 1.05, colors: [Color(0xFF111B35), Color(0xFF050810), Color(0xFF010205)])))),
+        Positioned.fill(child: Opacity(opacity: .14, child: Image.asset('assets/branding/workearn_logo.png', fit: BoxFit.contain))),
+        Positioned(top: 22, right: 24, child: Text('☾', style: TextStyle(fontSize: 58, color: const Color(0xFFEAF4FF), shadows: [Shadow(color: const Color(0xFF8EDCFF).withValues(alpha: .8), blurRadius: 24)]))),
+        Positioned(top: h * .18, left: 0, right: 0, child: IgnorePointer(child: Opacity(opacity: .32, child: _threeDText('ERGS DYNAMICS', size: 31)))),
+        Positioned(top: h * .235, left: 0, right: 0, child: IgnorePointer(child: Opacity(opacity: .22, child: _threeDText('FOUNDATION TECHNOLOGY', size: 18)))),
+        _star(11, w * .82, -20, .03, const Color(0xFF8DEBFF)),
+        _star(16, w * .58, 35, .21, const Color(0xFFFFE89A)),
+        _star(9, w * .34, -10, .44, const Color(0xFFB8A7FF)),
+        _star(14, w * .94, 170, .62, const Color(0xFF8DEBFF)),
+        _star(8, w * .70, 260, .77, const Color(0xFFFFC8F2)),
+        _star(12, w * .25, 180, .37, const Color(0xFFFFE89A)),
+        _star(7, w * .50, 320, .89, const Color(0xFF8DEBFF)),
+        _star(13, w * .08, 90, .56, const Color(0xFFB8A7FF)),
+        _rocket(),
+        Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .25), Colors.black.withValues(alpha: .55)])))),
+        FadeTransition(opacity: _fade, child: SizedBox(height: h, width: w, child: _credits(h))),
+        Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: .04), width: 1))))),
+      ]));
+    }));
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-  @override State<HomePage> createState() => _HomePageState();
-}
-
+class HomePage extends StatefulWidget { const HomePage({super.key}); @override State<HomePage> createState() => _HomePageState(); }
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   final List<Widget> pages = [const DashboardPage(), const WorkPage(embedded: true), const HistoryPage(), const FinancePage(), const SettingsPage()];
   Widget nav3D(IconData icon) => Icon(icon, size: 20);
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context);
-    final l = AppLocalization.english();
-    return Scaffold(
-      body: pages[selectedIndex],
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.only(left: 10, right: 10, bottom: 8),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: t.cardColor, border: Border.all(color: t.colorScheme.primary.withValues(alpha: .20)), boxShadow: [BoxShadow(color: t.colorScheme.primary.withValues(alpha: .10), blurRadius: 9, offset: const Offset(0, 3))]),
-        child: ClipRRect(borderRadius: BorderRadius.circular(24), child: NavigationBar(
-          height: 64, elevation: 0, backgroundColor: t.cardColor, indicatorColor: t.colorScheme.primary.withValues(alpha: .12), labelBehavior: NavigationDestinationLabelBehavior.alwaysShow, selectedIndex: selectedIndex,
-          destinations: [
-            NavigationDestination(icon: nav3D(Icons.dashboard), label: l.dashboard),
-            NavigationDestination(icon: nav3D(Icons.work), label: l.work),
-            NavigationDestination(icon: nav3D(Icons.history), label: l.history),
-            NavigationDestination(icon: nav3D(Icons.account_balance_wallet), label: l.finance),
-            NavigationDestination(icon: nav3D(Icons.settings), label: l.settings),
-          ],
-          onDestinationSelected: (index) => setState(() => selectedIndex = index),
-        )),
-      ),
-    );
+  @override Widget build(BuildContext context) {
+    final t = Theme.of(context); final l = AppLocalization.english();
+    return Scaffold(body: pages[selectedIndex], bottomNavigationBar: Container(
+      margin: const EdgeInsets.only(left: 10, right: 10, bottom: 8),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: t.cardColor, border: Border.all(color: t.colorScheme.primary.withValues(alpha: .20)), boxShadow: [BoxShadow(color: t.colorScheme.primary.withValues(alpha: .10), blurRadius: 9, offset: const Offset(0, 3))]),
+      child: ClipRRect(borderRadius: BorderRadius.circular(24), child: NavigationBar(height: 64, elevation: 0, backgroundColor: t.cardColor, indicatorColor: t.colorScheme.primary.withValues(alpha: .12), labelBehavior: NavigationDestinationLabelBehavior.alwaysShow, selectedIndex: selectedIndex,
+        destinations: [NavigationDestination(icon: nav3D(Icons.dashboard), label: l.dashboard), NavigationDestination(icon: nav3D(Icons.work), label: l.work), NavigationDestination(icon: nav3D(Icons.history), label: l.history), NavigationDestination(icon: nav3D(Icons.account_balance_wallet), label: l.finance), NavigationDestination(icon: nav3D(Icons.settings), label: l.settings)],
+        onDestinationSelected: (index) => setState(() => selectedIndex = index),
+      )),
+    ));
   }
 }
