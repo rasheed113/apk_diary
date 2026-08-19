@@ -54,15 +54,16 @@ jobs:
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.WORKEARN_KEYSTORE_BASE64 }}
+          WORKEARN_KEYSTORE_PASSWORD: ${{ secrets.WORKEARN_KEYSTORE_PASSWORD }}
         run: |
           set -euo pipefail
           test -n "$KEYSTORE_BASE64"
+          test -n "$WORKEARN_KEYSTORE_PASSWORD"
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
           chmod 600 "$ANDROID_KEYSTORE_PATH"
           test -s "$ANDROID_KEYSTORE_PATH"
           keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$WORKEARN_KEYSTORE_PASSWORD" -alias workearn >/dev/null
-        env:
-          WORKEARN_KEYSTORE_PASSWORD: ${{ secrets.WORKEARN_KEYSTORE_PASSWORD }}
+          echo "Release keystore verified."
 
       - run: flutter clean
 
@@ -106,3 +107,8 @@ jobs:
           overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove release keystore from runner
+        if: always()
+        shell: bash
+        run: rm -f "$ANDROID_KEYSTORE_PATH"
