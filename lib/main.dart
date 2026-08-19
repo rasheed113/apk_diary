@@ -27,25 +27,38 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  @override Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final localization = AppLocalization.english();
-    return ValueListenableBuilder<AppTheme>(valueListenable: AppThemeController.currentTheme, builder: (context, theme, child) => MaterialApp(debugShowCheckedModeBanner: false, title: localization.appName, theme: ThemeManager.getTheme(theme), home: const SplashScreen()));
+    return ValueListenableBuilder<AppTheme>(
+      valueListenable: AppThemeController.currentTheme,
+      builder: (context, theme, child) => MaterialApp(debugShowCheckedModeBanner: false, title: localization.appName, theme: ThemeManager.getTheme(theme), home: const SplashScreen()),
+    );
   }
 }
 
-class SplashScreen extends StatefulWidget { const SplashScreen({super.key}); @override State<SplashScreen> createState() => _SplashScreenState(); }
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+  @override State<SplashScreen> createState() => _SplashScreenState();
+}
+
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fade;
   late final Animation<double> _creditsAnimation;
 
-  @override void initState() {
+  @override
+  void initState() {
     super.initState();
+    // The visual animation lasts 3 seconds; the final frame is then held briefly
+    // so the cinematic sequence is actually visible before entering the app.
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 3));
-    _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.18, curve: Curves.easeOut));
+    _fade = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.10, curve: Curves.easeOut));
     _creditsAnimation = CurvedAnimation(parent: _controller, curve: const Interval(0.0, 1.0, curve: Curves.easeInOutCubic));
     _controller.forward();
-    Timer(const Duration(seconds: 3), () { if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage())); });
+    Timer(const Duration(seconds: 5), () {
+      if (mounted) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+    });
   }
 
   @override void dispose() { _controller.dispose(); super.dispose(); }
@@ -53,18 +66,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Widget _star(double size, double left, double top, double phase, Color color) {
     return AnimatedBuilder(animation: _controller, builder: (context, child) {
       final p = (_controller.value + phase) % 1.0;
-      final x = left - p * 150;
-      final y = top + p * 360;
-      final twinkle = .42 + .58 * math.sin((p * math.pi * 2) + phase * 6).abs();
+      final x = left - p * 120;
+      final y = top + p * 260;
+      final twinkle = .65 + .35 * math.sin((p * math.pi * 2) + phase * 6).abs();
       return Positioned(left: x, top: y, child: Opacity(opacity: twinkle, child: Transform.rotate(angle: p * math.pi, child: child)));
-    }, child: Text('✦', style: TextStyle(fontSize: size, color: color, shadows: [Shadow(color: color.withValues(alpha: .9), blurRadius: size * .9)])));
+    }, child: Text('✦', style: TextStyle(fontSize: size, color: color, shadows: [Shadow(color: color.withValues(alpha: .95), blurRadius: size * 1.1)])));
   }
 
   Widget _rocket() {
     return AnimatedBuilder(animation: _controller, builder: (context, child) {
       final p = Curves.easeInOutCubic.transform(_controller.value);
-      final dx = -35 + p * 190;
-      final dy = 480 - p * 610;
+      final dx = -25 + p * 150;
+      final dy = 430 - p * 500;
       return Positioned(left: dx, top: dy, child: Transform.rotate(angle: -.30, child: child));
     }, child: const Text('🚀', style: TextStyle(fontSize: 34, shadows: [Shadow(color: Colors.cyanAccent, blurRadius: 10)])));
   }
@@ -80,7 +93,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   Widget _credits(double height) {
     return AnimatedBuilder(animation: _creditsAnimation, builder: (context, child) {
-      final offset = height * .92 - _creditsAnimation.value * height * 1.55;
+      // Start just below the screen and finish just above it. The complete
+      // credit stack therefore travels through the viewport instead of
+      // starting halfway through and showing only the final line.
+      const contentTravel = 980.0;
+      final offset = height * .82 - _creditsAnimation.value * contentTravel;
       return Transform.translate(offset: Offset(0, offset), child: child);
     }, child: Column(mainAxisSize: MainAxisSize.min, children: [
       _threeDText('WORK EARN APP', size: 34, hero: true), const SizedBox(height: 55),
@@ -106,7 +123,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         Positioned(top: h * .235, left: 0, right: 0, child: IgnorePointer(child: Opacity(opacity: .22, child: _threeDText('FOUNDATION TECHNOLOGY', size: 18)))),
         _star(11, w * .82, -20, .03, const Color(0xFF8DEBFF)), _star(16, w * .58, 35, .21, const Color(0xFFFFE89A)), _star(9, w * .34, -10, .44, const Color(0xFFB8A7FF)), _star(14, w * .94, 170, .62, const Color(0xFF8DEBFF)), _star(8, w * .70, 260, .77, const Color(0xFFFFC8F2)), _star(12, w * .25, 180, .37, const Color(0xFFFFE89A)), _star(7, w * .50, 320, .89, const Color(0xFF8DEBFF)), _star(13, w * .08, 90, .56, const Color(0xFFB8A7FF)),
         _rocket(),
-        Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .25), Colors.black.withValues(alpha: .55)])))),
+        Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: .18), Colors.black.withValues(alpha: .38)])))),
         FadeTransition(opacity: _fade, child: SizedBox(height: h, width: w, child: _credits(h))),
         Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: .04), width: 1))))),
       ]));
