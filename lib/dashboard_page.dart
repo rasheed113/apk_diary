@@ -190,7 +190,11 @@ class _DashboardPageState extends State<DashboardPage> {
     final weekFilter = 'Week:${now.toIso8601String()}';
     final monthFilter = 'Month:${now.year}-${now.month.toString().padLeft(2, '0')}';
     return Scaffold(
-      appBar: AppBar(toolbarHeight: 44, titleSpacing: 14, title: Text(l.dashboard, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)), actions: [IconButton(icon: const Icon(Icons.refresh_rounded, size: 20), onPressed: loadDashboard)]),
+      appBar: AppBar(toolbarHeight: 38, titleSpacing: 10, title: Stack(clipBehavior: Clip.none, children: [
+        Transform.translate(offset: const Offset(1.2, 1.8), child: Text(l.dashboard, style: const TextStyle(color: Color(0xAA061018), fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: .3))),
+        Transform.translate(offset: const Offset(.55, .85), child: Text(l.dashboard, style: const TextStyle(color: Color(0xCC7EEBFF), fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: .3))),
+        Transform.translate(offset: const Offset(0, -.55), child: Text(l.dashboard, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: .3, shadows: [Shadow(color: Color(0xFFFFFFFF), offset: Offset(-.3, -.4), blurRadius: .5), Shadow(color: Color(0x88000000), offset: Offset(1, 1), blurRadius: 1)]))),
+      ]), actions: [IconButton(icon: const Icon(Icons.refresh_rounded, size: 18), onPressed: loadDashboard)]),
       body: Container(
         decoration: BoxDecoration(gradient: LinearGradient(colors: [s.surface, Colors.white], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         child: SingleChildScrollView(
