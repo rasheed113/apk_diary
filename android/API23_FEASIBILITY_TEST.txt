@@ -1,0 +1,4 @@
+API 23 feasibility test marker. No production configuration changed yet.
+Target: Android API 23 (Android 6.0).
+Current release APK baseline: minSdk 24, targetSdk 36, compileSdk 36.
+Purpose: verify whether this project can build with minSdk 23 without changing the production branch configuration until the build is proven.
