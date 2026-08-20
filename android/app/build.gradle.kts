@@ -9,7 +9,8 @@ plugins {
 android {
     namespace = "com.example.apk_diary"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // Flutter 3.32.8's plugins require NDK 27; keep the project aligned.
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
