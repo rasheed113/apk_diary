@@ -59,7 +59,7 @@ class _FinancePageState extends State<FinancePage> {
     final r = await showDialog<bool>(context: context, builder: (d) => StatefulBuilder(builder: (context, setDialogState) => AlertDialog(
       title: Row(children: [Icon(Icons.edit_rounded, size: 24), const SizedBox(width: 8), Text(l.editFinanceRecord)]),
       content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        DropdownButtonFormField<String>(initialValue: type, decoration: InputDecoration(prefixIcon: Icon(Icons.receipt, size: 22), labelText: l.financeType), items: [DropdownMenuItem(value: 'Salary Received', child: Text(l.salaryReceived)), DropdownMenuItem(value: 'Advance Received', child: Text(l.advanceReceived)), DropdownMenuItem(value: 'Other', child: Text(l.other))], onChanged: (v) { if (v != null) setDialogState(() => type = v); }),
+        DropdownButtonFormField<String>(value: type, decoration: InputDecoration(prefixIcon: Icon(Icons.receipt, size: 22), labelText: l.financeType), items: [DropdownMenuItem(value: 'Salary Received', child: Text(l.salaryReceived)), DropdownMenuItem(value: 'Advance Received', child: Text(l.advanceReceived)), DropdownMenuItem(value: 'Other', child: Text(l.other))], onChanged: (v) { if (v != null) setDialogState(() => type = v); }),
         const SizedBox(height: 12),
         TextField(controller: ac, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l.amount, prefixIcon: Icon(Icons.payments, size: 22))),
         const SizedBox(height: 12),
@@ -79,7 +79,7 @@ class _FinancePageState extends State<FinancePage> {
     final r = await showDialog<bool>(context: context, builder: (d) => StatefulBuilder(builder: (context, setDialogState) => AlertDialog(
       title: Row(children: [Icon(Icons.add_circle_outline_rounded, size: 24), const SizedBox(width: 8), Text(l.addFinanceRecord)]),
       content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        DropdownButtonFormField<String>(initialValue: type, decoration: InputDecoration(prefixIcon: Icon(Icons.receipt, size: 22), labelText: l.financeType), items: [DropdownMenuItem(value: 'Salary Received', child: Text(l.salaryReceived)), DropdownMenuItem(value: 'Advance Received', child: Text(l.advanceReceived)), DropdownMenuItem(value: 'Other', child: Text(l.other))], onChanged: (v) { if (v != null) setDialogState(() => type = v); }),
+        DropdownButtonFormField<String>(value: type, decoration: InputDecoration(prefixIcon: Icon(Icons.receipt, size: 22), labelText: l.financeType), items: [DropdownMenuItem(value: 'Salary Received', child: Text(l.salaryReceived)), DropdownMenuItem(value: 'Advance Received', child: Text(l.advanceReceived)), DropdownMenuItem(value: 'Other', child: Text(l.other))], onChanged: (v) { if (v != null) setDialogState(() => type = v); }),
         const SizedBox(height: 12),
         TextField(controller: ac, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l.amount, prefixIcon: Icon(Icons.payments, size: 22))),
         const SizedBox(height: 12),
