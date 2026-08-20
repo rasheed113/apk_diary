@@ -143,11 +143,23 @@ jobs:
           unzip -l "$APK" | grep -q 'META-INF/CERT.RSA'
           echo "Legacy v1 signature files verified."
 
+      - name: Prepare separate Android 6 API 23 release asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          LEGACY_APK=build/app/outputs/flutter-apk/WorkEarn-Android-6-API23.apk
+          cp "$APK" "$LEGACY_APK"
+          test -s "$LEGACY_APK"
+          echo "Latest asset: $APK"
+          echo "Legacy asset: $LEGACY_APK"
+          sha256sum "$APK" "$LEGACY_APK"
+
       - name: Upload Android 6 API 23 APK
         uses: actions/upload-artifact@v4
         with:
           name: WorkEarn-Android-6-API23-Samsung-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/WorkEarn-Android-6-API23.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -160,12 +172,18 @@ jobs:
           body: |
             WorkEarn Android APK release.
 
-            Samsung Android 6 compatibility build.
+            Latest Version:
+            Standard release asset: app-release.apk
+
+            Old Phone:
+            Android 6.0 / API 23 compatibility asset: WorkEarn-Android-6-API23.apk
             Minimum Android version: Android 6.0 / API 23.
             Native ABI: ARMv7 (armeabi-v7a).
             Signing: legacy APK Signature Scheme v1 for maximum Android 6/OEM compatibility.
-            The release asset is the same APK produced by the successful build job.
-          files: build/app/outputs/flutter-apk/app-release.apk
+            Both assets are produced from the same verified Android 6-compatible build; the legacy asset has a dedicated filename so the ERGS download flow can target it explicitly.
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/flutter-apk/WorkEarn-Android-6-API23.apk
           overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
