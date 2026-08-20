@@ -41,6 +41,10 @@ android {
             storePassword = signingPassword
             keyAlias = "workearn"
             keyPassword = signingPassword
+
+            // Keep both signing schemes so minSdk 23 devices (Android 6) can install the APK.
+            enableV1Signing = true
+            enableV2Signing = true
         }
     }
 
