@@ -83,87 +83,119 @@ jobs:
           echo "--- BEFORE BUILD ---"
           grep -n -E 'minSdk|minSdkVersion|targetSdk|compileSdk' android/app/build.gradle.kts
 
-      - name: Build Samsung Android 6 compatible release APK
+      - name: Build Latest Version APK
         env:
           WORKEARN_KEYSTORE_PASSWORD: ${{ secrets.WORKEARN_KEYSTORE_PASSWORD }}
         run: |
           set -euo pipefail
-          # Force ARMv7 only. This is the safest native ABI for legacy Samsung
-          # Android 6 / API 23 devices and avoids unnecessary unsupported ABIs.
-          flutter build apk --release --target-platform android-arm
+          echo "Building Latest Version with Flutter's normal universal APK target."
+          flutter build apk --release
 
-      - name: Check build.gradle.kts after build
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "--- AFTER BUILD ---"
-          grep -n -E 'minSdk|minSdkVersion|targetSdk|compileSdk' android/app/build.gradle.kts
-
-      - name: Verify MinSDK of generated APK
+      - name: Verify Latest Version APK
         shell: bash
         run: |
           set -euo pipefail
           APK=build/app/outputs/flutter-apk/app-release.apk
           APKANALYZER="$(find "$ANDROID_HOME" -type f -name apkanalyzer | head -n 1)"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -s "$APK"
           test -x "$APKANALYZER"
-          echo "Using apkanalyzer: $APKANALYZER"
-          echo "Generated APK: $APK"
-          echo "APK minSdkVersion:"
+          test -x "$APKSIGNER"
+          unzip -t "$APK" >/dev/null
+          echo "Latest APK size: $(du -h "$APK" | cut -f1)"
+          echo "Latest APK minSdkVersion:"
           "$APKANALYZER" manifest min-sdk "$APK"
+          echo "Latest APK native ABIs:"
+          unzip -l "$APK" | grep -E 'lib/(armeabi-v7a|arm64-v8a|x86_64)/' || true
+          echo "Latest APK signature:"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          echo "Latest APK SHA-256:"
+          sha256sum "$APK"
 
-      - name: Verify APK structure and SHA-256
+      - name: Check build.gradle.kts after Latest build
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "--- AFTER LATEST BUILD ---"
+          grep -n -E 'minSdk|minSdkVersion|targetSdk|compileSdk' android/app/build.gradle.kts
+
+      - name: Save Latest Version APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/release-assets
+          cp build/app/outputs/flutter-apk/app-release.apk build/release-assets/app-release.apk
+          test -s build/release-assets/app-release.apk
+          echo "Saved Latest Version APK:"
+          ls -lh build/release-assets/app-release.apk
+
+      - name: Build Old Phone Android 6 API 23 APK
+        env:
+          WORKEARN_KEYSTORE_PASSWORD: ${{ secrets.WORKEARN_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          flutter clean
+          flutter pub get
+          # Dedicated legacy build: ARMv7 only for Android 6 / API 23 Samsung devices.
+          flutter build apk --release --target-platform android-arm
+
+      - name: Verify Old Phone APK
         shell: bash
         run: |
           set -euo pipefail
           APK=build/app/outputs/flutter-apk/app-release.apk
+          LEGACY=build/release-assets/WorkEarn-Android-6-API23.apk
+          APKANALYZER="$(find "$ANDROID_HOME" -type f -name apkanalyzer | head -n 1)"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
           test -s "$APK"
+          test -x "$APKANALYZER"
+          test -x "$APKSIGNER"
           unzip -t "$APK" >/dev/null
-          echo "APK contents:"
-          unzip -l "$APK" | grep -E 'lib/armeabi-v7a/|lib/arm64-v8a/|lib/x86_64/' || true
+          echo "Old Phone APK size: $(du -h "$APK" | cut -f1)"
+          echo "Old Phone APK minSdkVersion:"
+          "$APKANALYZER" manifest min-sdk "$APK"
+          test "$($APKANALYZER manifest min-sdk "$APK")" = "23"
+          echo "Old Phone APK native ABIs:"
+          unzip -l "$APK" | grep -E 'lib/(armeabi-v7a|arm64-v8a|x86_64)/' || true
           if unzip -l "$APK" | grep -qE 'lib/(arm64-v8a|x86_64)/'; then
-            echo "ERROR: non-ARMv7 native libraries unexpectedly present."
+            echo "ERROR: non-ARMv7 native libraries unexpectedly present in Old Phone APK."
             exit 1
           fi
           unzip -l "$APK" | grep -q 'lib/armeabi-v7a/libflutter.so'
           unzip -l "$APK" | grep -q 'lib/armeabi-v7a/libapp.so'
-          sha256sum "$APK"
-
-      - name: Verify APK legacy v1 signature
-        shell: bash
-        run: |
-          set -euo pipefail
-          APK=build/app/outputs/flutter-apk/app-release.apk
-          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
-          test -x "$APKSIGNER"
-          echo "Using apksigner: $APKSIGNER"
           "$APKSIGNER" verify --verbose --print-certs "$APK"
-          # v1 signature must be present for the Android 6 Samsung compatibility build.
           unzip -l "$APK" | grep -q 'META-INF/MANIFEST.MF'
           unzip -l "$APK" | grep -q 'META-INF/CERT.SF'
           unzip -l "$APK" | grep -q 'META-INF/CERT.RSA'
-          echo "Legacy v1 signature files verified."
+          cp "$APK" "$LEGACY"
+          echo "Old Phone APK SHA-256:"
+          sha256sum "$LEGACY"
 
-      - name: Prepare separate Android 6 API 23 release asset
+      - name: Verify final release assets are distinct
         shell: bash
         run: |
           set -euo pipefail
-          APK=build/app/outputs/flutter-apk/app-release.apk
-          LEGACY_APK=build/app/outputs/flutter-apk/WorkEarn-Android-6-API23.apk
-          cp "$APK" "$LEGACY_APK"
-          test -s "$LEGACY_APK"
-          echo "Latest asset: $APK"
-          echo "Legacy asset: $LEGACY_APK"
-          sha256sum "$APK" "$LEGACY_APK"
+          LATEST=build/release-assets/app-release.apk
+          LEGACY=build/release-assets/WorkEarn-Android-6-API23.apk
+          test -s "$LATEST"
+          test -s "$LEGACY"
+          echo "Final release assets:"
+          ls -lh "$LATEST" "$LEGACY"
+          LATEST_SHA="$(sha256sum "$LATEST" | awk '{print $1}')"
+          LEGACY_SHA="$(sha256sum "$LEGACY" | awk '{print $1}')"
+          test "$LATEST_SHA" != "$LEGACY_SHA"
+          echo "Latest SHA-256: $LATEST_SHA"
+          echo "Old Phone SHA-256: $LEGACY_SHA"
 
-      - name: Upload Android 6 API 23 APK
+      - name: Upload Old Phone Android 6 API 23 APK
         uses: actions/upload-artifact@v4
         with:
           name: WorkEarn-Android-6-API23-Samsung-APK
-          path: build/app/outputs/flutter-apk/WorkEarn-Android-6-API23.apk
+          path: build/release-assets/WorkEarn-Android-6-API23.apk
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish APK to GitHub Release
+      - name: Publish APKs to GitHub Release
         uses: softprops/action-gh-release@v2
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
@@ -173,17 +205,18 @@ jobs:
             WorkEarn Android APK release.
 
             Latest Version:
-            Standard release asset: app-release.apk
+            Standard universal APK: app-release.apk
 
             Old Phone:
-            Android 6.0 / API 23 compatibility asset: WorkEarn-Android-6-API23.apk
+            Android 6.0 / API 23 compatibility APK: WorkEarn-Android-6-API23.apk
             Minimum Android version: Android 6.0 / API 23.
             Native ABI: ARMv7 (armeabi-v7a).
-            Signing: legacy APK Signature Scheme v1 for maximum Android 6/OEM compatibility.
-            Both assets are produced from the same verified Android 6-compatible build; the legacy asset has a dedicated filename so the ERGS download flow can target it explicitly.
+            Legacy signing: v1 JAR signing is verified.
+
+            The two assets are intentionally built separately: Latest uses Flutter's normal universal APK target, while Old Phone is a dedicated ARMv7/API-23 build.
           files: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/flutter-apk/WorkEarn-Android-6-API23.apk
+            build/release-assets/app-release.apk
+            build/release-assets/WorkEarn-Android-6-API23.apk
           overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
