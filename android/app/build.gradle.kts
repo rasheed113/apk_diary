@@ -23,6 +23,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.apk_diary"
+        // Hard compatibility floor: Android 6.0 / API 23.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -42,9 +43,11 @@ android {
             keyAlias = "workearn"
             keyPassword = signingPassword
 
-            // Keep both signing schemes so minSdk 23 devices (Android 6) can install the APK.
+            // Samsung/Android 6 compatibility: use the legacy APK Signature Scheme v1.
+            // Android 6 understands v1 reliably, while this avoids OEM-specific parser
+            // problems seen with newer signing schemes on some legacy Samsung firmware.
             enableV1Signing = true
-            enableV2Signing = true
+            enableV2Signing = false
         }
     }
 
