@@ -48,7 +48,15 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.32.8'
           channel: stable
+
+      - name: Verify Flutter and Dart toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter --version
+          dart --version
 
       - name: Install release keystore
         shell: bash
