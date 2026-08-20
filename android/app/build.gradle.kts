@@ -24,10 +24,9 @@ android {
         applicationId = "com.example.apk_diary"
         // Android 6.0 / API 23 is the compatibility floor.
         minSdk = 23
-        // API 25 keeps the release compatible with Android 6 while allowing
-        // legacy v1 signing. Newer target SDKs require v2+ signing and cannot
-        // produce an Android-6-installable v1-only APK.
-        targetSdk = 25
+        // Keep the target SDK modern enough for current Android/Flutter lint.
+        // minSdk remains API 23, so Android 6 compatibility is preserved.
+        targetSdk = 33
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
