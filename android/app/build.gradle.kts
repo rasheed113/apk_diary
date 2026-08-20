@@ -3,7 +3,6 @@ import java.io.File
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -23,9 +22,12 @@ android {
 
     defaultConfig {
         applicationId = "com.example.apk_diary"
-        // Hard compatibility floor: Android 6.0 / API 23.
+        // Android 6.0 / API 23 is the compatibility floor.
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        // API 25 keeps the release compatible with Android 6 while allowing
+        // legacy v1 signing. Newer target SDKs require v2+ signing and cannot
+        // produce an Android-6-installable v1-only APK.
+        targetSdk = 25
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -43,11 +45,9 @@ android {
             keyAlias = "workearn"
             keyPassword = signingPassword
 
-            // Samsung/Android 6 compatibility: use the legacy APK Signature Scheme v1.
-            // Android 6 understands v1 reliably, while this avoids OEM-specific parser
-            // problems seen with newer signing schemes on some legacy Samsung firmware.
+            // Keep both schemes. Android 6 uses v1; newer Android uses v2.
             enableV1Signing = true
-            enableV2Signing = false
+            enableV2Signing = true
         }
     }
 
