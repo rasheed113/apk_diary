@@ -77,6 +77,18 @@ jobs:
           # Android 6 / API 23 devices and avoids unnecessary unsupported ABIs.
           flutter build apk --release --target-platform android-arm
 
+      - name: Verify MinSDK of generated APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          APKANALYZER="$(find "$ANDROID_HOME" -type f -name apkanalyzer | head -n 1)"
+          test -x "$APKANALYZER"
+          echo "Using apkanalyzer: $APKANALYZER"
+          echo "Generated APK: $APK"
+          echo "APK minSdkVersion:"
+          "$APKANALYZER" manifest min-sdk "$APK"
+
       - name: Verify APK structure and SHA-256
         shell: bash
         run: |
