@@ -88,11 +88,13 @@ jobs:
           echo "Using apksigner: $APKSIGNER"
           "$APKSIGNER" verify --verbose build/app/outputs/flutter-apk/app-release.apk
 
-      - name: Upload APK artifact
+      - name: Upload Android 6 API 23 APK
         uses: actions/upload-artifact@v4
         with:
-          name: apk-release
+          name: WorkEarn-Android-6-API23-APK
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Publish APK to GitHub Release
         uses: softprops/action-gh-release@v2
@@ -104,6 +106,7 @@ jobs:
             WorkEarn Android APK release.
 
             The APK is built by GitHub Actions from the main branch.
+            Minimum Android version: Android 6.0 / API 23.
             The release asset is the same APK produced by the successful build job.
           files: build/app/outputs/flutter-apk/app-release.apk
           overwrite_files: true
