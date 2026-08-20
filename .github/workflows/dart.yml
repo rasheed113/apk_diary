@@ -68,6 +68,13 @@ jobs:
       - run: flutter clean
       - run: flutter pub get
 
+      - name: Check build.gradle.kts before build
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "--- BEFORE BUILD ---"
+          grep -n -E 'minSdk|minSdkVersion|targetSdk|compileSdk' android/app/build.gradle.kts
+
       - name: Build Samsung Android 6 compatible release APK
         env:
           WORKEARN_KEYSTORE_PASSWORD: ${{ secrets.WORKEARN_KEYSTORE_PASSWORD }}
@@ -76,6 +83,13 @@ jobs:
           # Force ARMv7 only. This is the safest native ABI for legacy Samsung
           # Android 6 / API 23 devices and avoids unnecessary unsupported ABIs.
           flutter build apk --release --target-platform android-arm
+
+      - name: Check build.gradle.kts after build
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "--- AFTER BUILD ---"
+          grep -n -E 'minSdk|minSdkVersion|targetSdk|compileSdk' android/app/build.gradle.kts
 
       - name: Verify MinSDK of generated APK
         shell: bash
