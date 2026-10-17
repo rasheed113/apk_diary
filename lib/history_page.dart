@@ -38,7 +38,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   String _dayLabel(DateTime d) => DateFormat('d MMMM yyyy').format(d);
 
-  List<DateTime> _weeksForLastFourMonths() { final n = DateTime.now(); final c = DateTime(n.year, n.month - 3, 1); var x = _startOfWeek(n); final r = <DateTime>[]; while (!x.isBefore(c)) { r.add(x); x = x.subtract(const Duration(days: 7)); } return r; }
+  List<DateTime> _weeksForLastFourMonths() { final n = DateTime.now(); final c = DateTime(n.year, n.month - 3, 1); var x = _startOfWeek(n); final r = <DateTime>[]; while (!_endOfWeek(x).isBefore(c)) { r.add(x); x = x.subtract(const Duration(days: 7)); } return r; }
   List<DateTime> _recentMonths(int c) { final n = DateTime.now(); return List.generate(c, (i) => DateTime(n.year, n.month - i, 1)); }
   AppLocalization get _l => AppLocalization(AppLanguageController.currentLanguage.value);
 
@@ -60,7 +60,16 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Future<void> _showDailyHistory() async {
-    final days = _recentDays(30);
+    final entries = await entriesFuture;
+    if (!mounted) return;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final availableDays = _recentDays(30).toSet();
+    for (final entry in entries) {
+      final date = _parseDate(entry.workDate);
+      if (date != null) availableDays.add(DateTime(date.year, date.month, date.day));
+    }
+    final days = availableDays.toList()..sort((a, b) => b.compareTo(a));
     await showModalBottomSheet<void>(
       context: context, isScrollControlled: true, showDragHandle: true,
       builder: (sc) {
@@ -69,11 +78,12 @@ class _HistoryPageState extends State<HistoryPage> {
           Padding(padding: const EdgeInsets.fromLTRB(20, 4, 20, 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(l.dailyHistory, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: s.onSurface)),
             const SizedBox(height: 4),
-            Text(l.chooseDayFromLast30Days, style: TextStyle(fontSize: 12, color: s.onSurfaceVariant)),
+            Text(l.chooseDayToViewEntries, style: TextStyle(fontSize: 12, color: s.onSurfaceVariant)),
           ])),
           Expanded(child: ListView.builder(itemCount: days.length, itemBuilder: (c, i) {
             final d = days[i];
-            final label = i == 0 ? l.today : i == 1 ? l.yesterday : '${i} ${l.daysAgo}';
+            final age = today.difference(d).inDays;
+            final label = age == 0 ? l.today : age == 1 ? l.yesterday : age > 1 ? '${age} ${l.daysAgo}' : _dayLabel(d);
             return ListTile(
               leading: Icon(Icons.today_rounded, color: s.primary),
               title: Text(label, style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface)),
