@@ -30,6 +30,14 @@ class _HistoryPageState extends State<HistoryPage> {
   String _weekLabel(DateTime d) => '${_dateLabel(d)}–${_dateLabel(_endOfWeek(d))}';
   String _monthLabel(DateTime d) => DateFormat('MMMM yyyy').format(d);
 
+  List<DateTime> _recentDays(int count) {
+    final n = DateTime.now();
+    final today = DateTime(n.year, n.month, n.day);
+    return List.generate(count, (i) => today.subtract(Duration(days: i)));
+  }
+
+  String _dayLabel(DateTime d) => DateFormat('d MMMM yyyy').format(d);
+
   List<DateTime> _weeksForLastFourMonths() { final n = DateTime.now(); final c = DateTime(n.year, n.month - 3, 1); var x = _startOfWeek(n); final r = <DateTime>[]; while (!x.isBefore(c)) { r.add(x); x = x.subtract(const Duration(days: 7)); } return r; }
   List<DateTime> _recentMonths(int c) { final n = DateTime.now(); return List.generate(c, (i) => DateTime(n.year, n.month - i, 1)); }
   AppLocalization get _l => AppLocalization(AppLanguageController.currentLanguage.value);
@@ -38,16 +46,47 @@ class _HistoryPageState extends State<HistoryPage> {
     final s = Theme.of(context).colorScheme;
     return Expanded(
       child: Container(
-        height: 58,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.surface, s.primary.withValues(alpha: .08)]), border: Border.all(color: s.primary.withValues(alpha: .16)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 4))]),
+        height: 52,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.surface, s.primary.withValues(alpha: .08)]), border: Border.all(color: s.primary.withValues(alpha: .16)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .10), blurRadius: 10, offset: const Offset(0, 4))]),
         child: Material(color: Colors.transparent, child: InkWell(
-          borderRadius: BorderRadius.circular(18), onTap: onPressed,
+          borderRadius: BorderRadius.circular(14), onTap: onPressed,
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(width: 34, height: 34, decoration: BoxDecoration(borderRadius: BorderRadius.circular(11), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary.withValues(alpha: .14), s.secondary.withValues(alpha: .08)]), border: Border.all(color: s.primary.withValues(alpha: .14)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .08), blurRadius: 6, offset: const Offset(0, 3))]), child: Icon(icon, size: 19, color: s.primary)),
-            const SizedBox(width: 8), Flexible(child: Text(label, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w900, color: s.primary))),
+            Container(width: 27, height: 27, decoration: BoxDecoration(borderRadius: BorderRadius.circular(9), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [s.primary.withValues(alpha: .14), s.secondary.withValues(alpha: .08)]), border: Border.all(color: s.primary.withValues(alpha: .14)), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .08), blurRadius: 6, offset: const Offset(0, 3))]), child: Icon(icon, size: 19, color: s.primary)),
+            const SizedBox(width: 5), Flexible(child: Text(label, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: s.primary))),
           ]),
         )),
       ),
+    );
+  }
+
+  Future<void> _showDailyHistory() async {
+    final days = _recentDays(30);
+    await showModalBottomSheet<void>(
+      context: context, isScrollControlled: true, showDragHandle: true,
+      builder: (sc) {
+        final s = Theme.of(sc).colorScheme; final l = _l;
+        return SafeArea(child: SizedBox(height: MediaQuery.of(sc).size.height * .78, child: Column(children: [
+          Padding(padding: const EdgeInsets.fromLTRB(20, 4, 20, 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(l.dailyHistory, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: s.onSurface)),
+            const SizedBox(height: 4),
+            Text(l.chooseDayFromLast30Days, style: TextStyle(fontSize: 12, color: s.onSurfaceVariant)),
+          ])),
+          Expanded(child: ListView.builder(itemCount: days.length, itemBuilder: (c, i) {
+            final d = days[i];
+            final label = i == 0 ? l.today : i == 1 ? l.yesterday : '${i} ${l.daysAgo}';
+            return ListTile(
+              leading: Icon(Icons.today_rounded, color: s.primary),
+              title: Text(label, style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface)),
+              subtitle: Text(_dayLabel(d), style: TextStyle(color: s.onSurfaceVariant)),
+              trailing: Icon(Icons.chevron_right, color: s.primary),
+              onTap: () {
+                Navigator.pop(sc);
+                setState(() => selectedFilter = 'Day:${DateTime(d.year, d.month, d.day).toIso8601String()}');
+              },
+            );
+          })),
+        ])));
+      },
     );
   }
 
@@ -104,22 +143,37 @@ class _HistoryPageState extends State<HistoryPage> {
           if (snapshot.hasError) return Center(child: Text('${l.errorPrefix}: ${snapshot.error}'));
           final entries = snapshot.data ?? [];
           final filtered = entries.where((entry) {
-            final q = searchText.toLowerCase();
-            if (!entry.itemName.toLowerCase().contains(q) && !entry.workDate.toLowerCase().contains(q)) return false;
+            final q = searchText.trim().toLowerCase();
             final d = _parseDate(entry.workDate); if (d == null) return false;
+            final searchableDate = '${entry.workDate.toLowerCase()} ${DateFormat('d MMMM yyyy').format(d).toLowerCase()} ${DateFormat('d MMM yyyy').format(d).toLowerCase()}';
+            if (!entry.itemName.toLowerCase().contains(q) && !searchableDate.contains(q)) return false;
             final x = DateTime(d.year, d.month, d.day);
             if (selectedFilter == 'Today') { final n = DateTime.now(); return x == DateTime(n.year, n.month, n.day); }
+            if (selectedFilter.startsWith('Day:')) { final selected = DateTime.tryParse(selectedFilter.substring(4)); return selected != null && x == DateTime(selected.year, selected.month, selected.day); }
             if (selectedFilter.startsWith('Week:')) { final w = DateTime.tryParse(selectedFilter.substring(5)); if (w == null) return false; return !x.isBefore(_startOfWeek(w)) && !x.isAfter(_endOfWeek(w)); }
             if (selectedFilter.startsWith('Month:')) { final p = selectedFilter.substring(6).split('-'); final y = int.tryParse(p[0]); final m = int.tryParse(p[1]); return y != null && m != null && d.year == y && d.month == m; }
             return true;
           }).toList();
+          filtered.sort((a, b) {
+            final aDate = _parseDate(a.workDate)!;
+            final bDate = _parseDate(b.workDate)!;
+            final dateOrder = DateTime(bDate.year, bDate.month, bDate.day).compareTo(DateTime(aDate.year, aDate.month, aDate.day));
+            if (dateOrder != 0) return dateOrder;
+            return (b.id ?? 0).compareTo(a.id ?? 0);
+          });
           final totalPieces = filtered.fold<int>(0, (sum, e) => sum + e.pieces);
           final totalEarnings = filtered.fold<double>(0, (sum, e) => sum + e.total);
           return Column(children: [
             Padding(padding: const EdgeInsets.all(8), child: TextField(controller: searchController, style: TextStyle(color: s.onSurface), decoration: InputDecoration(hintText: l.searchItemOrDate, hintStyle: TextStyle(color: s.onSurfaceVariant), prefixIcon: Icon(Icons.search, color: s.primary), filled: true, fillColor: s.surfaceContainerHighest, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: s.primary.withValues(alpha: .14))), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: s.primary.withValues(alpha: .14)))), onChanged: (v) => setState(() => searchText = v))),
-            Padding(padding: const EdgeInsets.fromLTRB(8, 8, 8, 0), child: Row(children: [_shortcutButton(icon: Icons.calendar_view_week_rounded, label: l.weeklyHistory, onPressed: _showWeeklyHistory), const SizedBox(width: 8), _shortcutButton(icon: Icons.calendar_month_rounded, label: l.monthlyHistory, onPressed: _showMonthlyHistory)])),
+            Padding(padding: const EdgeInsets.fromLTRB(8, 8, 8, 0), child: Row(children: [
+              _shortcutButton(icon: Icons.today_rounded, label: l.daily, onPressed: _showDailyHistory),
+              const SizedBox(width: 6),
+              _shortcutButton(icon: Icons.calendar_view_week_rounded, label: l.weekly, onPressed: _showWeeklyHistory),
+              const SizedBox(width: 6),
+              _shortcutButton(icon: Icons.calendar_month_rounded, label: l.monthly, onPressed: _showMonthlyHistory),
+            ])),
             if (selectedFilter == 'Today') Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Align(alignment: Alignment.centerLeft, child: Text('${l.today}: ${DateFormat('d MMMM yyyy').format(DateTime.now())}', style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurfaceVariant)))),
-            if (selectedFilter.startsWith('Week:') || selectedFilter.startsWith('Month:')) Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Row(children: [Expanded(child: Text(selectedFilter.startsWith('Week:') ? '${l.selectedWeek}: ${_weekLabel(DateTime.parse(selectedFilter.substring(5)))}' : '${l.selectedMonth}: ${_monthLabel(DateTime.parse('${selectedFilter.substring(6)}-01'))}', style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface))), TextButton(onPressed: () => setState(() => selectedFilter = 'Today'), child: Text(l.clear))])),
+            if (selectedFilter.startsWith('Day:') || selectedFilter.startsWith('Week:') || selectedFilter.startsWith('Month:')) Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Row(children: [Expanded(child: Text(selectedFilter.startsWith('Day:') ? '${l.selectedDay}: ${_dayLabel(DateTime.parse(selectedFilter.substring(4)))}' : selectedFilter.startsWith('Week:') ? '${l.selectedWeek}: ${_weekLabel(DateTime.parse(selectedFilter.substring(5)))}' : '${l.selectedMonth}: ${_monthLabel(DateTime.parse('${selectedFilter.substring(6)}-01'))}', style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface))), TextButton(onPressed: () => setState(() => selectedFilter = 'Today'), child: Text(l.clear))])),
             const SizedBox(height: 8),
             themedCard(child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [Column(children: [Icon(Icons.list_alt_rounded, color: s.primary), const SizedBox(height: 2), Text(l.entries, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(filtered.length.toString(), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))]), Column(children: [Icon(Icons.numbers, color: s.primary), const SizedBox(height: 2), Text(l.pieces, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(totalPieces.toString(), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))]), Column(children: [Icon(Icons.payments, color: s.primary), const SizedBox(height: 2), Text(l.earnings, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(totalEarnings.toStringAsFixed(0), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))])])),
             const SizedBox(height: 8),
