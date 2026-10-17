@@ -59,78 +59,77 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Future<void> _showDailyHistory() async {
-    final entries = await entriesFuture;
-    if (!mounted) return;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final availableDays = _recentDays(30).toSet();
-    for (final entry in entries) {
-      final date = _parseDate(entry.workDate);
-      if (date != null) availableDays.add(DateTime(date.year, date.month, date.day));
+  DateTime _selectedPeriodDate() {
+    if (selectedFilter.startsWith('Day:')) return DateTime.parse(selectedFilter.substring(4));
+    if (selectedFilter.startsWith('Week:')) return DateTime.parse(selectedFilter.substring(5));
+    if (selectedFilter.startsWith('Month:')) {
+      final p = selectedFilter.substring(6).split('-');
+      return DateTime(int.parse(p[0]), int.parse(p[1]), 1);
     }
-    final days = availableDays.toList()..sort((a, b) => b.compareTo(a));
-    await showModalBottomSheet<void>(
-      context: context, isScrollControlled: true, showDragHandle: true,
-      builder: (sc) {
-        final s = Theme.of(sc).colorScheme; final l = _l;
-        return SafeArea(child: SizedBox(height: MediaQuery.of(sc).size.height * .78, child: Column(children: [
-          Padding(padding: const EdgeInsets.fromLTRB(20, 4, 20, 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(l.dailyHistory, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: s.onSurface)),
-            const SizedBox(height: 4),
-            Text(l.chooseDayToViewEntries, style: TextStyle(fontSize: 12, color: s.onSurfaceVariant)),
+    final n = DateTime.now();
+    return DateTime(n.year, n.month, n.day);
+  }
+
+  void _selectPeriod(String type) {
+    final n = DateTime.now();
+    final today = DateTime(n.year, n.month, n.day);
+    setState(() {
+      if (type == 'Day') selectedFilter = 'Day:${today.toIso8601String()}';
+      if (type == 'Week') selectedFilter = 'Week:${_startOfWeek(today).toIso8601String()}';
+      if (type == 'Month') selectedFilter = 'Month:${today.year}-${today.month.toString().padLeft(2, '0')}';
+    });
+  }
+
+  void _navigatePeriod(int direction) {
+    final current = _selectedPeriodDate();
+    setState(() {
+      if (selectedFilter == 'Today' || selectedFilter.startsWith('Day:')) {
+        final d = current.add(Duration(days: direction));
+        selectedFilter = 'Day:${DateTime(d.year, d.month, d.day).toIso8601String()}';
+      } else if (selectedFilter.startsWith('Week:')) {
+        final d = current.add(Duration(days: 7 * direction));
+        selectedFilter = 'Week:${_startOfWeek(d).toIso8601String()}';
+      } else if (selectedFilter.startsWith('Month:')) {
+        final d = DateTime(current.year, current.month + direction, 1);
+        selectedFilter = 'Month:${d.year}-${d.month.toString().padLeft(2, '0')}';
+      }
+    });
+  }
+
+  Widget _periodNavigator(ColorScheme s, AppLocalization l) {
+    final isDay = selectedFilter == 'Today' || selectedFilter.startsWith('Day:');
+    final isWeek = selectedFilter.startsWith('Week:');
+    final isMonth = selectedFilter.startsWith('Month:');
+    final d = _selectedPeriodDate();
+    final label = isDay ? _dayLabel(d) : isWeek ? _weekLabel(_startOfWeek(d)) : isMonth ? _monthLabel(d) : _dayLabel(d);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: s.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: s.primary.withValues(alpha: .16)),
+        ),
+        child: Row(children: [
+          IconButton(
+            tooltip: 'Previous',
+            onPressed: () => _navigatePeriod(-1),
+            icon: Icon(Icons.chevron_left_rounded, color: s.primary, size: 30),
+          ),
+          Expanded(child: Column(children: [
+            Text(isDay ? l.dailyHistory : isWeek ? l.weeklyHistory : l.monthlyHistory,
+              style: TextStyle(fontSize: 11, color: s.onSurfaceVariant, fontWeight: FontWeight.w600)),
+            Text(label, textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: s.onSurface, fontWeight: FontWeight.w800)),
           ])),
-          Expanded(child: ListView.builder(itemCount: days.length, itemBuilder: (c, i) {
-            final d = days[i];
-            final age = today.difference(d).inDays;
-            final label = age == 0 ? l.today : age == 1 ? l.yesterday : age > 1 ? '${age} ${l.daysAgo}' : _dayLabel(d);
-            return ListTile(
-              leading: Icon(Icons.today_rounded, color: s.primary),
-              title: Text(label, style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface)),
-              subtitle: Text(_dayLabel(d), style: TextStyle(color: s.onSurfaceVariant)),
-              trailing: Icon(Icons.chevron_right, color: s.primary),
-              onTap: () {
-                Navigator.pop(sc);
-                setState(() => selectedFilter = 'Day:${DateTime(d.year, d.month, d.day).toIso8601String()}');
-              },
-            );
-          })),
-        ])));
-      },
-    );
-  }
-
-  Future<void> _showWeeklyHistory() async {
-    final weeks = _weeksForLastFourMonths();
-    await showModalBottomSheet<void>(
-      context: context, isScrollControlled: true, showDragHandle: true,
-      builder: (sc) {
-        final s = Theme.of(sc).colorScheme; final l = _l;
-        return SafeArea(child: SizedBox(height: MediaQuery.of(sc).size.height * .78, child: Column(children: [
-          Padding(padding: const EdgeInsets.fromLTRB(20, 4, 20, 12), child: Text(l.weeklyHistory, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: s.onSurface))),
-          Expanded(child: ListView.builder(itemCount: weeks.length, itemBuilder: (c, i) {
-            final w = weeks[i];
-            return ListTile(leading: Icon(Icons.calendar_view_week, color: s.primary), title: Text(i == 0 ? l.thisWeek : '$i ${l.week}', style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface)), subtitle: Text(_weekLabel(w), style: TextStyle(color: s.onSurfaceVariant)), trailing: Icon(Icons.chevron_right, color: s.primary), onTap: () { Navigator.pop(sc); setState(() => selectedFilter = 'Week:${w.toIso8601String()}'); });
-          })),
-        ])));
-      },
-    );
-  }
-
-  Future<void> _showMonthlyHistory() async {
-    final months = _recentMonths(12);
-    await showModalBottomSheet<void>(
-      context: context, isScrollControlled: true, showDragHandle: true,
-      builder: (sc) {
-        final s = Theme.of(sc).colorScheme; final l = _l;
-        return SafeArea(child: SizedBox(height: MediaQuery.of(sc).size.height * .78, child: Column(children: [
-          Padding(padding: const EdgeInsets.fromLTRB(20, 4, 20, 12), child: Text(l.monthlyHistory, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: s.onSurface))),
-          Expanded(child: ListView.builder(itemCount: months.length, itemBuilder: (c, i) {
-            final m = months[i];
-            return ListTile(leading: Icon(Icons.calendar_month, color: s.primary), title: Text(i == 0 ? l.thisMonth : '$i ${l.month}', style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface)), subtitle: Text(_monthLabel(m), style: TextStyle(color: s.onSurfaceVariant)), trailing: Icon(Icons.chevron_right, color: s.primary), onTap: () { Navigator.pop(sc); setState(() => selectedFilter = 'Month:${m.year}-${m.month.toString().padLeft(2, '0')}'); });
-          })),
-        ])));
-      },
+          IconButton(
+            tooltip: 'Next',
+            onPressed: () => _navigatePeriod(1),
+            icon: Icon(Icons.chevron_right_rounded, color: s.primary, size: 30),
+          ),
+        ]),
+      ),
     );
   }
 
@@ -176,14 +175,13 @@ class _HistoryPageState extends State<HistoryPage> {
           return Column(children: [
             Padding(padding: const EdgeInsets.all(8), child: TextField(controller: searchController, style: TextStyle(color: s.onSurface), decoration: InputDecoration(hintText: l.searchItemOrDate, hintStyle: TextStyle(color: s.onSurfaceVariant), prefixIcon: Icon(Icons.search, color: s.primary), filled: true, fillColor: s.surfaceContainerHighest, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: s.primary.withValues(alpha: .14))), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: s.primary.withValues(alpha: .14)))), onChanged: (v) => setState(() => searchText = v))),
             Padding(padding: const EdgeInsets.fromLTRB(8, 8, 8, 0), child: Row(children: [
-              _shortcutButton(icon: Icons.today_rounded, label: l.daily, onPressed: _showDailyHistory),
+              _shortcutButton(icon: Icons.today_rounded, label: l.daily, onPressed: () => _selectPeriod('Day')),
               const SizedBox(width: 6),
-              _shortcutButton(icon: Icons.calendar_view_week_rounded, label: l.weekly, onPressed: _showWeeklyHistory),
+              _shortcutButton(icon: Icons.calendar_view_week_rounded, label: l.weekly, onPressed: () => _selectPeriod('Week')),
               const SizedBox(width: 6),
-              _shortcutButton(icon: Icons.calendar_month_rounded, label: l.monthly, onPressed: _showMonthlyHistory),
+              _shortcutButton(icon: Icons.calendar_month_rounded, label: l.monthly, onPressed: () => _selectPeriod('Month')),
             ])),
-            if (selectedFilter == 'Today') Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Align(alignment: Alignment.centerLeft, child: Text('${l.today}: ${DateFormat('d MMMM yyyy').format(DateTime.now())}', style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurfaceVariant)))),
-            if (selectedFilter.startsWith('Day:') || selectedFilter.startsWith('Week:') || selectedFilter.startsWith('Month:')) Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Row(children: [Expanded(child: Text(selectedFilter.startsWith('Day:') ? '${l.selectedDay}: ${_dayLabel(DateTime.parse(selectedFilter.substring(4)))}' : selectedFilter.startsWith('Week:') ? '${l.selectedWeek}: ${_weekLabel(DateTime.parse(selectedFilter.substring(5)))}' : '${l.selectedMonth}: ${_monthLabel(DateTime.parse('${selectedFilter.substring(6)}-01'))}', style: TextStyle(fontWeight: FontWeight.w700, color: s.onSurface))), TextButton(onPressed: () => setState(() => selectedFilter = 'Today'), child: Text(l.clear))])),
+            _periodNavigator(s, l),
             const SizedBox(height: 8),
             themedCard(child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [Column(children: [Icon(Icons.list_alt_rounded, color: s.primary), const SizedBox(height: 2), Text(l.entries, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(filtered.length.toString(), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))]), Column(children: [Icon(Icons.numbers, color: s.primary), const SizedBox(height: 2), Text(l.pieces, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(totalPieces.toString(), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))]), Column(children: [Icon(Icons.payments, color: s.primary), const SizedBox(height: 2), Text(l.earnings, style: TextStyle(fontWeight: FontWeight.bold, color: s.onSurfaceVariant)), Text(totalEarnings.toStringAsFixed(0), style: TextStyle(color: s.onSurface, fontWeight: FontWeight.w800))])])),
             const SizedBox(height: 8),
