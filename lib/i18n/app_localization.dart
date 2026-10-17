@@ -75,7 +75,7 @@ class AppLocalization {
   String get yesterday => AppStrings.yesterday;
   String get daysAgo => AppStrings.daysAgo;
   String get selectedDay => AppStrings.selectedDay;
-  String get chooseDayFromLast30Days => AppStrings.chooseDayFromLast30Days;
+  String get chooseDayToViewEntries => AppStrings.chooseDayToViewEntries;
   String get searchItemOrDate => AppStrings.searchItemOrDate;
   String get selectedWeek => AppStrings.selectedWeek;
   String get selectedMonth => AppStrings.selectedMonth;
