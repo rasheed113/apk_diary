@@ -64,10 +64,18 @@ class AppLocalization {
   String get advance => AppStrings.advance;
   String get noFinanceRecords => AppStrings.noFinanceRecords;
 
+  String get dailyHistory => AppStrings.dailyHistory;
   String get weeklyHistory => AppStrings.weeklyHistory;
   String get monthlyHistory => AppStrings.monthlyHistory;
+  String get daily => AppStrings.daily;
+  String get weekly => AppStrings.weekly;
+  String get monthly => AppStrings.monthly;
   String get thisWeek => AppStrings.thisWeek;
   String get thisMonth => AppStrings.thisMonth;
+  String get yesterday => AppStrings.yesterday;
+  String get daysAgo => AppStrings.daysAgo;
+  String get selectedDay => AppStrings.selectedDay;
+  String get chooseDayFromLast30Days => AppStrings.chooseDayFromLast30Days;
   String get searchItemOrDate => AppStrings.searchItemOrDate;
   String get selectedWeek => AppStrings.selectedWeek;
   String get selectedMonth => AppStrings.selectedMonth;
