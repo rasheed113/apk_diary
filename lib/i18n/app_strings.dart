@@ -70,7 +70,7 @@ class AppStrings {
   static const yesterday = 'Yesterday';
   static const daysAgo = 'days ago';
   static const selectedDay = 'Selected Day';
-  static const chooseDayFromLast30Days = 'Choose a day from the last 30 days';
+  static const chooseDayToViewEntries = 'Choose a day to view its entries';
   static const searchItemOrDate = 'Search item or date...';
   static const selectedWeek = 'Selected Week';
   static const selectedMonth = 'Selected Month';
