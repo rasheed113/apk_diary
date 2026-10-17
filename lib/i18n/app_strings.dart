@@ -59,10 +59,18 @@ class AppStrings {
   static const noFinanceRecords = 'No Finance Records';
 
   // History
+  static const dailyHistory = 'Daily History';
   static const weeklyHistory = 'Weekly History';
   static const monthlyHistory = 'Monthly History';
+  static const daily = 'Daily';
+  static const weekly = 'Weekly';
+  static const monthly = 'Monthly';
   static const thisWeek = 'This Week';
   static const thisMonth = 'This Month';
+  static const yesterday = 'Yesterday';
+  static const daysAgo = 'days ago';
+  static const selectedDay = 'Selected Day';
+  static const chooseDayFromLast30Days = 'Choose a day from the last 30 days';
   static const searchItemOrDate = 'Search item or date...';
   static const selectedWeek = 'Selected Week';
   static const selectedMonth = 'Selected Month';
